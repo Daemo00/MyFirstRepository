@@ -4,9 +4,11 @@ package com.daemo.myfirstapp.location;
 import android.Manifest;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
@@ -38,9 +40,24 @@ public class LocationActivity extends AppCompatActivity {
         mPager = (ViewPager) findViewById(R.id.pager);
         mPager.setAdapter(new ScreenSlidePagerAdapter(getSupportFragmentManager()));
         mPager.setOffscreenPageLimit(2);
+
         // Check permissions here because fragments are continuously created and destroyed
         checkPermissionsRunTime(Manifest.permission.ACCESS_FINE_LOCATION);
         checkPermissionsRunTime(Manifest.permission.ACCESS_COARSE_LOCATION);
+        if (!ProviderDetailsFragment.isMockLocationEnabled(this)) {
+            new AlertDialog.Builder(this)
+                    .setMessage("Activate mock location")
+                    .setTitle("Pliis")
+                    .setPositiveButton("Ok", new DialogInterface.OnClickListener() {
+                        @Override
+                        public void onClick(DialogInterface dialogInterface, int i) {
+                            startActivity(new Intent(Settings.ACTION_APPLICATION_DEVELOPMENT_SETTINGS));
+                        }
+                    })
+                    .setNegativeButton("Cancel", null)
+                    .create()
+                    .show();
+        }
     }
 
     private boolean checkPermissionsRunTime(String permission) {
