@@ -52,6 +52,12 @@
     <string name="saving_key_value_title">Key-Value</string>
     <string name="select_provider">Select a provider</string>
 
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="saving_files_title">Files</string>
+    <string name="internal_storage">Internal Storage</string>
+    <string name="external_storage">External Storage</string>
+    <string name="is_cache">Cache?</string>
+    <string name="file_content">File Content</string>
+    <string name="is_public">Public?</string>
+    <string name="file_path">File path</string>
 </resources>

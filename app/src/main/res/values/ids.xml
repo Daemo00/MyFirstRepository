@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <item name="cbIsCache" type="id" />
+    <item name="spDirectoryStorage" type="id" />
+    <item name="tvDirectoryStorageLabel" type="id" />
+    <item name="cbIsPublic" type="id" />
+</resources>

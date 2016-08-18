@@ -2,18 +2,15 @@ package com.daemo.myfirstapp.location;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
-import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
-import android.support.v4.text.TextUtilsCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.ListViewCompat;
 import android.text.TextUtils;
@@ -29,10 +26,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.daemo.myfirstapp.BuildConfig;
 import com.daemo.myfirstapp.R;
 
-import java.sql.Array;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -52,6 +47,7 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
     private View root;
     private TimerTask timerTask;
     private MyLocationListener locationListener;
+    private LocationActivity locationActivity;
 
     public ProviderDetailsFragment() {
     }
@@ -72,10 +68,14 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
         locationListener = new MyLocationListener(this, mLocationProvider);
     }
 
+    @SuppressWarnings("MissingPermission")
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        locationActivity = (LocationActivity) getActivity();
+        List<String> missing_permissions = missingPermissions();
+        if (!missing_permissions.isEmpty()) {
+            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions), Toast.LENGTH_SHORT);
             return;
         }
         getLocationManager().requestLocationUpdates(mLocationProvider, 1000, 1, locationListener);
@@ -110,30 +110,34 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
                 if (tvTitle != null) tvTitle.setText(listItems.get(position).title);
                 TextView tvSubTitle = (TextView) convertView.findViewById(android.R.id.text2);
                 if (tvSubTitle != null)
-                    tvSubTitle.setText(new SimpleDateFormat("[HH.mm.ss.SSS]").format(new Date()));
+                    tvSubTitle.setText(new SimpleDateFormat("[HH:mm:ss.SSS]").format(new Date()));
 
                 return convertView;
             }
         };
 
         ((ListViewCompat) root.findViewById(R.id.listView))
-                .setAdapter(
-//                        adapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listItems)
-                        adapter
-                );
+                .setAdapter(adapter);
         return root;
     }
 
     public void onMockButtonPressed() {
+        Button btnMock = (Button) root.findViewById(R.id.btnMock);
+        if (btnMock == null) return;
+
         if (mock.isEnabled) {
-            if (stopMocking()) ((Button) getView().findViewById(R.id.btnMock)).setText("Start");
+            if (stopMocking()) btnMock.setText("Start");
         } else {
-            if (startMocking()) ((Button) getView().findViewById(R.id.btnMock)).setText("Stop");
+            if (startMocking()) btnMock.setText("Stop");
         }
     }
 
     private boolean startMocking() {
-        if (!hasPermissions()) return false;
+        List<String> missing_permissions = missingPermissions();
+        if (!missing_permissions.isEmpty()) {
+            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions), Toast.LENGTH_SHORT);
+            return false;
+        }
         mock.enable();
 
         // Set test location programmatically
@@ -174,7 +178,11 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
 
     @SuppressWarnings("MissingPermission")
     private boolean stopMocking() {
-        if (!hasPermissions()) return false;
+        List<String> missing_permissions = missingPermissions();
+        if (!missing_permissions.isEmpty()) {
+            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions), Toast.LENGTH_SHORT);
+            return false;
+        }
         mock.disable();
         t.cancel();
         getLocationManager().removeUpdates(locationListener);
@@ -196,8 +204,8 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
 
     @Override
     public void onDestroy() {
-        if (hasPermissions() && t != null) t.cancel();
         super.onDestroy();
+        if (missingPermissions().isEmpty() && t != null) t.cancel();
     }
 
     @Override
@@ -214,7 +222,7 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
 
     private void onDetailsButtonPressed() {
         new AlertDialog.Builder(getActivity())
-                .setMessage(hasPermissions() ? providerDetails(getLocationManager().getProvider(mLocationProvider)) : "Need permissions to show details")
+                .setMessage(missingPermissions().isEmpty() ? providerDetails(getLocationManager().getProvider(mLocationProvider)) : "Need permissions to show details")
                 .setTitle("Details of " + mLocationProvider + " provider")
                 .setPositiveButton("Ok", null)
                 .create()
@@ -235,7 +243,6 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
     }
 
     protected void addRow(String title, String description) {
-//        Toast.makeText(getActivity(), title, Toast.LENGTH_SHORT).show();
         listItems.add(listItems.size(), new TitleDescription(title, description));
         adapter.notifyDataSetChanged();
     }
@@ -245,42 +252,17 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
         showItemDetails(position);
     }
 
-    public boolean hasPermissions() {
+    public List<String> missingPermissions() {
         List<String> missing_permissions = new ArrayList<>();
-        if (!isMockLocationEnabled(getActivity())) {
-            missing_permissions.add("mock setting");
-        }
+        if (!locationActivity.isMockLocationEnabled()) missing_permissions.add("mock setting");
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             missing_permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
-        }
 
-        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+        if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             missing_permissions.add(Manifest.permission.ACCESS_COARSE_LOCATION);
-        }
 
-        if (missing_permissions.isEmpty()) return true;
-
-        Toast.makeText(getActivity(), "missing: " + TextUtils.join(", ",missing_permissions), Toast.LENGTH_SHORT).show();
-        return false;
-    }
-
-    public static boolean isMockLocationEnabled(Context context) {
-        boolean isMockLocation = false;
-        try {
-            //if marshmallow
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                AppOpsManager opsManager = (AppOpsManager) context.getSystemService(Context.APP_OPS_SERVICE);
-                isMockLocation = (opsManager.checkOp(AppOpsManager.OPSTR_MOCK_LOCATION, android.os.Process.myUid(), BuildConfig.APPLICATION_ID) == AppOpsManager.MODE_ALLOWED);
-            } else {
-                // in marshmallow this will always return true
-                isMockLocation = !android.provider.Settings.Secure.getString(context.getContentResolver(), "mock_location").equals("0");
-            }
-        } catch (Exception e) {
-            return isMockLocation;
-        }
-
-        return isMockLocation;
+        return missing_permissions;
     }
 
     private class TitleDescription {

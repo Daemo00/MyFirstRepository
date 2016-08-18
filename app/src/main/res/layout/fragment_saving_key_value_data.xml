@@ -23,14 +23,13 @@
             android:layout_height="wrap_content"
             android:id="@+id/mode"
             android:orientation="horizontal"
-            android:baselineAligned="false"
-            style="2">
+            android:baselineAligned="false">
 
             <RadioButton
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lblSharedPreferences"
-                android:id="@+id/rbSharedPreferences"
+                android:id="@+id/rbtnSharedPreferences"
                 android:checked="true"
                 android:layout_weight="1" />
 
@@ -38,7 +37,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lblPreferences"
-                android:id="@+id/rbPreferences"
+                android:id="@+id/rbtnPreferences"
                 android:checked="false"
                 android:layout_weight="1" />
         </RadioGroup>
@@ -57,7 +56,6 @@
                 android:layout_height="wrap_content"
                 android:id="@+id/etValueToSave"
                 android:layout_weight="1"
-                android:editable="true"
                 android:inputType="text"
                 android:hint="@string/sharedPreferences_hint" />
 
@@ -92,7 +90,6 @@
                 android:textAppearance="?android:attr/textAppearanceMedium"
                 android:id="@+id/tvValueLoaded"
                 android:textAlignment="center"
-                android:password="false"
                 android:singleLine="false"
                 android:gravity="center" />
 
