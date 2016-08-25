@@ -27,7 +27,6 @@ public class LocationActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_location);
 
         // Instantiate a ViewPager and a PagerAdapter.
         mPager = (ViewPager) findViewById(R.id.pager);
@@ -44,6 +43,11 @@ public class LocationActivity extends MySuperActivity {
                 }
             });
         }
+    }
+
+    @Override
+    protected int getLayoutResID() {
+        return R.layout.activity_location;
     }
 
     public boolean isMockLocationEnabled() {

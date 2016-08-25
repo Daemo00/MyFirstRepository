@@ -2,21 +2,60 @@ package com.daemo.myfirstapp;
 
 import android.app.Activity;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.net.Uri;
+import android.os.Bundle;
+import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MySuperActivity extends AppCompatActivity {
+public abstract class MySuperActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST = 0;
     private List<Toast> toastList = new ArrayList<>();
     private List<AlertDialog> alertDialogList = new ArrayList<>();
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(getLayoutResID());
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+    }
+
+    protected abstract int getLayoutResID();
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.menu, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle item selection
+        switch (item.getItemId()) {
+            case R.id.settings:
+                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
+                intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
+                startActivity(intent);
+                return true;
+            default:
+                return super.onOptionsItemSelected(item);
+        }
+    }
 
     protected void checkPermissionsRunTime(final Activity activity, final String[] permissions) {
         boolean shouldShowStuff = false;
@@ -82,5 +121,6 @@ public class MySuperActivity extends AppCompatActivity {
     protected void onDestroy() {
         super.onDestroy();
         for (Toast toast : toastList) toast.cancel();
+        for (AlertDialog alertDialog : alertDialogList) alertDialog.cancel();
     }
 }

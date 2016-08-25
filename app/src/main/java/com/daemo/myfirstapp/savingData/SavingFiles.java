@@ -60,6 +60,7 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
         return root;
     }
 
+    @Nullable
     private File getSelectedDirectory() {
         File res = null;
         RadioGroup rg = (RadioGroup) root.findViewById(R.id.rgStorageMode);
@@ -163,6 +164,7 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
         if (rl == null) return;
         rl.removeAllViews();
 
+        // maybe better to convert to XML layout
         TextView tvDirectoryStorageLabel = new TextView(savingActivity);
         tvDirectoryStorageLabel.setId(R.id.tvDirectoryStorageLabel);
         tvDirectoryStorageLabel.setText("Choose Directory:");

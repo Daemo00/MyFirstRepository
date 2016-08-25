@@ -16,12 +16,12 @@ package com.daemo.myfirstapp.lifecycle;
  */
 
 
-import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.lifecycle.util.StatusTracker;
 import com.daemo.myfirstapp.lifecycle.util.Utils;
@@ -29,7 +29,7 @@ import com.daemo.myfirstapp.lifecycle.util.Utils;
 /**
  * Example Activity to demonstrate the lifecycle callback methods.
  */
-public class ActivityB extends Activity {
+public class ActivityB extends MySuperActivity {
 
     private String mActivityName;
     private TextView mStatusView;
@@ -39,12 +39,16 @@ public class ActivityB extends Activity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_b);
         mActivityName = getString(R.string.activity_b_label);
         mStatusView = (TextView)findViewById(R.id.status_view_b);
         mStatusAllView = (TextView)findViewById(R.id.status_view_all_b);
         mStatusTracker.setStatus(mActivityName, getString(R.string.on_create));
         Utils.printStatus(mStatusView, mStatusAllView);
+    }
+
+    @Override
+    protected int getLayoutResID() {
+        return R.layout.activity_b;
     }
 
     @Override
