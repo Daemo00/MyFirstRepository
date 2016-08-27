@@ -16,6 +16,7 @@
         <activity android:name=".MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -37,6 +38,9 @@
             android:parentActivityName=".MainActivity" />
         <activity
             android:name=".location.LocationActivity"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".interaction.Interacting"
             android:parentActivityName=".MainActivity" />
     </application>
 
