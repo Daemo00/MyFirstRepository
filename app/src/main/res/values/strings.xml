@@ -62,4 +62,9 @@
     <string name="file_path">File path</string>
     <string name="settings">Settings</string>
     <string name="saving_database_title">Database</string>
+    <string name="drawer_open">Drawer open</string>
+    <string name="drawer_close">Drawer close</string>
+    <string name="yes">Yes</string>
+    <string name="no">No</string>
+    <string name="show_chooser">Show Chooser?</string>
 </resources>
