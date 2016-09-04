@@ -9,7 +9,6 @@ import android.provider.ContactsContract;
 import android.util.Log;
 import android.view.View;
 import android.widget.RadioGroup;
-import android.widget.Toast;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
@@ -80,12 +79,12 @@ public class Interacting extends MySuperActivity {
 
                         // Retrieve the phone number from the NUMBER column
                         String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        showToast("Number is " + number, Toast.LENGTH_SHORT);
+                        showToast("Number is " + number);
                     }
                 }
                 // Do something with the phone number...
             } else {
-                showToast("Result is " + resultCode, Toast.LENGTH_SHORT);
+                showToast("Result is " + resultCode);
             }
         }
     }

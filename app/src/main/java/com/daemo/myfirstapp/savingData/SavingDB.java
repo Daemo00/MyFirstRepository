@@ -18,7 +18,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.savingData.DBUtils.FeedReaderContract.FeedEntry;
@@ -119,7 +118,7 @@ public class SavingDB extends Fragment {
             public void onClick(View v) {
                 String newTitle = ((EditText) dialog.findViewById(R.id.editText)).getText().toString();
                 String newSubTitle = ((EditText) dialog.findViewById(R.id.editText2)).getText().toString();
-                savingActivity.showToast("Updated " + updateDBrow(rowId, newTitle, newSubTitle) + " row(s)", Toast.LENGTH_SHORT);
+                savingActivity.showToast("Updated " + updateDBrow(rowId, newTitle, newSubTitle) + " row(s)");
 
                 bindGridView();
                 dialog.dismiss();

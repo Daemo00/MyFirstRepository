@@ -9,9 +9,11 @@ import android.os.Bundle;
 import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
 import android.view.Menu;
@@ -26,6 +28,7 @@ public abstract class MySuperActivity extends AppCompatActivity {
     private static final int MY_PERMISSIONS_REQUEST = 0;
     private List<Toast> toastList = new ArrayList<>();
     private List<AlertDialog> alertDialogList = new ArrayList<>();
+    private ShareActionProvider mShareActionProvider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,7 +50,25 @@ public abstract class MySuperActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
+
+        MenuItem shareItem = menu.findItem(R.id.menu_item_share);
+        mShareActionProvider = (ShareActionProvider) MenuItemCompat.getActionProvider(shareItem);
+        setShareIntent(createDummyIntent());
+        // Return true to display menu
         return true;
+    }
+
+    private Intent createDummyIntent() {
+        return (new Intent()).setAction(Intent.ACTION_SEND)
+                .setType("text/plain")
+                .putExtra(Intent.EXTRA_TEXT, "dummy text");
+    }
+
+    // Call to update the share intent
+    protected void setShareIntent(Intent shareIntent) {
+        if (mShareActionProvider != null) {
+            mShareActionProvider.setShareIntent(shareIntent);
+        }
     }
 
     @Override
@@ -59,12 +80,15 @@ public abstract class MySuperActivity extends AppCompatActivity {
                 intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
                 startActivity(intent);
                 return true;
+            case R.id.menu_item_share:
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    protected void checkPermissionsRunTime(final Activity activity, final String[] permissions) {
+    protected void checkPermissionsRunTime(final String[] permissions) {
+        final Activity activity = this;
         boolean shouldShowStuff = false;
         for (String permission : permissions)
             shouldShowStuff = shouldShowStuff || ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
@@ -100,7 +124,7 @@ public abstract class MySuperActivity extends AppCompatActivity {
                     message += (message.isEmpty() ? "" : "\n") +
                             "Permission(s) granted: " + TextUtils.join(", ", grantedPerms);
 
-                showToast(message, Toast.LENGTH_SHORT);
+                showToast(message);
             default:
                 super.onRequestPermissionsResult(requestCode, permissions, grantResults);
         }
@@ -118,8 +142,8 @@ public abstract class MySuperActivity extends AppCompatActivity {
         return alertDialog;
     }
 
-    public void showToast(String message, int duration) {
-        Toast toast = Toast.makeText(this, message, duration);
+    public void showToast(String message) {
+        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
         toast.show();
         toastList.add(toast);
     }

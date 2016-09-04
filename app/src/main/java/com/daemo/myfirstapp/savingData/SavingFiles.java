@@ -15,7 +15,6 @@ import android.widget.LinearLayout;
 import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daemo.myfirstapp.R;
 
@@ -81,7 +80,7 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
         }
 
         if (res != null && !res.exists() && res.mkdir())
-            savingActivity.showToast(res + " created", Toast.LENGTH_SHORT);
+            savingActivity.showToast(res + " created");
         return res;
     }
 
@@ -97,7 +96,7 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
                     break;
             }
         } catch (IOException e) {
-            savingActivity.showToast(e.getMessage(), Toast.LENGTH_SHORT);
+            savingActivity.showToast(e.getMessage());
         }
     }
 

@@ -34,7 +34,7 @@ public class LocationActivity extends MySuperActivity {
         mPager.setOffscreenPageLimit(2);
 
         // Check permissions here because fragments are continuously created and destroyed
-        checkPermissionsRunTime(this, new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
+        checkPermissionsRunTime(new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION});
         if (!isMockLocationEnabled()) {
             showOkCancelDialog("Pliis", "Activate mock location", new DialogInterface.OnClickListener() {
                 @Override

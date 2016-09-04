@@ -24,7 +24,6 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daemo.myfirstapp.R;
 
@@ -75,7 +74,7 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
         locationActivity = (LocationActivity) getActivity();
         List<String> missing_permissions = missingPermissions();
         if (!missing_permissions.isEmpty()) {
-            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions), Toast.LENGTH_SHORT);
+            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions));
             return;
         }
         getLocationManager().requestLocationUpdates(mLocationProvider, 1000, 1, locationListener);
@@ -135,7 +134,7 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
     private boolean startMocking() {
         List<String> missing_permissions = missingPermissions();
         if (!missing_permissions.isEmpty()) {
-            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions), Toast.LENGTH_SHORT);
+            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions));
             return false;
         }
         mock.enable();
@@ -180,7 +179,7 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
     private boolean stopMocking() {
         List<String> missing_permissions = missingPermissions();
         if (!missing_permissions.isEmpty()) {
-            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions), Toast.LENGTH_SHORT);
+            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions));
             return false;
         }
         mock.disable();
