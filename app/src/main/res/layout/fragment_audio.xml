@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.daemo.myfirstapp.multimedia.AudioFragment"
+    android:orientation="vertical">
+
+    <android.support.v7.widget.AppCompatSpinner
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/spinner" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/spinner"
+        android:text="@string/select_stream"
+        android:id="@+id/btnStream" />
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnStream"
+        android:text="@string/focus"
+        android:id="@+id/btnFocus" />
+
+    <Button
+        android:text="@string/select_uri"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/btnFocus"
+        android:id="@+id/btnSelectFile" />
+
+    <Button
+        android:text="@string/play"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignTop="@+id/btnSelectFile"
+        android:layout_toEndOf="@+id/btnSelectFile"
+        android:id="@+id/btnPlay" />
+
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btnSelectFile"
+        android:layout_alignParentStart="true"
+        android:id="@+id/tvSelectedURI" />
+
+    <android.support.v7.widget.SwitchCompat
+        android:text="@string/is_service"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/switchService"
+        android:layout_alignBaseline="@+id/btnPlay"
+        android:layout_alignBottom="@+id/btnPlay"
+        android:layout_toEndOf="@+id/btnPlay" />
+
+</RelativeLayout>

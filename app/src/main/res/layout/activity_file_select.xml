@@ -6,23 +6,66 @@
     tools:context=".sharingSimpleData.FileSelectServerActivity">
 
     <include
-        layout="@layout/toolbar"
-        android:id="@+id/toolbar" />
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toolbar"
+        android:id="@+id/relativeLayout">
+
+        <android.support.v7.widget.AppCompatSpinner
+            android:id="@+id/spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <LinearLayout
+            android:id="@+id/linearLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/spinner"
+            android:orientation="horizontal">
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switchCompatInternal"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/is_internal" />
+
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switchCompatCache"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/is_cache" />
+
+            <android.support.v7.widget.SwitchCompat
+                android:id="@+id/switchCompatPublic"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:text="@string/is_public" />
+
+        </LinearLayout>
+    </RelativeLayout>
 
     <android.support.v7.widget.ListViewCompat
+        android:id="@+id/lvFileSelector"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/lvFileSelector"
-        android:layout_below="@id/toolbar"
+        android:layout_below="@id/relativeLayout"
         android:choiceMode="singleChoice"
         android:listSelector="@color/colorPrimary" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:onClick="onDoneClick"
-        android:src="@android:drawable/checkbox_on_background"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_margin="10dp" />
+        android:layout_margin="10dp"
+        android:onClick="onDoneClick"
+        android:src="@android:drawable/checkbox_on_background" />
 </RelativeLayout>

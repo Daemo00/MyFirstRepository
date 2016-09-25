@@ -28,7 +28,7 @@ import java.io.IOException;
 public class SavingFiles extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
 
     private View root;
-    private final String file_name = "tempFile.txt";
+    private final String file_name = "temp file.txt";
     private SavingActivity savingActivity;
     private final String[] storageDirectories = new String[]{
             Environment.DIRECTORY_ALARMS,

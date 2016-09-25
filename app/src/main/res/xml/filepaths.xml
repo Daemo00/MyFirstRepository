@@ -1,5 +1,14 @@
 <paths>
     <files-path
         path="images/"
-        name="myImages" />
+        name="internalImages" />
+    <files-path
+        path="Music/"
+        name="internalMusic" />
+    <files-path
+        path=""
+        name="internalRoot" />
+    <external-path
+        path="Music/"
+        name="externalMusic" />
 </paths>

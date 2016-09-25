@@ -4,9 +4,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Settings;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.MenuItemCompat;
@@ -20,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
+
+import com.daemo.myfirstapp.settings.SettingsActivity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -76,9 +76,7 @@ public abstract class MySuperActivity extends AppCompatActivity {
         // Handle item selection
         switch (item.getItemId()) {
             case R.id.settings:
-                Intent intent = new Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS);
-                intent.setData(Uri.parse("package:" + BuildConfig.APPLICATION_ID));
-                startActivity(intent);
+                startActivity(new Intent(this, SettingsActivity.class));
                 return true;
             case R.id.menu_item_share:
                 return true;
