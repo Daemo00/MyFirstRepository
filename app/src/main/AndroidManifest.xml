@@ -8,9 +8,14 @@
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.NFC" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.RECORD_AUDIO" />
 
     <uses-feature
         android:name="android.hardware.NFC"
+        android:required="false" />
+    <uses-feature
+        android:name="android.hardware.camera"
         android:required="false" />
 
     <application
@@ -105,7 +110,7 @@
                 <action android:name="android.intent.action.MEDIA_BUTTON" />
             </intent-filter>
         </receiver>
-        <receiver android:name=".multimedia.MusicIntentReceiver">
+        <receiver android:name=".multimedia.audio.MusicIntentReceiver">
             <intent-filter>
                 <action android:name="android.media.AUDIO_BECOMING_NOISY" />
             </intent-filter>
@@ -115,7 +120,7 @@
         <activity android:name=".settings.SettingsActivity" />
 
         <service
-            android:name=".multimedia.MyService"
+            android:name=".multimedia.audio.MyService"
             android:enabled="true"
             android:exported="true" />
     </application>

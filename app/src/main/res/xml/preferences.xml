@@ -2,13 +2,7 @@
 <PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
     <Preference android:title="Go to serious Settings">
         <intent
-            android:action="android.provider.Settings.ACTION_APPLICATION_DETAILS_SETTINGS"
+            android:action="android.settings.APPLICATION_DETAILS_SETTINGS"
             android:data="package:com.daemo.myfirstapp" />
     </Preference>
-    <PreferenceCategory>
-        <ListPreference
-            android:key="pref_key_audio_stream"
-            android:summary="Select an audio stream, this is a summary"
-            android:title="Selected audio stream" />
-    </PreferenceCategory>
 </PreferenceScreen>

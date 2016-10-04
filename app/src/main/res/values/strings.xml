@@ -74,4 +74,9 @@
     <string name="select_stream">select stream</string>
     <string name="stop">Stop</string>
     <string name="is_service">Service?</string>
+    <string name="image_taken">image taken</string>
+    <string name="open_camera">Open camera</string>
+    <string name="request_permission">Request permission</string>
+    <string name="camera_error">Camera error</string>
+    <string name="record">Registra</string>
 </resources>

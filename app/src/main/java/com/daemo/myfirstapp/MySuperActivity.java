@@ -80,12 +80,15 @@ public abstract class MySuperActivity extends AppCompatActivity {
                 return true;
             case R.id.menu_item_share:
                 return true;
+            case android.R.id.home:
+                onBackPressed();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
     }
 
-    protected void checkPermissionsRunTime(final String[] permissions) {
+    public void checkPermissionsRunTime(final String[] permissions) {
         final Activity activity = this;
         boolean shouldShowStuff = false;
         for (String permission : permissions)
@@ -128,22 +131,33 @@ public abstract class MySuperActivity extends AppCompatActivity {
         }
     }
 
-    protected AlertDialog showOkCancelDialog(String title, String message, DialogInterface.OnClickListener clickListener) {
-        AlertDialog alertDialog = new AlertDialog.Builder(this)
-                .setMessage(message)
-                .setTitle(title)
-                .setPositiveButton("Ok", clickListener)
-                .setNegativeButton("Cancel", null)
-                .create();
-        alertDialog.show();
-        alertDialogList.add(alertDialog);
-        return alertDialog;
+    protected void showOkCancelDialog(final String title, final String message, final DialogInterface.OnClickListener clickListener) {
+        final Activity thisActivity = this;
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog alertDialog = new AlertDialog.Builder(thisActivity)
+                        .setMessage(message)
+                        .setTitle(title)
+                        .setPositiveButton("Ok", clickListener)
+                        .setNegativeButton("Cancel", null)
+                        .create();
+                alertDialog.show();
+                alertDialogList.add(alertDialog);
+            }
+        });
     }
 
-    public void showToast(String message) {
-        Toast toast = Toast.makeText(this, message, Toast.LENGTH_SHORT);
-        toast.show();
-        toastList.add(toast);
+    public void showToast(final String message) {
+        final Activity thisActivity = this;
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                Toast toast = Toast.makeText(thisActivity, message, Toast.LENGTH_SHORT);
+                toast.show();
+                toastList.add(toast);
+            }
+        });
     }
 
     @Override

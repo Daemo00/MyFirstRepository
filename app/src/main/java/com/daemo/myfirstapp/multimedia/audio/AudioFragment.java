@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp.multimedia;
+package com.daemo.myfirstapp.multimedia.audio;
 
 
 import android.app.Activity;
@@ -23,6 +23,7 @@ import android.widget.ArrayAdapter;
 import android.widget.TextView;
 
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.multimedia.MultimediaActivity;
 
 import java.io.File;
 import java.io.IOException;

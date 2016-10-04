@@ -3,17 +3,17 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.daemo.myfirstapp.settings.SettingsActivity">
+    tools:context=".settings.SettingsActivity">
 
     <include
-        layout="@layout/toolbar"
-        android:id="@id/toolbar" />
+        android:id="@+id/toolbar"
+        layout="@layout/toolbar" />
 
     <fragment
+        android:id="@+id/settingsFragment"
+        android:name="com.daemo.myfirstapp.settings.SettingsFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar"
-        android:id="@+id/settingsFragment"
-        android:name="com.daemo.myfirstapp.settings.SettingsFragment" />
+        android:layout_below="@id/toolbar" />
 
 </RelativeLayout>

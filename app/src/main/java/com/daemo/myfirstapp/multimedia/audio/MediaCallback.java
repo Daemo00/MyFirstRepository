@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp.multimedia;
+package com.daemo.myfirstapp.multimedia.audio;
 
 import android.support.v4.media.session.MediaControllerCompat;
 import android.util.Log;

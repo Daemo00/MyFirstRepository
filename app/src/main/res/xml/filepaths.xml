@@ -11,4 +11,7 @@
     <external-path
         path="Music/"
         name="externalMusic" />
+    <external-path
+        path="Pictures/"
+        name="externalPictures" />
 </paths>

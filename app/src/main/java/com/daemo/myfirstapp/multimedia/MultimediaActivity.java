@@ -8,6 +8,8 @@ import android.support.v4.view.ViewPager;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.multimedia.audio.AudioFragment;
+import com.daemo.myfirstapp.multimedia.video.VideoFragment;
 
 public class MultimediaActivity extends MySuperActivity {
 
@@ -29,10 +31,11 @@ public class MultimediaActivity extends MySuperActivity {
     private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
 
         Fragment[] fragments = new Fragment[]{
-                new AudioFragment()
+                new AudioFragment(),
+                VideoFragment.newInstance()
         };
 
-        public MyFragmentPagerAdapter(FragmentManager fm) {
+        MyFragmentPagerAdapter(FragmentManager fm) {
             super(fm);
         }
 

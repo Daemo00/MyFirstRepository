@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp.multimedia;
+package com.daemo.myfirstapp.multimedia.audio;
 
 import android.content.Context;
 import android.content.Intent;

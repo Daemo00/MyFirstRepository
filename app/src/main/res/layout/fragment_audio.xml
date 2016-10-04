@@ -2,7 +2,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.daemo.myfirstapp.multimedia.AudioFragment"
+    tools:context="com.daemo.myfirstapp.multimedia.audio.AudioFragment"
     android:orientation="vertical">
 
     <android.support.v7.widget.AppCompatSpinner

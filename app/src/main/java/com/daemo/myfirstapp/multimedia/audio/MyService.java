@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp.multimedia;
+package com.daemo.myfirstapp.multimedia.audio;
 
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -16,6 +16,7 @@ import android.support.v7.app.NotificationCompat;
 import android.util.Log;
 
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.multimedia.MultimediaActivity;
 
 import java.io.IOException;
 
