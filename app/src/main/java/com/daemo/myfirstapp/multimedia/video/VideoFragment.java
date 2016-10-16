@@ -163,13 +163,11 @@ public class VideoFragment extends Fragment
 
         @Override
         public void onSurfaceTextureAvailable(SurfaceTexture surfaceTexture, int width, int height) {
-            Log.d(this.getClass().getSimpleName(), "onSurfaceTextureAvailable");
             openCamera(width, height);
         }
 
         @Override
-        public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture,
-                                                int width, int height) {
+        public void onSurfaceTextureSizeChanged(SurfaceTexture surfaceTexture, int width, int height) {
             configureTransform(width, height);
         }
 
@@ -908,8 +906,7 @@ public class VideoFragment extends Fragment
     }
 
     private String getVideoFilePath(Context context) {
-        return context.getExternalFilesDir(Environment.DIRECTORY_MOVIES).getAbsolutePath() + "/"
-                + System.currentTimeMillis() + ".mp4";
+        return context.getExternalFilesDir(Environment.DIRECTORY_MOVIES).getAbsolutePath() + "/" + System.currentTimeMillis() + ".mp4";
     }
 
     /**
@@ -1101,7 +1098,6 @@ public class VideoFragment extends Fragment
     }
 
     private void closePreviewSession() {
-        Log.d(this.getClass().getSimpleName(), "closePreviewSession");
         if (mPreviewSession != null) {
             mPreviewSession.close();
             mPreviewSession = null;

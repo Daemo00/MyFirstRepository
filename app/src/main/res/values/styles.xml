@@ -17,4 +17,9 @@
 
     <style name="AppTheme.PopupOverlay" parent="@style/ThemeOverlay.AppCompat.Light" />
 
+    <style name="PhotoGridLayout">
+        <item name="android:drawSelectorOnTop">true</item>
+        <item name="android:listSelector">@drawable/photogrid_list_selector</item>
+    </style>
+
 </resources>

@@ -10,6 +10,8 @@
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.CAMERA" />
     <uses-permission android:name="android.permission.RECORD_AUDIO" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.INTERNET" />
 
     <uses-feature
         android:name="android.hardware.NFC"
@@ -17,6 +19,10 @@
     <uses-feature
         android:name="android.hardware.camera"
         android:required="false" />
+    <!-- Tell the system this app requires OpenGL ES 3.0. -->
+    <uses-feature
+        android:glEsVersion="0x00030000"
+        android:required="true" />
 
     <application
         android:allowBackup="true"
@@ -94,6 +100,13 @@
         <activity
             android:name=".multimedia.MultimediaActivity"
             android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".graphics.GraphicsActivity"
+            android:label="@string/title_activity_main2"
+            android:parentActivityName=".MainActivity" />
+        <activity
+            android:name=".graphics.displayingbitmaps.ImageDetailActivity"
+            android:parentActivityName=".graphics.GraphicsActivity" />
 
         <provider
             android:name="android.support.v4.content.FileProvider"
@@ -116,13 +129,13 @@
             </intent-filter>
         </receiver>
 
-
         <activity android:name=".settings.SettingsActivity" />
 
         <service
             android:name=".multimedia.audio.MyService"
             android:enabled="true"
             android:exported="true" />
+
     </application>
 
 </manifest>
