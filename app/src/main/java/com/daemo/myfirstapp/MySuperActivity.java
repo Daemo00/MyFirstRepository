@@ -131,7 +131,7 @@ public abstract class MySuperActivity extends AppCompatActivity {
         }
     }
 
-    protected void showOkCancelDialog(final String title, final String message, final DialogInterface.OnClickListener clickListener) {
+    public void showOkCancelDialog(final String title, final String message, final DialogInterface.OnClickListener clickListener) {
         final Activity thisActivity = this;
         this.runOnUiThread(new Runnable() {
             @Override

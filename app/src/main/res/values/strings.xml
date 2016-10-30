@@ -96,10 +96,26 @@
     <string name="go_delayed">Go delayed</string>
     <string name="go_custom">Go custom</string>
     <string name="label">Label</string>
+    <string name="register">Register</string>
+    <string name="discover">Discover</string>
+    <string name="connect">Connect</string>
+    <string name="send">Send</string>
+    <string name="connection_error">Unable to load content</string>
+    <string name="wifi_connected">Wifi connected</string>
+    <string name="lost_connection">Lost connection</string>
+    <string name="xml_error">Error parsing xml</string>
     <string-array name="interpolator_names">
         <item>Linear</item>
         <item>Fast Out Linear In</item>
         <item>Fast Out Slow In</item>
         <item>Linear Out Slow In</item>
+    </string-array>
+    <string-array name="network_list_descr">
+        <item>Only when on Wi-Fi</item>
+        <item>On any network</item>
+    </string-array>
+    <string-array name="network_list_ids">
+        <item>Wi-Fi</item>
+        <item>Any</item>
     </string-array>
 </resources>

@@ -7,6 +7,7 @@ import android.support.annotation.Nullable;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Utils {
@@ -19,6 +20,16 @@ public class Utils {
         return Character.toUpperCase(line.charAt(0)) + line.substring(1).toLowerCase();
     }
 
+    public static String printList(Collection list) {
+        StringBuilder res = new StringBuilder("{");
+        int index = 0;
+        for (Object o : list)
+            res.append("item ").append(index++).append(": ").append(o.toString())
+                    .append(System.getProperty("line.separator"));
+
+        res.append("}");
+        return res.toString();
+    }
     @Nullable
     public static File getSelectedDirectory(MySuperActivity activity, String dirName, boolean isPublic, boolean isInternal, boolean isCache) {
         File res;
