@@ -5,4 +5,8 @@
         android:title="View Summaries"
         android:checkable="true"
         android:id="@+id/view_summaries" />
+
+    <item
+        android:title="Network settings"
+        android:id="@+id/network_settings" />
 </menu>

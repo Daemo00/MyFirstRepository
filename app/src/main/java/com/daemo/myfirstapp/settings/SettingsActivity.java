@@ -4,14 +4,18 @@ import android.os.Bundle;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.logger.Log;
 
 public class SettingsActivity extends MySuperActivity {
-
-    public static String pref_key_audio_stream = "pref_key_audio_stream";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.e(Utils.getTag(this), "Creating activity");
+        getFragmentManager().beginTransaction()
+                .replace(R.id.content_frame, new SettingsFragment())
+                .commit();
     }
 
     @Override

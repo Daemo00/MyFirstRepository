@@ -104,6 +104,7 @@
     <string name="wifi_connected">Wifi connected</string>
     <string name="lost_connection">Lost connection</string>
     <string name="xml_error">Error parsing xml</string>
+    <string name="loading">Loading</string>
     <string-array name="interpolator_names">
         <item>Linear</item>
         <item>Fast Out Linear In</item>

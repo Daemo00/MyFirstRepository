@@ -26,6 +26,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.daemo.myfirstapp.BuildConfig;
+import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
 import org.xmlpull.v1.XmlPullParserException;
@@ -181,6 +182,7 @@ public class DownloadPageFragment extends Fragment {
         WebView myWebView = (WebView) root.findViewById(R.id.webview);
         myWebView.loadData(getResources().getString(R.string.connection_error),
                 "text/html", null);
+        swipeRefreshLayout.setRefreshing(false);
     }
 
     @Override
@@ -197,6 +199,7 @@ public class DownloadPageFragment extends Fragment {
                 item.setChecked(!item.isChecked());
                 view_summaries = item.isChecked();
                 loadPage();
+                return true;
             default:
                 return super.onOptionsItemSelected(item);
         }
@@ -220,6 +223,12 @@ public class DownloadPageFragment extends Fragment {
             } catch (XmlPullParserException e) {
                 return getResources().getString(R.string.xml_error);
             }
+        }
+
+        @Override
+        protected void onCancelled() {
+            super.onCancelled();
+            swipeRefreshLayout.setRefreshing(false);
         }
 
         @Override
@@ -325,7 +334,7 @@ public class DownloadPageFragment extends Fragment {
                 // Sets refreshDisplay to false.
             } else {
                 refreshDisplay = false;
-                Toast.makeText(context, R.string.lost_connection, Toast.LENGTH_SHORT).show();
+                ((MySuperActivity) getActivity()).showToast(getResources().getString(R.string.lost_connection));
             }
         }
     }

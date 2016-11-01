@@ -11,6 +11,8 @@ import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.connectivity.downloadPage.DownloadPageFragment;
 import com.daemo.myfirstapp.connectivity.nsd.NsdFragment;
 import com.daemo.myfirstapp.connectivity.p2p.P2pFragment;
+import com.daemo.myfirstapp.connectivity.syncAdapter.SyncAdapterFragment;
+import com.daemo.myfirstapp.connectivity.volley.VolleyFragment;
 
 public class ConnectivityActivity extends MySuperActivity {
 
@@ -31,7 +33,9 @@ public class ConnectivityActivity extends MySuperActivity {
         Fragment[] frags = {
                 new NsdFragment(),
                 new P2pFragment(),
-                new DownloadPageFragment()
+                new DownloadPageFragment(),
+                new SyncAdapterFragment(),
+                new VolleyFragment()
         };
 
         MyPagerAdapter(FragmentManager fm) {

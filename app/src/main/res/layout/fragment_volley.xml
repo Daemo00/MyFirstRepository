@@ -1,0 +1,66 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.daemo.myfirstapp.connectivity.volley.VolleyFragment">
+
+
+    <Button
+        android:text="String request"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/string_req_btn" />
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/string_req_btn"
+        android:text="@string/hello_blank_fragment"
+        android:id="@+id/tv_volley" />
+
+    <Button
+        android:text="Image request"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_volley"
+        android:id="@+id/image_req_btn" />
+
+    <Button
+        android:text="Clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/iv_volley"
+        android:layout_alignParentStart="true"
+        android:id="@+id/clear_btn" />
+
+    <Button
+        android:text="Image request with loader"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/image_req_l_btn"
+        android:layout_below="@+id/image_req_btn"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Image request network"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/image_req_l_btn"
+        android:id="@+id/image_req_n_btn" />
+
+    <ImageView
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        app:srcCompat="@drawable/empty_photo"
+        android:id="@+id/iv_volley"
+        android:layout_below="@+id/image_req_n_btn"
+        android:layout_alignParentStart="true" />
+
+    <com.android.volley.toolbox.NetworkImageView
+        android:id="@+id/niv_volley"
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_alignTop="@+id/iv_volley"
+        android:layout_toEndOf="@+id/iv_volley" />
+</RelativeLayout>

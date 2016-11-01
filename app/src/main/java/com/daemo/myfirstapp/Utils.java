@@ -13,7 +13,8 @@ import java.util.List;
 public class Utils {
 
     public static String getTag(Object inst){
-        return inst.getClass().getSimpleName();
+        String className = inst.getClass().getSimpleName();
+        return className.isEmpty() ? "Anonymous Class" : className;
     }
 
     public static String capitalize(final String line) {

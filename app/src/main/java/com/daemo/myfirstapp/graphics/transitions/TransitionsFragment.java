@@ -100,7 +100,7 @@ public class TransitionsFragment extends Fragment implements View.OnClickListene
                 // Create a new TextView and set some View properties
                 mLabelText = new TextView(getActivity());
                 mLabelText.setText(R.string.label);
-                mLabelText.setId(R.id.textView);
+                mLabelText.setId(R.id.tv_volley);
 
                 Log.d(this.getClass().getSimpleName(), "root is " + root.toString());
                 // Start recording changes to the view hierarchy

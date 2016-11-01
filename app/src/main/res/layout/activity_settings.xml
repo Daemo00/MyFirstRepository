@@ -7,13 +7,13 @@
 
     <include
         android:id="@+id/toolbar"
-        layout="@layout/toolbar" />
+        layout="@layout/toolbar"
 
-    <fragment
-        android:id="@+id/settingsFragment"
-        android:name="com.daemo.myfirstapp.settings.SettingsFragment"
+        />
+
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/toolbar" />
-
+        android:layout_below="@id/toolbar"
+        android:id="@+id/content_frame" />
 </RelativeLayout>

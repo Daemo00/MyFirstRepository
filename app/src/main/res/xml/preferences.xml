@@ -5,4 +5,15 @@
             android:action="android.settings.APPLICATION_DETAILS_SETTINGS"
             android:data="package:com.daemo.myfirstapp" />
     </Preference>
+    <PreferenceScreen
+        android:key="network_settings"
+        android:title="Network">
+        <ListPreference
+            android:defaultValue="Wi-Fi"
+            android:title="Download Feed"
+            android:entries="@array/network_list_descr"
+            android:entryValues="@array/network_list_ids"
+            android:key="network_feed"
+            android:summary="Network connectivity required to download the feed." />
+    </PreferenceScreen>
 </PreferenceScreen>
