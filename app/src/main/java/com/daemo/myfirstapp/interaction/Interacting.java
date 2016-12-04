@@ -58,36 +58,39 @@ public class Interacting extends MySuperActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Check which request we're responding to
-        if (requestCode == PICK_CONTACT_REQUEST) {
-            // Make sure the request was successful
-            if (resultCode == RESULT_OK) {
-                // Get the URI that points to the selected contact
-                Uri contactUri = data.getData();
-                // We only need the NUMBER column, because there will be only one row in the result
-                String[] projection = {
-                        ContactsContract.CommonDataKinds.Phone.NUMBER
-                };
-                Log.d(this.getClass().getSimpleName(), "contactUri is " + contactUri.toString());
-                // Perform the query on the contact to get the NUMBER column
-                // We don't need a selection or sort order (there's only one result for the given URI)
-                // CAUTION: The query() method should be called from a separate thread to avoid blocking
-                // your app's UI thread. (For simplicity of the sample, this code doesn't do that.)
-                // Consider using CursorLoader to perform the query.
-                try (Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null)) {
-                    if (cursor != null) {
-                        cursor.moveToFirst();
+        switch (requestCode) {
+            case PICK_CONTACT_REQUEST:
+                // Make sure the request was successful
+                if (resultCode == RESULT_OK) {
+                    // Get the URI that points to the selected contact
+                    Uri contactUri = data.getData();
+                    // We only need the NUMBER column, because there will be only one row in the result
+                    String[] projection = {
+                            ContactsContract.CommonDataKinds.Phone.NUMBER
+                    };
+                    Log.d(this.getClass().getSimpleName(), "contactUri is " + contactUri.toString());
+                    // Perform the query on the contact to get the NUMBER column
+                    // We don't need a selection or sort order (there's only one result for the given URI)
+                    // CAUTION: The query() method should be called from a separate thread to avoid blocking
+                    // your app's UI thread. (For simplicity of the sample, this code doesn't do that.)
+                    // Consider using CursorLoader to perform the query.
+                    try (Cursor cursor = getContentResolver().query(contactUri, projection, null, null, null)) {
+                        if (cursor != null) {
+                            cursor.moveToFirst();
 
-                        // Retrieve the phone number from the NUMBER column
-                        String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
-                        showToast("Number is " + number);
+                            // Retrieve the phone number from the NUMBER column
+                            String number = cursor.getString(cursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                            showToast("Number is " + number);
+                        }
                     }
+                    // Do something with the phone number...
+                } else {
+                    showToast("Result is " + resultCode);
                 }
-                // Do something with the phone number...
-            } else {
-                showToast("Result is " + resultCode);
-            }
+                break;
         }
     }
+
 
     private boolean wantsChooser() {
         RadioGroup rgShowChooser = (RadioGroup) findViewById(R.id.rgShowChooser);

@@ -30,6 +30,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
+import com.daemo.myfirstapp.Utils;
 import com.daemo.myfirstapp.connectivity.syncAdapter.net.FeedParser;
 import com.daemo.myfirstapp.connectivity.syncAdapter.provider.FeedContract;
 
@@ -55,7 +56,6 @@ import java.util.List;
  * SyncService.
  */
 class SyncAdapter extends AbstractThreadedSyncAdapter {
-    public static final String TAG = "SyncAdapter";
 
     /**
      * URL to fetch content from during a sync.
@@ -131,13 +131,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
     @Override
     public void onPerformSync(Account account, Bundle extras, String authority,
                               ContentProviderClient provider, SyncResult syncResult) {
-        Log.i(TAG, "Beginning network synchronization");
+        Log.i(Utils.getTag(this), "Beginning network synchronization");
         try {
             final URL location = new URL(FEED_URL);
             InputStream stream = null;
 
             try {
-                Log.i(TAG, "Streaming data from network: " + location);
+                Log.i(Utils.getTag(this), "Streaming data from network: " + location);
                 stream = downloadUrl(location);
                 updateLocalFeedData(stream, syncResult);
                 // Makes sure that the InputStream is closed after the app is
@@ -148,31 +148,31 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                 }
             }
         } catch (MalformedURLException e) {
-            Log.wtf(TAG, "Feed URL is malformed", e);
+            Log.wtf(Utils.getTag(this), "Feed URL is malformed", e);
             syncResult.stats.numParseExceptions++;
             return;
         } catch (IOException e) {
-            Log.e(TAG, "Error reading from network: " + e.toString());
+            Log.e(Utils.getTag(this), "Error reading from network: " + e.toString());
             syncResult.stats.numIoExceptions++;
             return;
         } catch (XmlPullParserException e) {
-            Log.e(TAG, "Error parsing feed: " + e.toString());
+            Log.e(Utils.getTag(this), "Error parsing feed: " + e.toString());
             syncResult.stats.numParseExceptions++;
             return;
         } catch (ParseException e) {
-            Log.e(TAG, "Error parsing feed: " + e.toString());
+            Log.e(Utils.getTag(this), "Error parsing feed: " + e.toString());
             syncResult.stats.numParseExceptions++;
             return;
         } catch (RemoteException e) {
-            Log.e(TAG, "Error updating database: " + e.toString());
+            Log.e(Utils.getTag(this), "Error updating database: " + e.toString());
             syncResult.databaseError = true;
             return;
         } catch (OperationApplicationException e) {
-            Log.e(TAG, "Error updating database: " + e.toString());
+            Log.e(Utils.getTag(this), "Error updating database: " + e.toString());
             syncResult.databaseError = true;
             return;
         }
-        Log.i(TAG, "Network synchronization complete");
+        Log.i(Utils.getTag(this), "Network synchronization complete");
     }
 
     /**
@@ -201,9 +201,9 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         final FeedParser feedParser = new FeedParser();
         final ContentResolver contentResolver = getContext().getContentResolver();
 
-        Log.i(TAG, "Parsing stream as Atom feed");
+        Log.i(Utils.getTag(this), "Parsing stream as Atom feed");
         final List<FeedParser.Entry> entries = feedParser.parse(stream);
-        Log.i(TAG, "Parsing complete. Found " + entries.size() + " entries");
+        Log.i(Utils.getTag(this), "Parsing complete. Found " + entries.size() + " entries");
 
 
         ArrayList<ContentProviderOperation> batch = new ArrayList<ContentProviderOperation>();
@@ -215,11 +215,11 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
         }
 
         // Get list of all items
-        Log.i(TAG, "Fetching local entries for merge");
+        Log.i(Utils.getTag(this), "Fetching local entries for merge");
         Uri uri = FeedContract.Entry.CONTENT_URI; // Get all entries
         Cursor c = contentResolver.query(uri, PROJECTION, null, null, null);
         assert c != null;
-        Log.i(TAG, "Found " + c.getCount() + " local entries. Computing merge solution...");
+        Log.i(Utils.getTag(this), "Found " + c.getCount() + " local entries. Computing merge solution...");
 
         // Find stale data
         int id;
@@ -245,7 +245,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                         (match.link != null && !match.link.equals(link)) ||
                         (match.published != published)) {
                     // Update existing record
-                    Log.i(TAG, "Scheduling update: " + existingUri);
+                    Log.i(Utils.getTag(this), "Scheduling update: " + existingUri);
                     batch.add(ContentProviderOperation.newUpdate(existingUri)
                             .withValue(FeedContract.Entry.COLUMN_NAME_TITLE, title)
                             .withValue(FeedContract.Entry.COLUMN_NAME_LINK, link)
@@ -253,13 +253,13 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                             .build());
                     syncResult.stats.numUpdates++;
                 } else {
-                    Log.i(TAG, "No action: " + existingUri);
+                    Log.i(Utils.getTag(this), "No action: " + existingUri);
                 }
             } else {
                 // Entry doesn't exist. Remove it from the database.
                 Uri deleteUri = FeedContract.Entry.CONTENT_URI.buildUpon()
                         .appendPath(Integer.toString(id)).build();
-                Log.i(TAG, "Scheduling delete: " + deleteUri);
+                Log.i(Utils.getTag(this), "Scheduling delete: " + deleteUri);
                 batch.add(ContentProviderOperation.newDelete(deleteUri).build());
                 syncResult.stats.numDeletes++;
             }
@@ -268,7 +268,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
 
         // Add new items
         for (FeedParser.Entry e : entryMap.values()) {
-            Log.i(TAG, "Scheduling insert: entry_id=" + e.id);
+            Log.i(Utils.getTag(this), "Scheduling insert: entry_id=" + e.id);
             batch.add(ContentProviderOperation.newInsert(FeedContract.Entry.CONTENT_URI)
                     .withValue(FeedContract.Entry.COLUMN_NAME_ENTRY_ID, e.id)
                     .withValue(FeedContract.Entry.COLUMN_NAME_TITLE, e.title)
@@ -277,7 +277,7 @@ class SyncAdapter extends AbstractThreadedSyncAdapter {
                     .build());
             syncResult.stats.numInserts++;
         }
-        Log.i(TAG, "Merge solution ready. Applying batch update");
+        Log.i(Utils.getTag(this), "Merge solution ready. Applying batch update");
         mContentResolver.applyBatch(FeedContract.CONTENT_AUTHORITY, batch);
         mContentResolver.notifyChange(
                 FeedContract.Entry.CONTENT_URI, // URI where data was modified

@@ -1,0 +1,78 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context="com.daemo.myfirstapp.location.aware.AwarenessFragment">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_latitude"
+        android:text="TextView" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tv_latitude"
+        android:layout_alignParentStart="true"
+        android:id="@+id/tv_longitude" />
+
+    <Button
+        android:text="Clear"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/clear_btn"
+        android:layout_below="@+id/tv_longitude"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Check settings"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/btn_get_curr_location_sett"
+        android:layout_below="@+id/clear_btn"
+        android:layout_alignParentStart="true" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_last_update"
+        android:layout_alignBaseline="@+id/clear_btn"
+        android:layout_alignBottom="@+id/clear_btn"
+        android:layout_toEndOf="@+id/clear_btn" />
+
+    <Button
+        android:text="Address"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/btn_get_curr_location_sett"
+        android:layout_alignParentStart="true"
+        android:id="@+id/address_btn" />
+
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/tv_address"
+        android:layout_alignBaseline="@+id/address_btn"
+        android:layout_alignBottom="@+id/address_btn"
+        android:layout_toEndOf="@+id/address_btn" />
+
+    <Button
+        android:text="Enable Geofences"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/enable_geofences_button"
+        android:layout_below="@+id/address_btn"
+        android:layout_alignParentStart="true" />
+
+    <Button
+        android:text="Disable Geofence"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/enable_geofences_button"
+        android:id="@+id/disable_geofences_button" />
+
+</RelativeLayout>

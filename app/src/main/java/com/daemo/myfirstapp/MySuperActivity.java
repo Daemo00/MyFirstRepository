@@ -88,7 +88,7 @@ public abstract class MySuperActivity extends AppCompatActivity {
         }
     }
 
-    public void checkPermissionsRunTime(final String[] permissions) {
+    public void checkPermissionsRunTime(final String... permissions) {
         final Activity activity = this;
         boolean shouldShowStuff = false;
         for (String permission : permissions)
@@ -161,9 +161,21 @@ public abstract class MySuperActivity extends AppCompatActivity {
     }
 
     @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        // Show that something has been received
+        showToast("Received result with code: " + requestCode + ", result: " + resultCode + " and data: " + data.toString());
+        super.onActivityResult(requestCode, resultCode, data);
+    }
+
+    @Override
     protected void onDestroy() {
         super.onDestroy();
         for (Toast toast : toastList) toast.cancel();
         for (AlertDialog alertDialog : alertDialogList) alertDialog.cancel();
     }
+
+    public void showToast(int intMsg) {
+        showToast(getResources().getString(intMsg));
+    }
+
 }

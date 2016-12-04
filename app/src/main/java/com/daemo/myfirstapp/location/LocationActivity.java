@@ -18,6 +18,7 @@ import android.support.v4.view.ViewPager;
 import com.daemo.myfirstapp.BuildConfig;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.location.aware.AwarenessFragment;
 
 import java.util.List;
 
@@ -70,6 +71,9 @@ public class LocationActivity extends MySuperActivity {
 
     private class ScreenSlidePagerAdapter extends FragmentStatePagerAdapter {
         private List<String> locationProviders;
+        private Fragment[] frags = new Fragment[]{
+                new AwarenessFragment()
+        };
 
         public ScreenSlidePagerAdapter(FragmentManager fm) {
             super(fm);
@@ -78,17 +82,22 @@ public class LocationActivity extends MySuperActivity {
 
         @Override
         public Fragment getItem(int position) {
-            return ProviderDetailsFragment.newInstance(locationProviders.get(position));
+            return position < frags.length ?
+                    frags[position] :
+                    ProviderDetailsFragment.newInstance(locationProviders.get(position - frags.length));
         }
 
         @Override
         public CharSequence getPageTitle(int position) {
-            return locationProviders.get(position);
+
+            return position < frags.length ?
+                    frags[position].getClass().getSimpleName() :
+                    locationProviders.get(position - frags.length);
         }
 
         @Override
         public int getCount() {
-            return locationProviders.size();
+            return frags.length + locationProviders.size();
         }
     }
 }

@@ -16,6 +16,7 @@
     <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
     <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
 
     <uses-feature
         android:name="android.hardware.NFC"
@@ -29,17 +30,19 @@
         android:required="true" />
 
     <uses-permission android:name="android.permission.WRITE_SYNC_SETTINGS" />
+
     <application
+        android:name=".MyFirstApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme.NoActionBar"
-        android:name=".MyFirstApplication">
-        <activity android:name=".MainActivity">
+        android:theme="@style/AppTheme.NoActionBar">
+        <activity
+            android:name=".MainActivity"
+            android:theme="@style/SplashTheme">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
-
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
@@ -145,13 +148,18 @@
             android:name=".multimedia.audio.MyService"
             android:enabled="true"
             android:exported="true" />
-        <!-- This service implements our SyncAdapter. It needs to be exported, so that the system
-                sync framework can access it. -->
+        <!--
+             This service implements our SyncAdapter. It needs to be exported, so that the system
+                sync framework can access it.
+        -->
         <service
             android:name=".connectivity.syncAdapter.SyncService"
             android:exported="true">
-            <!-- This intent filter is required. It allows the system to launch our sync service
-            as needed. -->
+
+            <!--
+            This intent filter is required. It allows the system to launch our sync service
+            as needed.
+            -->
             <intent-filter>
                 <action android:name="android.content.SyncAdapter" />
             </intent-filter>
@@ -161,13 +169,16 @@
                 android:resource="@xml/syncadapter" />
         </service>
 
-        <!-- This implements the account we'll use as an attachment point for our SyncAdapter. Since
+        <!--
+        This implements the account we'll use as an attachment point for our SyncAdapter. Since
         our SyncAdapter doesn't need to authenticate the current user (it just fetches a public RSS
         feed), this account's implementation is largely empty.
 
         It's also possible to attach a SyncAdapter to an existing account provided by another
-        package. In that case, this element could be omitted here. -->
+        package. In that case, this element could be omitted here.
+        -->
         <service android:name=".connectivity.syncAdapter.accounts.GenericAccountService">
+
             <!-- Required filter used by the system to launch our account service. -->
             <intent-filter>
                 <action android:name="android.accounts.AccountAuthenticator" />
@@ -177,6 +188,11 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator" />
         </service>
+        <service
+            android:name=".location.aware.FetchAddressIntentService"
+            android:exported="false" />
+        <service android:name=".location.aware.GeofenceTransitionsIntentService" />
+
         <activity
             android:name=".connectivity.ConnectivityActivity"
             android:parentActivityName=".MainActivity" />
@@ -185,6 +201,26 @@
             android:name=".connectivity.p2p.WiFiDirectBroadcastReceiver"
             android:enabled="true"
             android:exported="true" />
+        <!--
+             The API key for Google Maps-based APIs is defined as a string resource.
+             (See the file "res/values/google_maps_api.xml").
+             Note that the API key is linked to the encryption key used to sign the APK.
+             You need a different API key for each encryption key, including the release key that is used to
+             sign the APK for publishing.
+             You can define the keys for the debug and release targets in src/debug/ and src/release/. 
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="@string/google_maps_key" />
+
+        <activity
+            android:name=".location.MapsActivity"
+            android:label="@string/title_activity_maps"
+            android:parentActivityName=".MainActivity" />
+
+        <activity
+            android:name=".userinfo.UserInfoActivity"
+            android:parentActivityName=".MainActivity" />
     </application>
 
 </manifest>

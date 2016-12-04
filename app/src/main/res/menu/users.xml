@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <item
+        android:title="Create contact"
+        android:icon="@android:drawable/ic_input_add"
+        android:id="@+id/create_contact" />
+    <item
+        android:title="Edit contact"
+        android:id="@+id/edit_contact"
+        android:icon="@android:drawable/ic_menu_edit" />
+</menu>

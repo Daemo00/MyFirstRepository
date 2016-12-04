@@ -7,6 +7,7 @@ import android.content.pm.ActivityInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AlertDialog;
@@ -34,9 +35,10 @@ public class MainActivity extends MySuperActivity {
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
+        setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
-
-        mTitle = mDrawerTitle = getTitle().toString();
+        mTitle = getTitle().toString();
+        mDrawerTitle = "Select an Activity";
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         mDrawerList = (ListView) findViewById(R.id.list_activities);
 
@@ -139,15 +141,17 @@ public class MainActivity extends MySuperActivity {
 
         //noinspection unchecked
         ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, activityInfos) {
+            @NonNull
             @Override
             public View getView(int position, View convertView, ViewGroup parent) {
-                if (convertView == null) {
-                    // inflate layout
+                // inflate layout
+                if (convertView == null)
                     convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
-                }
 
                 TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
-                if (tv != null) tv.setText(activityInfos.get(position).name);
+                if (tv != null)
+                    tv.setText(activityInfos.get(position).name.substring(
+                            activityInfos.get(position).packageName.length() + 1));
 
                 return convertView;
             }
