@@ -14,7 +14,7 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 import com.google.android.gms.location.GeofenceStatusCodes;
 import com.google.android.gms.maps.model.LatLng;
 

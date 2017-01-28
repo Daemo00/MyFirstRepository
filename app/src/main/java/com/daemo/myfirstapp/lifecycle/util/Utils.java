@@ -18,12 +18,7 @@ package com.daemo.myfirstapp.lifecycle.util;/*
 import android.os.Handler;
 import android.widget.TextView;
 
-import com.daemo.myfirstapp.lifecycle.util.StatusTracker;
-
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 public class Utils {
 

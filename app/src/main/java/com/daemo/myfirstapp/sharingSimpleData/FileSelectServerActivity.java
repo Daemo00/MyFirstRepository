@@ -16,7 +16,7 @@ import android.widget.ArrayAdapter;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 
 import java.io.File;
 

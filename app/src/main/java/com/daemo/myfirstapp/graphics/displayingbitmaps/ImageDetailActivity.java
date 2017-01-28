@@ -32,6 +32,7 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
+import com.daemo.myfirstapp.Constants;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.provider.Images;
@@ -41,8 +42,6 @@ import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.Utils;
 
 public class ImageDetailActivity extends MySuperActivity implements OnClickListener {
-    private static final String IMAGE_CACHE_DIR = "images";
-    public static final String EXTRA_IMAGE = "extra_image";
 
     private ImagePagerAdapter mAdapter;
     private ImageFetcher mImageFetcher;
@@ -72,8 +71,8 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
         final int longest = (height > width ? height : width) / 2;
 
         ImageCache.ImageCacheParams cacheParams =
-                new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
+                new ImageCache.ImageCacheParams(this, Constants.IMAGE_CACHE_DIR);
+        cacheParams.setMemCacheSizePercent(Constants.CACHE_SIZE); // Set memory cache to 25% of app memory
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcher(this, longest);
@@ -118,7 +117,7 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
         }
 
         // Set the current item based on the extra passed in to this activity
-        final int extraCurrentItem = getIntent().getIntExtra(EXTRA_IMAGE, -1);
+        final int extraCurrentItem = getIntent().getIntExtra(Constants.EXTRA_IMAGE, -1);
         if (extraCurrentItem != -1) {
             mPager.setCurrentItem(extraCurrentItem);
         }

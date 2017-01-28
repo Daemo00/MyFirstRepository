@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.FrameLayout;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
 import static android.transition.Fade.IN;
@@ -22,7 +23,7 @@ import static android.transition.Fade.IN;
 /**
  * A simple {@link Fragment} subclass.
  */
-public class TransitionsFragment extends Fragment implements View.OnClickListener, Transition.TransitionListener {
+public class TransitionsFragment extends MySuperFragment implements View.OnClickListener, Transition.TransitionListener {
 
 
     private ViewGroup mSceneRoot;

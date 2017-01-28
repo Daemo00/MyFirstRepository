@@ -25,7 +25,7 @@ import android.widget.TextView;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 
 import java.util.ArrayList;
 import java.util.Collection;

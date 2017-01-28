@@ -16,12 +16,13 @@
 
 package com.daemo.myfirstapp.connectivity.nsd;
 
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -89,7 +90,6 @@ public class ChatConnection {
         Message message = new Message();
         message.setData(messageBundle);
         mUpdateHandler.sendMessage(message);
-
     }
 
     private synchronized void setSocket(Socket socket) {
@@ -137,8 +137,8 @@ public class ChatConnection {
             public void run() {
 
                 try {
-                    // Since discovery will happen via Nsd, we don't need to care which port is
-                    // used.  Just grab an available one  and advertise it via Nsd.
+                    // Since discovery will happen via Nsd, we don't need to care which port is used.
+                    // Just grab an available one  and advertise it via Nsd.
                     mServerSocket = new ServerSocket(0);
                     setLocalPort(mServerSocket.getLocalPort());
 
@@ -186,7 +186,7 @@ public class ChatConnection {
             private int QUEUE_CAPACITY = 10;
 
             public SendingThread() {
-                mMessageQueue = new ArrayBlockingQueue<String>(QUEUE_CAPACITY);
+                mMessageQueue = new ArrayBlockingQueue<>(QUEUE_CAPACITY);
             }
 
             @Override
@@ -257,7 +257,7 @@ public class ChatConnection {
             }
         }
 
-        public void sendMessage(String msg) {
+        public void sendMessage(final String msg) {
             try {
                 Socket socket = getSocket();
                 if (socket == null) {
@@ -265,12 +265,24 @@ public class ChatConnection {
                 } else if (socket.getOutputStream() == null) {
                     Log.d(CLIENT_TAG, "Socket output stream is null, wtf?");
                 }
+                // Avoids NetworkOnMainThreadException
+                new AsyncTask<String, Void, Void>() {
 
-                PrintWriter out = new PrintWriter(
-                        new BufferedWriter(
-                                new OutputStreamWriter(getSocket().getOutputStream())), true);
-                out.println(msg);
-                out.flush();
+                    protected Void doInBackground(String... msgs) {
+                        final PrintWriter out;
+                        try {
+                            out = new PrintWriter(
+                                    new BufferedWriter(
+                                            new OutputStreamWriter(getSocket().getOutputStream())), true);
+                            out.println(msgs[0]);
+                            out.flush();
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        return null;
+                    }
+                }.execute(msg);
+
                 updateMessages(msg, true);
             } catch (UnknownHostException e) {
                 Log.d(CLIENT_TAG, "Unknown Host", e);

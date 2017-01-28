@@ -3,7 +3,6 @@ package com.daemo.myfirstapp.savingData;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -16,6 +15,7 @@ import android.widget.RadioGroup;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
 import java.io.BufferedReader;
@@ -25,9 +25,8 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 
-public class SavingFiles extends Fragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
+public class SavingFiles extends MySuperFragment implements View.OnClickListener, RadioGroup.OnCheckedChangeListener {
 
-    private View root;
     private final String file_name = "temp file.txt";
     private SavingActivity savingActivity;
     private final String[] storageDirectories = new String[]{
@@ -42,6 +41,13 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
             Environment.DIRECTORY_PODCASTS,
             Environment.DIRECTORY_RINGTONES
     };
+    private static SavingFiles instance;
+
+    public static SavingFiles getInstance(Bundle args) {
+        if (instance == null) instance = new SavingFiles();
+        instance.setArguments(args);
+        return instance;
+    }
 
     @Override
     public void onActivityCreated(@Nullable Bundle savedInstanceState) {
@@ -51,7 +57,7 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_saving_files_data, container, false);
+        View root = inflater.inflate(R.layout.fragment_saving_files_data, container, false);
 
         root.findViewById(R.id.btnSaveFile).setOnClickListener(this);
         root.findViewById(R.id.btnLoadFile).setOnClickListener(this);
@@ -62,17 +68,17 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
     @Nullable
     private File getSelectedDirectory() {
         File res = null;
-        RadioGroup rg = (RadioGroup) root.findViewById(R.id.rgStorageMode);
+        RadioGroup rg = (RadioGroup) getView().findViewById(R.id.rgStorageMode);
         if (rg == null) return null;
 
         switch (rg.getCheckedRadioButtonId()) {
             case R.id.rbtnInternalStorage:
-                CheckBox cbIsCache = (CheckBox) root.findViewById(R.id.cbIsCache);
+                CheckBox cbIsCache = (CheckBox) getView().findViewById(R.id.cbIsCache);
                 res = cbIsCache.isChecked() ? savingActivity.getCacheDir() : savingActivity.getFilesDir();
                 break;
             case R.id.rbtnExternalStorage:
-                CheckBox cbIsPublic = (CheckBox) root.findViewById(R.id.cbIsPublic);
-                Spinner sp = (Spinner) root.findViewById(R.id.spDirectoryStorage);
+                CheckBox cbIsPublic = (CheckBox) getView().findViewById(R.id.cbIsPublic);
+                Spinner sp = (Spinner) getView().findViewById(R.id.spDirectoryStorage);
 
                 String type = sp.getSelectedItem().toString();
                 res = cbIsPublic.isChecked() ? Environment.getExternalStoragePublicDirectory(type) : savingActivity.getExternalFilesDir(type);
@@ -103,8 +109,8 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
     private void save() throws IOException {
         if (!isExternalStorageWritable()) Log.d(this.getClass().getSimpleName(), "not writable");
 
-        EditText etFileContent = (EditText) root.findViewById(R.id.etFileContent);
-        TextView tvFilePath = (TextView) root.findViewById(R.id.tvFilePath);
+        EditText etFileContent = (EditText) getView().findViewById(R.id.etFileContent);
+        TextView tvFilePath = (TextView) getView().findViewById(R.id.tvFilePath);
         if (etFileContent == null || tvFilePath == null) return;
 
         File file = new File(getSelectedDirectory() + File.separator + file_name);
@@ -118,8 +124,8 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
     private void load() throws IOException {
         if (!isExternalStorageReadable()) Log.d(this.getClass().getSimpleName(), "not readable");
 
-        EditText etFileContent = (EditText) root.findViewById(R.id.etFileContent);
-        TextView tvFilePath = (TextView) root.findViewById(R.id.tvFilePath);
+        EditText etFileContent = (EditText) getView().findViewById(R.id.etFileContent);
+        TextView tvFilePath = (TextView) getView().findViewById(R.id.tvFilePath);
         if (etFileContent == null || tvFilePath == null) return;
 
         StringBuilder res = new StringBuilder();
@@ -159,7 +165,7 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
     }
 
     private void buildSpDirectory() {
-        LinearLayout rl = (LinearLayout) root.findViewById(R.id.rlStorageOptions);
+        LinearLayout rl = (LinearLayout) getView().findViewById(R.id.rlStorageOptions);
         if (rl == null) return;
         rl.removeAllViews();
 
@@ -191,7 +197,7 @@ public class SavingFiles extends Fragment implements View.OnClickListener, Radio
     }
 
     private void buildCbIsCache() {
-        LinearLayout rl = (LinearLayout) root.findViewById(R.id.rlStorageOptions);
+        LinearLayout rl = (LinearLayout) getView().findViewById(R.id.rlStorageOptions);
         if (rl == null) return;
         rl.removeAllViews();
 

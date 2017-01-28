@@ -5,7 +5,7 @@ import android.os.Bundle;
 import android.preference.PreferenceFragment;
 
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.common.logger.Log;
 
 public class SettingsFragment extends PreferenceFragment {

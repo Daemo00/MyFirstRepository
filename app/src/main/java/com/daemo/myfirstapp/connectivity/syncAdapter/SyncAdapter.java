@@ -30,7 +30,7 @@ import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
 
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.connectivity.syncAdapter.net.FeedParser;
 import com.daemo.myfirstapp.connectivity.syncAdapter.provider.FeedContract;
 

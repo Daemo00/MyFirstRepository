@@ -39,7 +39,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.connectivity.syncAdapter.accounts.GenericAccountService;
 import com.daemo.myfirstapp.connectivity.syncAdapter.provider.FeedContract;
 

@@ -1,11 +1,11 @@
 package com.daemo.myfirstapp.location;
 
-import android.location.*;
 import android.location.Location;
+import android.location.LocationListener;
+import android.location.LocationProvider;
 import android.os.Bundle;
-import android.widget.Toast;
 
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 
 /**
  * Created by admin on 17/07/2016.

@@ -10,13 +10,14 @@ import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Spinner;
 
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.graphics.GraphicsActivity;
 
 /**
  * A simple {@link Fragment} subclass.
  */
-public class AnimationsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+public class AnimationsFragment extends MySuperFragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
 
 
     private boolean mMainLoaded = true;

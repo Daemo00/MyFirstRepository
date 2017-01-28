@@ -31,7 +31,12 @@
     </LinearLayout>
 
     <TextView
-        android:id="@+id/status"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/status" />
+
+    <TextView
+        android:id="@+id/chat"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:focusable="true" />

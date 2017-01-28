@@ -16,7 +16,13 @@ package com.daemo.myfirstapp.lifecycle.util;/*
 
 
 import java.text.SimpleDateFormat;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Locale;
+import java.util.Map;
+import java.util.Set;
 
 public class StatusTracker {
     private Map<String, String> mStatusMap;
@@ -49,9 +55,7 @@ public class StatusTracker {
      * @param status
      */
     public void setStatus(String activityName, String status) {
-        SimpleDateFormat fmt = new SimpleDateFormat("HH:mm:ss.SSS", Locale.ITALY);
-
-        mMethodList.add("[" + fmt.format(new Date()) + "]: " + activityName + "." + status + "()");
+        mMethodList.add("[" + new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date()) + "]: " + activityName + "." + status + "()");
         if (mStatusMap.containsKey(activityName)) mStatusMap.remove(activityName);
         mStatusMap.put(activityName, status);
     }

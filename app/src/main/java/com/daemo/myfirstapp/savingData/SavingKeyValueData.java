@@ -3,7 +3,6 @@ package com.daemo.myfirstapp.savingData;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,14 +11,22 @@ import android.widget.RadioButton;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
-public class SavingKeyValueData extends Fragment implements View.OnClickListener {
+public class SavingKeyValueData extends MySuperFragment implements View.OnClickListener {
 
     private final String saved_key = SavingKeyValueData.class.getPackage().getName().concat(".saved_key");
     private final String file_save = SavingKeyValueData.class.getPackage().getName().concat(".saved_file");
 
     private SharedPreferences sharedPreferences = null;
+    private static SavingKeyValueData instance;
+
+    public static SavingKeyValueData getInstance(Bundle args) {
+        if (instance == null) instance = new SavingKeyValueData();
+        instance.setArguments(args);
+        return instance;
+    }
 
     public SharedPreferences getSharedPreferences() {
         return sharedPreferences == null ?

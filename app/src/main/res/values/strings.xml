@@ -152,4 +152,16 @@
         <item>Any</item>
     </string-array>
     <string name="title_activity_maps">Map</string>
+    <string name="title_activity_notification_special">NotificationSpecialActivity</string>
+    <string name="dismiss">Dismiss</string>
+    <string name="snooze">Snooze</string>
+    <string name="sample_notification_summary_content">You have %d notifications</string>
+    <string name="active_notifications">There are %d notifications</string>
+    <string name="shortcut_shortcut_short_label1">notification_shortcut_short_label1</string>
+    <string name="shortcut_shortcut_long_label1">notification_shortcut_long_label1</string>
+    <string name="shortcut_disabled_message1">notification_disabled_message1</string>
+    <string name="add_shortcut">Add</string>
+    <string name="reset_shortcuts">Reset shortcuts</string>
+    <string name="services_fragment_title">Services list</string>
+    <string name="processes_fragment_title">Processes list</string>
 </resources>

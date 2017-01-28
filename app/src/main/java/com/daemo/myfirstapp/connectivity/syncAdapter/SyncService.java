@@ -21,7 +21,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 
 /**
  * Service to handle sync requests.

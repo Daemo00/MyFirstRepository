@@ -35,7 +35,7 @@ import android.widget.TextView;
 import com.daemo.myfirstapp.BuildConfig;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.Utils;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageCache;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
 
@@ -44,6 +44,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
+import static com.daemo.myfirstapp.Constants.IMAGE_CACHE_DIR;
 import static com.daemo.myfirstapp.userinfo.Contract.CONTACT_ID_INDEX;
 import static com.daemo.myfirstapp.userinfo.Contract.CONTACT_LOOKUP_KEY_INDEX;
 import static com.daemo.myfirstapp.userinfo.Contract.CONTACT_NAME_INDEX;
@@ -70,7 +71,6 @@ public class UserInfoActivity extends MySuperActivity implements AdapterView.OnI
     private String mContactName;
     private Intent editIntent;
     private ImageFetcher mImageFetcher;
-    private static final String IMAGE_CACHE_DIR = "thumbs";
     private LoaderManager loaderManager;
 
     @Override

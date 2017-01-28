@@ -21,7 +21,6 @@ import android.graphics.Path;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.RequiresApi;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,6 +32,7 @@ import android.widget.SeekBar;
 import android.widget.Spinner;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
 /**
@@ -41,7 +41,7 @@ import com.daemo.myfirstapp.R;
  * It shows how an {@link ObjectAnimator} is used to animate two properties of a
  * view (scale X and Y) along a path.
  */
-public class InterpolatorFragment extends Fragment {
+public class InterpolatorFragment extends MySuperFragment {
 
     /**
      * View that is animated.

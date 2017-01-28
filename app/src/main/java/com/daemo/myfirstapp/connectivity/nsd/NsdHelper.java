@@ -19,13 +19,19 @@ package com.daemo.myfirstapp.connectivity.nsd;
 import android.content.Context;
 import android.net.nsd.NsdManager;
 import android.net.nsd.NsdServiceInfo;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
+
+import com.daemo.myfirstapp.MySuperActivity;
 
 public class NsdHelper {
 
-    Context mContext;
+    MySuperActivity mActivity;
 
     NsdManager mNsdManager;
+    private final Handler mUpdateHandler;
     NsdManager.ResolveListener mResolveListener;
     NsdManager.DiscoveryListener mDiscoveryListener;
     NsdManager.RegistrationListener mRegistrationListener;
@@ -37,9 +43,10 @@ public class NsdHelper {
 
     NsdServiceInfo mService;
 
-    public NsdHelper(Context context) {
-        mContext = context;
+    public NsdHelper(Context context, Handler mUpdateHandler) {
+        mActivity = (MySuperActivity) context;
         mNsdManager = (NsdManager) context.getSystemService(Context.NSD_SERVICE);
+        this.mUpdateHandler = mUpdateHandler;
     }
 
     public void initializeNsd() {
@@ -58,22 +65,26 @@ public class NsdHelper {
 
             @Override
             public void onServiceFound(NsdServiceInfo service) {
+
                 Log.d(TAG, "Service discovery success: " + service);
+                mActivity.showToast("Service discovery success: " + service);
                 if (!service.getServiceType().equals(SERVICE_TYPE)) {
                     Log.d(TAG, "Unknown Service Type: " + service.getServiceType());
                 } else if (service.getServiceName().equals(mServiceName)) {
                     Log.d(TAG, "Same machine: " + mServiceName);
                 } else if (service.getServiceName().contains(mServiceName)) {
                     mNsdManager.resolveService(service, mResolveListener);
+                    sendUpdate("Service found: " + service.getServiceName());
                 }
             }
 
             @Override
             public void onServiceLost(NsdServiceInfo service) {
-                Log.e(TAG, "service lost" + service);
+                Log.e(TAG, "service lost: " + service);
                 if (mService == service) {
                     mService = null;
                 }
+                Log.e(TAG, "service set to null");
             }
 
             @Override
@@ -95,6 +106,14 @@ public class NsdHelper {
         };
     }
 
+    public void sendUpdate(String update) {
+        Bundle messageBundle = new Bundle();
+        messageBundle.putString("upd", update);
+        Message message = new Message();
+        message.setData(messageBundle);
+        mUpdateHandler.sendMessage(message);
+    }
+
     public void initializeResolveListener() {
         mResolveListener = new NsdManager.ResolveListener() {
 
@@ -106,11 +125,11 @@ public class NsdHelper {
             @Override
             public void onServiceResolved(NsdServiceInfo serviceInfo) {
                 Log.d(TAG, "Resolve Succeeded. " + serviceInfo);
-
                 if (serviceInfo.getServiceName().equals(mServiceName)) {
                     Log.d(TAG, "Same IP.");
                     return;
                 }
+                sendUpdate("Resolve Succeeded: " + serviceInfo.toString());
                 mService = serviceInfo;
             }
         };
@@ -123,6 +142,7 @@ public class NsdHelper {
             public void onServiceRegistered(NsdServiceInfo NsdServiceInfo) {
                 Log.d(TAG, "onServiceRegistered");
                 mServiceName = NsdServiceInfo.getServiceName();
+                sendUpdate("Service registered: " + mServiceName);
             }
 
             @Override
@@ -160,7 +180,7 @@ public class NsdHelper {
 
     private boolean isServiceRegistered = false;
 
-    public void registerService(int port) {
+    public void registerService(final int port) {
         if (!isServiceRegistered) {
             NsdServiceInfo serviceInfo = new NsdServiceInfo();
             serviceInfo.setPort(port);
@@ -168,6 +188,7 @@ public class NsdHelper {
             serviceInfo.setServiceType(SERVICE_TYPE);
 
             mNsdManager.registerService(serviceInfo, NsdManager.PROTOCOL_DNS_SD, mRegistrationListener);
+
             isServiceRegistered = true;
         }
     }

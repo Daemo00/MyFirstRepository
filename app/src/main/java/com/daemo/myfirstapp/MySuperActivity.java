@@ -177,5 +177,4 @@ public abstract class MySuperActivity extends AppCompatActivity {
     public void showToast(int intMsg) {
         showToast(getResources().getString(intMsg));
     }
-
 }

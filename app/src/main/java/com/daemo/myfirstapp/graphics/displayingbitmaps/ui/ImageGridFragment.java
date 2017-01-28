@@ -22,7 +22,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -38,10 +37,12 @@ import android.widget.GridView;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.daemo.myfirstapp.Constants;
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.logger.Log;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.ImageDetailActivity;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.BuildConfig;
+import com.daemo.myfirstapp.graphics.displayingbitmaps.ImageDetailActivity;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.provider.Images;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageCache;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
@@ -54,7 +55,7 @@ import com.daemo.myfirstapp.graphics.displayingbitmaps.util.Utils;
  * cache is retained over configuration changes like orientation change so the images are populated
  * quickly if, for example, the user rotates the device.
  */
-public class ImageGridFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class ImageGridFragment extends MySuperFragment implements AdapterView.OnItemClickListener {
     private static final String TAG = "ImageGridFragment";
     private static final String IMAGE_CACHE_DIR = "thumbs";
 
@@ -168,7 +169,7 @@ public class ImageGridFragment extends Fragment implements AdapterView.OnItemCli
     @Override
     public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
         final Intent i = new Intent(getActivity(), ImageDetailActivity.class);
-        i.putExtra(ImageDetailActivity.EXTRA_IMAGE, (int) id);
+        i.putExtra(Constants.EXTRA_IMAGE, (int) id);
         if (Utils.hasJellyBean()) {
             // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
             // show plus the thumbnail image in GridView is cropped. so using

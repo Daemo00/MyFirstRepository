@@ -7,7 +7,6 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.savingData.DBUtils.FeedReaderContract.FeedEntry;
 import com.daemo.myfirstapp.savingData.DBUtils.FeedReaderDbHelper;
@@ -29,12 +29,18 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SavingDB extends Fragment {
+public class SavingDB extends MySuperFragment {
 
     private SQLiteOpenHelper mDbHelper;
-    private View root;
     private Map<Long, String[]> rowsMap = new HashMap<>();
     private SavingActivity savingActivity;
+    private static SavingDB instance;
+
+    public static SavingDB getInstance(Bundle args) {
+        if (instance == null) instance = new SavingDB();
+        instance.setArguments(args);
+        return instance;
+    }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
@@ -45,16 +51,16 @@ public class SavingDB extends Fragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_saving_db, container, false);
+        View root = inflater.inflate(R.layout.fragment_saving_db, container, false);
         mDbHelper = new FeedReaderDbHelper(getContext());
 
-        bindGridView();
+        bindGridView(root);
         return root;
     }
 
     Object[] ee; //maps progressive -> _id of table
 
-    private void bindGridView() {
+    private void bindGridView(View root) {
         ListView listView = (ListView) root.findViewById(R.id.DBList);
 
         readDBrow();
@@ -120,7 +126,7 @@ public class SavingDB extends Fragment {
                 String newSubTitle = ((EditText) dialog.findViewById(R.id.editText2)).getText().toString();
                 savingActivity.showToast("Updated " + updateDBrow(rowId, newTitle, newSubTitle) + " row(s)");
 
-                bindGridView();
+                bindGridView(getView());
                 dialog.dismiss();
             }
         });
@@ -130,7 +136,7 @@ public class SavingDB extends Fragment {
             @Override
             public void onClick(View v) {
                 deleteDBrow(rowId);
-                bindGridView();
+                bindGridView(getView());
                 dialog.dismiss();
             }
         });
@@ -143,7 +149,7 @@ public class SavingDB extends Fragment {
                 String newSubTitle = ((EditText) dialog.findViewById(R.id.editText2)).getText().toString();
 
                 insertDBrow(newTitle, newSubTitle);
-                bindGridView();
+                bindGridView(getView());
                 dialog.dismiss();
             }
         });

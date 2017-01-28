@@ -17,6 +17,10 @@ import android.widget.TextView;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
+
 /**
  * A simple {@link Fragment} subclass.
  */
@@ -25,7 +29,7 @@ public class NsdFragment extends Fragment implements View.OnClickListener {
 
     NsdHelper mNsdHelper;
 
-    private TextView mStatusView;
+    private TextView mChatTextView;
     private Handler mUpdateHandler;
 
     public static final String TAG = "NsdChat";
@@ -49,19 +53,22 @@ public class NsdFragment extends Fragment implements View.OnClickListener {
         root = inflater.inflate(R.layout.fragment_nsd, container, false);
         activity = (MySuperActivity) getActivity();
 
-        mStatusView = (TextView) root.findViewById(R.id.status);
+        mChatTextView = (TextView) root.findViewById(R.id.chat);
 
         mUpdateHandler = new Handler() {
             @Override
             public void handleMessage(Message msg) {
-                String chatLine = msg.getData().getString("msg");
-                addChatLine(chatLine);
+                String newLine = "[" + new SimpleDateFormat("HH:mm:ss.SSS", Locale.getDefault()).format(new Date()) + "]: ";
+                if (msg.getData().containsKey("msg"))
+                    newLine += msg.getData().getString("msg");
+                else if (msg.getData().containsKey("upd"))
+                    newLine += msg.getData().getString("upd");
+                addChatLine(newLine);
             }
         };
-
         mConnection = new ChatConnection(mUpdateHandler);
 
-        mNsdHelper = new NsdHelper(activity);
+        mNsdHelper = new NsdHelper(activity, mUpdateHandler);
         mNsdHelper.initializeNsd();
 
         root.findViewById(R.id.advertise_btn).setOnClickListener(this);
@@ -71,7 +78,7 @@ public class NsdFragment extends Fragment implements View.OnClickListener {
         return root;
     }
 
-    public void clickAdvertise(View v) {
+    public void clickRegister(View v) {
         // Register service
         if (mConnection.getLocalPort() > -1) {
             mNsdHelper.registerService(mConnection.getLocalPort());
@@ -106,7 +113,7 @@ public class NsdFragment extends Fragment implements View.OnClickListener {
     }
 
     public void addChatLine(String line) {
-        mStatusView.append("\n" + line);
+        mChatTextView.append("\n" + line);
     }
 
     @Override
@@ -136,7 +143,7 @@ public class NsdFragment extends Fragment implements View.OnClickListener {
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.advertise_btn:
-                clickAdvertise(view);
+                clickRegister(view);
                 break;
             case R.id.connect_btn:
                 clickConnect(view);

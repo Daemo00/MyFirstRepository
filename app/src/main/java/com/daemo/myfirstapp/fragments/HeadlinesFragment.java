@@ -18,7 +18,6 @@ import android.content.Context;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.ListFragment;
-import android.util.Log;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -28,9 +27,6 @@ public class HeadlinesFragment extends ListFragment {
 
     // The container Activity must implement this interface so the frag can deliver messages
     public interface OnHeadlineSelectedListener {
-        /**
-         * Called by HeadlinesFragment when a list item is selected
-         */
         void onArticleSelected(int position);
     }
 
@@ -43,8 +39,6 @@ public class HeadlinesFragment extends ListFragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(this.getClass().getSimpleName(), "onCreate, savedInstanceState is " + savedInstanceState);
-
         // We need to use a different list item layout for devices older than Honeycomb
         int layout = Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB ?
                 android.R.layout.simple_list_item_activated_1 : android.R.layout.simple_list_item_1;
