@@ -21,7 +21,7 @@ public class SearchableActivity extends MySuperActivity {
     }
 
     private void doMySearch(String query) {
-        super.showToast("Searching " + query);
+        super.showToast("Searching " + query + "...");
     }
 
     @Override
