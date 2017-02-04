@@ -1,5 +1,7 @@
 package com.daemo.myfirstapp.monitor;
 
+import android.app.ActivityManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.ListViewCompat;
@@ -12,8 +14,16 @@ import com.daemo.myfirstapp.MyFirstApplication;
 import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+
 import static com.daemo.myfirstapp.monitor.ProcessList.COLUMN_PROCESS_NAME;
 import static com.daemo.myfirstapp.monitor.ProcessList.COLUMN_PROCESS_PID;
+import static com.daemo.myfirstapp.monitor.ProcessList.COLUMN_SERVICE_NAME;
+import static com.daemo.myfirstapp.monitor.ProcessList.COLUMN_SERVICE_PID;
 
 public class ProcessesFragment extends MySuperFragment implements MonitorService.ServiceCallback {
 
@@ -27,8 +37,16 @@ public class ProcessesFragment extends MySuperFragment implements MonitorService
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+
         ListViewCompat lvc = new ListViewCompat(getContext());
         createAdapter(lvc);
+
+        View view = super.onCreateView(inflater, container, savedInstanceState);
+        if (view instanceof ViewGroup) {
+            ViewGroup viewGroup = (ViewGroup) view;
+            viewGroup.addView(lvc);
+            return viewGroup;
+        }
         return lvc;
     }
 

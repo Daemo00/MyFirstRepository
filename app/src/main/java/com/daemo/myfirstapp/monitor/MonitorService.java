@@ -68,9 +68,18 @@ public class MonitorService extends Service {
 
     public void start() {
         Log.d(Utils.getTag(this), "Service started");
-        if (timer == null) {
-            timer = new Timer();
-            timer.schedule(new MonitoringTimerTask(), 500, SERVICE_PERIOD);
+//        if (timer == null) {
+//            timer = new Timer();
+//            timer.schedule(new MonitoringTimerTask(), 500, SERVICE_PERIOD);
+//        }
+        fillLists();
+        if (callback != null) {
+            final Bundle b = new Bundle();
+            mHandler.post(new Runnable() {
+                public void run() {
+                    callback.sendResults(1, b);
+                }
+            });
         }
     }
 
@@ -96,7 +105,32 @@ public class MonitorService extends Service {
         }
     }
 
-    private void fillLists() {
-        pl.fillLists(servicesList, processesList);
+    void fillServicesList(){
+        pl.fillServicesList(servicesList);
+        if (callback != null) {
+            final Bundle b = new Bundle();
+            mHandler.post(new Runnable() {
+                public void run() {
+                    callback.sendResults(1, b);
+                }
+            });
+        }
+    }
+
+    void fillProcessesList(){
+        pl.fillProcessesList(processesList);
+        if (callback != null) {
+            final Bundle b = new Bundle();
+            mHandler.post(new Runnable() {
+                public void run() {
+                    callback.sendResults(1, b);
+                }
+            });
+        }
+    }
+
+    void fillLists() {
+        fillServicesList();
+        fillProcessesList();
     }
 }

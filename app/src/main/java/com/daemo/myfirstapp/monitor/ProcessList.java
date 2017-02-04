@@ -57,4 +57,53 @@ class ProcessList {
         //Collections.sort(processesList, comparator);
         Collections.sort(servicesList, comparator);
     }
+
+    void fillProcessesList(ArrayList<HashMap<String, Object>> processesList){
+        processesList.clear();
+
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RecentTaskInfo> runningAppProcesses = am.getRecentTasks(100, ActivityManager.RECENT_WITH_EXCLUDED);//getRecentTasksForUser(1,2,3);
+
+        HashMap<String, Object> hm;
+        for (ActivityManager.RecentTaskInfo runningAppTask : runningAppProcesses) {
+            hm = new HashMap<>();
+            hm.put(COLUMN_PROCESS_NAME, runningAppTask.numActivities + " activities");
+            hm.put(COLUMN_PROCESS_PID, runningAppTask.id);
+            processesList.add(hm);
+        }
+
+        Comparator<HashMap<String, Object>> comparator = new Comparator<HashMap<String, Object>>() {
+            public int compare(HashMap<String, Object> object1, HashMap<String, Object> object2) {
+                return object1.get(COLUMN_SERVICE_NAME).toString().compareToIgnoreCase(object2.get(COLUMN_SERVICE_NAME).toString());
+                //return (Integer) object1.get(COLUMN_SERVICE_PID) - (Integer) object2.get(COLUMN_SERVICE_PID);
+            }
+        };
+
+        //Collections.sort(processesList, comparator);
+    }
+
+    void fillServicesList(ArrayList<HashMap<String, Object>> servicesList) {
+        servicesList.clear();
+
+        ActivityManager am = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        List<ActivityManager.RunningServiceInfo> runningServices = am.getRunningServices(100);
+
+
+        for (ActivityManager.RunningServiceInfo runningService : runningServices) {
+            HashMap<String, Object> hm = new HashMap<>();
+            hm.put(COLUMN_SERVICE_NAME, runningService.service.flattenToShortString());
+            hm.put(COLUMN_SERVICE_PID, runningService.pid);
+            servicesList.add(hm);
+        }
+
+
+        Comparator<HashMap<String, Object>> comparator = new Comparator<HashMap<String, Object>>() {
+            public int compare(HashMap<String, Object> object1, HashMap<String, Object> object2) {
+                return object1.get(COLUMN_SERVICE_NAME).toString().compareToIgnoreCase(object2.get(COLUMN_SERVICE_NAME).toString());
+                //return (Integer) object1.get(COLUMN_SERVICE_PID) - (Integer) object2.get(COLUMN_SERVICE_PID);
+            }
+        };
+
+        Collections.sort(servicesList, comparator);
+    }
 }

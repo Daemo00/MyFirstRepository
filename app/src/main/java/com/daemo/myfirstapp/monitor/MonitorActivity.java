@@ -14,7 +14,7 @@ import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.SectionsPagerAdapter;
 
 public class MonitorActivity extends MySuperActivity implements MonitorService.ServiceCallback {
-    private MonitorService backgroundService;
+    MonitorService backgroundService;
     private ViewPager mViewPager;
 
     @Override
