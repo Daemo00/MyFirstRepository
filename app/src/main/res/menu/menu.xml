@@ -6,6 +6,14 @@
         android:title="@string/settings" />
     <item
         android:id="@+id/menu_item_share"
-        android:title="Share"
+        android:title="@string/share"
+        android:icon="@android:drawable/ic_menu_share"
+        app:showAsAction="ifRoom"
         app:actionProviderClass="android.support.v7.widget.ShareActionProvider" />
+    <item
+        android:id="@id/menu_item_search"
+        android:title="@string/search"
+        android:icon="@android:drawable/ic_menu_search"
+        app:showAsAction="ifRoom|collapseActionView"
+        app:actionViewClass="android.support.v7.widget.SearchView" />
 </menu>

@@ -4,5 +4,7 @@
     <item name="spDirectoryStorage" type="id" />
     <item name="tvDirectoryStorageLabel" type="id" />
     <item name="cbIsPublic" type="id" />
-    <item name="swipe_layout_superfragment" type="id" />
+    <item name="swipe_layout_superFragment" type="id" />
+    <item name="menu_item_search" type="id" />
+    <item name="DBList" type="id" />
 </resources>

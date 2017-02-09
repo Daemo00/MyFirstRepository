@@ -1,8 +1,5 @@
 <resources>
     <string name="app_name">My First App</string>
-    <string name="edit_message">Enter a message</string>
-    <string name="button_send">Send</string>
-    <string name="action_settings">Settings</string>
 
     <string name="lifecycle_method_list">Lifecycle Method List</string>
     <string name="activity_status">Activity Status</string>
@@ -14,7 +11,6 @@
     <string name="on_stop">onStop</string>
     <string name="on_pause">onPause</string>
     <string name="on_resume">onResume</string>
-    <string name="activity_a_label">Activity A</string>
     <string name="activity_b_label">Activity B</string>
     <string name="activity_c_label">Activity C</string>
     <string name="btn_start_a_label">Start A</string>
@@ -25,20 +21,8 @@
     <string name="btn_finish_b_label">Finish B</string>
     <string name="btn_finish_c_label">Finish C</string>
     <string name="btn_finish_dialog_label">Close</string>
-    <string name="on_activity_created">onActivityCreated</string>
-    <string name="on_attach">onAttach</string>
-    <string name="on_create_view">onCreateView</string>
-    <string name="on_destroy_view">onDestroyView</string>
-    <string name="on_detach">onDetach</string>
-    <string name="on_view_created">onViewCreated</string>
     <string name="activity_a">Activity A</string>
-    <string name="start_a">Start A</string>
-    <string name="start_b">Start B</string>
-    <string name="start_c">Start C</string>
-    <string name="close">Close</string>
-    <string name="dialog">Dialog</string>
     <string name="go">Go</string>
-    <string name="sharedPreferences">sharedPreferences</string>
     <string name="sharedPreferencesTitle">Key-Value Sets</string>
     <string name="lblSharedPreferences">Shared Preferences</string>
     <string name="lblPreferences">Preferences</string>
@@ -48,9 +32,7 @@
     <string name="success">Success!</string>
     <string name="fail">Failed :(</string>
     <string name="title_activity_saving_data">SavingData</string>
-    <string name="section_format">Hello World from section: %1$d</string>
     <string name="saving_key_value_title">Key-Value</string>
-    <string name="select_provider">Select a provider</string>
 
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="saving_files_title">Files</string>
@@ -74,11 +56,8 @@
     <string name="select_stream">select stream</string>
     <string name="stop">Stop</string>
     <string name="is_service">Service?</string>
-    <string name="image_taken">image taken</string>
-    <string name="open_camera">Open camera</string>
     <string name="request_permission">Request permission</string>
     <string name="camera_error">Camera error</string>
-    <string name="record">Registra</string>
     <string name="imageview_description">Image Description</string>
     <string name="clear_cache_menu">Clear cache</string>
     <string name="no_network_connection_toast">No network connection</string>
@@ -87,9 +66,7 @@
     <string name="animation_duration">Duration: %1$d ms</string>
     <string name="interpolator">Interpolator:</string>
     <string name="interpolate">Interpolate!</string>
-    <string name="simple_crossfade">Simple Crossfade</string>
     <string name="animate">Animate</string>
-    <string name="lorem_ipsum"><![CDATA[Lorem ipsum dolor sit amet, consectetur adipiscing elit. Mauris et magna ut erat elementum cursus in quis ipsum. Nam faucibus ultrices eros, vel tempor leo semper sit amet. Duis magna quam, congue vitae interdum nec, condimentum ut lectus. Sed commodo venenatis eros a dignissim. Nunc adipiscing turpis nec magna venenatis at ultricies ipsum bibendum. Sed volutpat urna quis nisi vulputate egestas. Etiam eu dui a enim lacinia dapibus. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas.\n\nPhasellus orci mi, eleifend nec congue id, volutpat at neque. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Integer semper velit vel leo rutrum sed fermentum elit porta.]]></string>
     <string name="dummy1">Dummy text one</string>
     <string name="dummy2">Dummy text 2</string>
     <string name="title">Title</string>
@@ -111,14 +88,11 @@
     <string name="address_found">Address found</string>
     <string name="no_geocoder_available">No Geocodewr available</string>
     <!-- Buttons strings -->
-    <string name="add_geofences">Add geofences</string>
-    <string name="remove_geofences">Remove geofences</string>
 
     <string name="geofences_added">Geofences added</string>
     <string name="geofences_removed">Geofences removed</string>
 
     <!-- Error strings -->
-    <string name="not_connected">GoogleApiClient no yet connected. Try again.</string>
     <string name="geofence_not_available">Geofence service is not available now</string>
     <string name="geofence_too_many_geofences">Your app has registered too many geofences</string>
     <string name="geofence_too_many_pending_intents">
@@ -153,7 +127,6 @@
     </string-array>
     <string name="title_activity_maps">Map</string>
     <string name="title_activity_notification_special">NotificationSpecialActivity</string>
-    <string name="dismiss">Dismiss</string>
     <string name="snooze">Snooze</string>
     <string name="sample_notification_summary_content">You have %d notifications</string>
     <string name="active_notifications">There are %d notifications</string>
@@ -165,4 +138,6 @@
     <string name="services_fragment_title">Services list</string>
     <string name="processes_fragment_title">Processes list</string>
     <string name="search_hint">Search hint</string>
+    <string name="search">Search</string>
+    <string name="share">Share</string>
 </resources>

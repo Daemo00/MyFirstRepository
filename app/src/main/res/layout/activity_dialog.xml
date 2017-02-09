@@ -33,7 +33,6 @@ limitations under the License.
     />
 
  <Button
-     android:id="@+id/btn_finish_dialog"
      android:layout_height="wrap_content"
      android:layout_width="wrap_content"
      android:text="@string/btn_finish_dialog_label"

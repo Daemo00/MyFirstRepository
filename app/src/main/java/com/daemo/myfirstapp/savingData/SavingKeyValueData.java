@@ -9,7 +9,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.RadioButton;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
@@ -21,6 +20,10 @@ public class SavingKeyValueData extends MySuperFragment implements View.OnClickL
 
     private SharedPreferences sharedPreferences = null;
     private static SavingKeyValueData instance;
+
+    public static SavingKeyValueData getInstance() {
+        return getInstance(new Bundle());
+    }
 
     public static SavingKeyValueData getInstance(Bundle args) {
         if (instance == null) instance = new SavingKeyValueData();
@@ -66,14 +69,13 @@ public class SavingKeyValueData extends MySuperFragment implements View.OnClickL
         SharedPreferences.Editor editor = getSelectedPreferences().edit();
         editor.putString(saved_key, valueToSave);
         if (editor.commit())
-            Toast.makeText(getActivity(), R.string.success, Toast.LENGTH_SHORT).show();
+            getMySuperActivity().showToast(R.string.success);
         else
-            Toast.makeText(getActivity(), R.string.fail, Toast.LENGTH_SHORT).show();
+            getMySuperActivity().showToast(R.string.fail);
     }
 
     public void load(View view) {
-        String defaultValue = "";
-        String savedValue = getSelectedPreferences().getString(saved_key, defaultValue);
+        String savedValue = getSelectedPreferences().getString(saved_key, "");
         TextView tvValueLoaded = (TextView) getActivity().findViewById(R.id.tvValueLoaded);
         if (tvValueLoaded != null) tvValueLoaded.setText(savedValue);
     }

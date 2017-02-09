@@ -80,7 +80,8 @@ public class WiFiDirectBroadcastReceiver extends BroadcastReceiver {
             case WifiP2pManager.WIFI_P2P_PEERS_CHANGED_ACTION:
                 Log.d(Utils.getTag(this), "Peers changed");
 
-                // Request available peers from the wifi p2p manager. This is an asynchronous call and the calling activity is notified with a callback on PeerListListener.onPeersAvailable()
+                // Request available peers from the wifi p2p manager.
+                // This is an asynchronous call and the calling activity is notified with a callback on PeerListListener.onPeersAvailable()
 //                WifiP2pDeviceList list = intent.getParcelableExtra(WifiP2pManager.EXTRA_P2P_DEVICE_LIST);
 //                Log.d(Utils.getTag(this), "Received peers list is " + Utils.printList(list.getDeviceList()));
                 if (mManager != null) mManager.requestPeers(mChannel, peerListListener);

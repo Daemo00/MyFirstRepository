@@ -6,8 +6,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
@@ -25,16 +23,14 @@ public class MySuperFragment extends Fragment implements SwipeRefreshLayout.OnRe
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Bundle arguments = getArguments();
-        if (arguments != null) Log.d(Utils.getTag(this), "onCreate, arguments is " + arguments);
-        else Log.d(Utils.getTag(this), "onCreate, arguments is null");
+        Log.d(Utils.getTag(this), "onCreate, arguments is " + getArguments());
     }
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
         SwipeRefreshLayout swipeRefreshLayout = new SwipeRefreshLayout(getContext());
-        swipeRefreshLayout.setId(R.id.swipe_layout_superfragment);
+        swipeRefreshLayout.setId(R.id.swipe_layout_superFragment);
         swipeRefreshLayout.setLayoutParams(new ViewGroup.LayoutParams(
                 ViewGroup.LayoutParams.MATCH_PARENT,
                 ViewGroup.LayoutParams.MATCH_PARENT));
@@ -65,11 +61,18 @@ public class MySuperFragment extends Fragment implements SwipeRefreshLayout.OnRe
     public void stopRefreshing() {
         View view = getView();
         if (view != null) {
-            View layout = view.findViewById(R.id.swipe_layout_superfragment);
+            View layout = view.findViewById(R.id.swipe_layout_superFragment);
             if (layout instanceof SwipeRefreshLayout) {
                 SwipeRefreshLayout swipeRefreshLayout = (SwipeRefreshLayout) layout;
                 swipeRefreshLayout.setRefreshing(false);
             }
         }
+    }
+
+    public MySuperActivity getMySuperActivity() {
+        if (getActivity() instanceof MySuperActivity) {
+            return (MySuperActivity) getActivity();
+        }
+        return null;
     }
 }

@@ -20,20 +20,17 @@ public class SavingActivity extends MySuperActivity {
         mViewPager = (ViewPager) findViewById(R.id.container);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
 
-        SavingKeyValueData savingKeyValueData = SavingKeyValueData.getInstance(new Bundle());
+        SavingKeyValueData savingKeyValueData = SavingKeyValueData.getInstance();
         savingKeyValueData.setTitle(getString(R.string.saving_key_value_title));
 
-        SavingFiles savingFiles = SavingFiles.getInstance(new Bundle());
+        SavingFiles savingFiles = SavingFiles.getInstance();
         savingFiles.setTitle(getString(R.string.saving_files_title));
 
-        SavingDB savingDB = SavingDB.getInstance(new Bundle());
+        SavingDB savingDB = SavingDB.getInstance();
         savingDB.setTitle(getString(R.string.saving_database_title));
 
         sectionsPagerAdapter.setFrags(savingKeyValueData, savingFiles, savingDB);
         mViewPager.setAdapter(sectionsPagerAdapter);
-
-//        TabLayout tabLayout = (TabLayout) findViewById(R.id.tabs);
-//        tabLayout.setupWithViewPager(mViewPager);
 
         checkPermissionsRunTime(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }

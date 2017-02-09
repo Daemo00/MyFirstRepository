@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.widget.ListViewCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,19 +21,19 @@ import android.widget.TextView;
 
 import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.savingData.DBUtils.FeedReaderContract.FeedEntry;
 import com.daemo.myfirstapp.savingData.DBUtils.FeedReaderDbHelper;
 
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.Map;
+import java.util.TreeMap;
 
 public class SavingDB extends MySuperFragment {
 
     private SQLiteOpenHelper mDbHelper;
-    private Map<Long, String[]> rowsMap = new HashMap<>();
+    private Map<Long, String[]> rowsMap = new TreeMap<>();
     private SavingActivity savingActivity;
     private static SavingDB instance;
 
@@ -51,20 +52,36 @@ public class SavingDB extends MySuperFragment {
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
-        View root = inflater.inflate(R.layout.fragment_saving_db, container, false);
-        mDbHelper = new FeedReaderDbHelper(getContext());
+        ViewGroup viewGroup = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
+        ListViewCompat listViewCompat = new ListViewCompat(getActivity());
+        listViewCompat.setLayoutParams(new ViewGroup.LayoutParams(
+                ViewGroup.LayoutParams.MATCH_PARENT,
+                ViewGroup.LayoutParams.MATCH_PARENT));
+        listViewCompat.setId(R.id.DBList);
+        if (viewGroup == null) return listViewCompat;
 
-        bindGridView(root);
-        return root;
+        viewGroup.addView(listViewCompat);
+        return viewGroup;
     }
 
-    Object[] ee; //maps progressive -> _id of table
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mDbHelper = new FeedReaderDbHelper(getContext());
+        bindGridView(view);
+        if (!rowsMap.isEmpty()) return;
+        for (int i = 0; i < 10; i++)
+            Log.d(Utils.getTag(this), "inserted row with id " + insertDBrow("title" + i, "subtitle" + i));
+    }
+
+//    Object[] ee; //maps progressive -> _id of table
 
     private void bindGridView(View root) {
         ListView listView = (ListView) root.findViewById(R.id.DBList);
 
         readDBrow();
-        final Object[] elements = ee;
+        final Object[] elements = rowsMap.keySet().toArray();
+
         Log.d(this.getClass().getSimpleName(), "keyset has " + rowsMap.keySet().toArray().length + " elements");
         //noinspection unchecked
         ArrayAdapter adapter = new ArrayAdapter(savingActivity, R.layout.my_two_line_listitem, elements) {
@@ -80,7 +97,7 @@ public class SavingDB extends MySuperFragment {
                 if (tvTitle != null) tvTitle.setText(rowsMap.get(elements[position])[0]);
 
                 TextView tvSubTitle = (TextView) convertView.findViewById(android.R.id.text2);
-                if (tvSubTitle != null) tvSubTitle.setText(rowsMap.get(elements[position])[2]);
+                if (tvSubTitle != null) tvSubTitle.setText(rowsMap.get(elements[position])[1]);
 
                 return convertView;
             }
@@ -99,7 +116,7 @@ public class SavingDB extends MySuperFragment {
     private void showRowOptions(final Long rowId) {
         final Dialog dialog = new Dialog(savingActivity);
         dialog.setContentView(R.layout.db_row_details);
-        //use ee
+
         String[] row = rowsMap.get(rowId);
         if (row == null) row = new String[]{};
 
@@ -213,8 +230,8 @@ public class SavingDB extends MySuperFragment {
                     rowsMap.put(id, new String[]{title, subtitle, updated});
                 } while (cursor.moveToNext());
             }
-            ee = rowsMap.keySet().toArray();
-            Arrays.sort(ee);
+//            ee = rowsMap.keySet().toArray();
+//            Arrays.sort(ee);
         }
     }
 
@@ -249,5 +266,15 @@ public class SavingDB extends MySuperFragment {
                 values,
                 selection,
                 selectionArgs);
+    }
+
+    public static SavingDB getInstance() {
+        return getInstance(new Bundle());
+    }
+
+    @Override
+    public void onRefresh() {
+        getMySuperActivity().showToast("Refreshing...");
+        super.onRefresh();
     }
 }

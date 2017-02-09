@@ -43,6 +43,10 @@ public class SavingFiles extends MySuperFragment implements View.OnClickListener
     };
     private static SavingFiles instance;
 
+    public static SavingFiles getInstance() {
+        return getInstance(new Bundle());
+    }
+
     public static SavingFiles getInstance(Bundle args) {
         if (instance == null) instance = new SavingFiles();
         instance.setArguments(args);
@@ -103,6 +107,7 @@ public class SavingFiles extends MySuperFragment implements View.OnClickListener
             }
         } catch (IOException e) {
             savingActivity.showToast(e.getMessage());
+            e.printStackTrace();
         }
     }
 

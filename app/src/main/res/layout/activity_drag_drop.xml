@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/activity_drag_drop"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="com.daemo.myfirstapp.drag_drop.DragDropActivity">
@@ -19,7 +18,6 @@
         app:srcCompat="@drawable/common_google_signin_btn_icon_light_normal" />
 
     <LinearLayout
-        android:id="@+id/grid_layout"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/imageView"

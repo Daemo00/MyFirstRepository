@@ -37,7 +37,6 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/lblPreferences"
-                android:id="@+id/rbtnPreferences"
                 android:checked="false"
                 android:layout_weight="1" />
         </RadioGroup>
@@ -73,7 +72,6 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:id="@+id/loadKeyValue"
             android:layout_below="@+id/saveKeyValue"
             android:gravity="center">
 
