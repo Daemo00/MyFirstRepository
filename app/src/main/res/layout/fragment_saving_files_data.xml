@@ -77,8 +77,8 @@
         android:id="@+id/etFileContent"
         android:layout_below="@+id/tvFilePath"
         android:layout_centerHorizontal="true"
-        android:background="@color/white"
-        android:textColor="@color/black"
+        android:background="@android:color/white"
+        android:textColor="@android:color/black"
         android:gravity="start"
         android:hint="@string/file_content" />
 </RelativeLayout>

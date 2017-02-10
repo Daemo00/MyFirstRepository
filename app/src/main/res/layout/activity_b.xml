@@ -86,8 +86,8 @@
             android:id="@+id/status_view_b"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/white"
-            android:textColor="@color/black"
+            android:background="@android:color/white"
+            android:textColor="@android:color/black"
             android:padding="4dip"
             android:typeface="monospace"
             />
@@ -105,8 +105,8 @@
         android:id="@+id/status_view_all_b"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
-        android:textColor="@color/black"
+        android:background="@android:color/white"
+        android:textColor="@android:color/black"
         android:padding="4dip"
         android:typeface="monospace"
         />

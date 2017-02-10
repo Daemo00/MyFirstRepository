@@ -7,4 +7,6 @@
     <item name="swipe_layout_superFragment" type="id" />
     <item name="menu_item_search" type="id" />
     <item name="DBList" type="id" />
+    <item name="Reset" type="id"/>
+    <item name="Pie" type="id"/>
 </resources>
