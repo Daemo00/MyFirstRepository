@@ -8,7 +8,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.util.Log;
 
-import com.daemo.myfirstapp.MyFirstApplication;
+import com.daemo.myfirstapp.MySuperApplication;
 import com.daemo.myfirstapp.common.Utils;
 
 import java.util.ArrayList;
@@ -44,8 +44,8 @@ public class MonitorService extends Service {
         super.onCreate();
         Log.d(Utils.getTag(this), "Service created");
         initialized = true;
-        servicesList = ((MyFirstApplication) getApplication()).getServicesList();
-        processesList = ((MyFirstApplication) getApplication()).getProcessesList();
+        servicesList = ((MySuperApplication) getApplication()).getServicesList();
+        processesList = ((MySuperApplication) getApplication()).getProcessesList();
     }
 
     @Override

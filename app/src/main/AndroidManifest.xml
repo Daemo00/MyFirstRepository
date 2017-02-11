@@ -34,7 +34,7 @@
         android:required="true"/>
 
     <application
-        android:name=".MyFirstApplication"
+        android:name=".MySuperApplication"
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
@@ -310,6 +310,22 @@
             android:name=".customView.CustomViewActivity"
             android:parentActivityName=".MainActivity">
         </activity>
+        <activity
+            android:name=".performance.PerformanceActivity"
+            android:parentActivityName=".MainActivity">
+        </activity>
+
+        <receiver
+            android:name=".performance.BatteryStatusReceiver"
+            android:exported="true"
+            android:enabled="true">
+            <intent-filter>
+                <action android:name="android.intent.action.BATTERY_LOW"/>
+                <action android:name="android.intent.action.BATTERY_OKAY"/>
+                <action android:name="android.intent.action.ACTION_POWER_CONNECTED"/>
+                <action android:name="android.intent.action.ACTION_POWER_DISCONNECTED"/>
+            </intent-filter>
+        </receiver>
     </application>
 
 </manifest>
