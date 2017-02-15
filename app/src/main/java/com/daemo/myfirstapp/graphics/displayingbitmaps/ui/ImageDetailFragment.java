@@ -18,6 +18,7 @@ package com.daemo.myfirstapp.graphics.displayingbitmaps.ui;
 
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -26,10 +27,10 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.ImageDetailActivity;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageWorker;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.Utils;
 
 /**
  * This fragment will populate the children of the ViewPager from {@link ImageDetailActivity}.
@@ -86,15 +87,14 @@ public class ImageDetailFragment extends Fragment implements ImageWorker.OnImage
     public void onActivityCreated(Bundle savedInstanceState) {
         super.onActivityCreated(savedInstanceState);
 
-        // Use the parent activity to load the image asynchronously into the ImageView (so a single
-        // cache can be used over all pages in the ViewPager
+        // Use the parent activity to load the image asynchronously into the ImageView (so a single cache can be used over all pages in the ViewPager
         if (ImageDetailActivity.class.isInstance(getActivity())) {
             mImageFetcher = ((ImageDetailActivity) getActivity()).getImageFetcher();
             mImageFetcher.loadImage(mImageUrl, mImageView, this);
         }
 
         // Pass clicks on the ImageView to the parent activity to handle
-        if (OnClickListener.class.isInstance(getActivity()) && Utils.hasHoneycomb()) {
+        if (OnClickListener.class.isInstance(getActivity()) && com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
             mImageView.setOnClickListener((OnClickListener) getActivity());
         }
     }
@@ -111,8 +111,14 @@ public class ImageDetailFragment extends Fragment implements ImageWorker.OnImage
 
     @Override
     public void onImageLoaded(boolean success) {
-        // Set loading spinner to gone once image has loaded. Cloud also show
-        // an error view here if needed.
+        Log.d(Utils.getTag(this), "Loaded detailed image: " + mImageUrl);
+        // Set loading spinner to gone once image has loaded.
+        // Cloud also show an error view here if needed.
         mProgressBar.setVisibility(View.GONE);
+    }
+
+    @Override
+    public void onImageLoading() {
+        Log.d(Utils.getTag(this), "Loading detailed image: " + mImageUrl);
     }
 }

@@ -15,15 +15,15 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.daemo.myfirstapp.Constants;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 import com.google.common.base.Objects;
 
-import static com.daemo.myfirstapp.Constants.ACTION_UPDATE;
-import static com.daemo.myfirstapp.Constants.NOTIFICATION_GROUP;
-import static com.daemo.myfirstapp.Constants.NOTIFICATION_GROUP_SUMMARY_ID;
+import static com.daemo.myfirstapp.common.Constants.ACTION_UPDATE;
+import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_GROUP;
+import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_GROUP_SUMMARY_ID;
 import static com.daemo.myfirstapp.notification.MyNotificationReceiver.getDeletePendingIntent;
 import static com.daemo.myfirstapp.notification.MyNotificationReceiver.getNumberOfNotifications;
 import static com.daemo.myfirstapp.notification.MyNotificationReceiver.updateNotificationSummary;

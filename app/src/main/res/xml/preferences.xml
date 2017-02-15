@@ -16,4 +16,12 @@
             android:key="network_feed"
             android:summary="Network connectivity required to download the feed." />
     </PreferenceScreen>
+    <PreferenceScreen
+        android:key="location_settings"
+        android:title="Location">
+        <SwitchPreference
+            android:title="Enable Geofences"
+            android:key="@string/settings_location_enable_geofences"
+            android:summary="Switch to enable/disable geofences"/>
+    </PreferenceScreen>
 </PreferenceScreen>

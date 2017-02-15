@@ -32,14 +32,13 @@ import android.view.View.OnClickListener;
 import android.view.WindowManager.LayoutParams;
 import android.widget.Toast;
 
-import com.daemo.myfirstapp.Constants;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.provider.Images;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.ui.ImageDetailFragment;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageCache;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.Utils;
 
 public class ImageDetailActivity extends MySuperActivity implements OnClickListener {
 
@@ -50,9 +49,6 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
     @TargetApi(VERSION_CODES.HONEYCOMB)
     @Override
     public void onCreate(Bundle savedInstanceState) {
-//        if (BuildConfig.DEBUG) {
-//            Utils.enableStrictMode();
-//        }
         super.onCreate(savedInstanceState);
 //        setContentView(R.layout.image_detail_pager);
 
@@ -70,13 +66,13 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
         // cache.
         final int longest = (height > width ? height : width) / 2;
 
-        ImageCache.ImageCacheParams cacheParams =
-                new ImageCache.ImageCacheParams(this, Constants.IMAGE_CACHE_DIR);
-        cacheParams.setMemCacheSizePercent(Constants.CACHE_SIZE); // Set memory cache to 25% of app memory
+//        ImageCache.ImageCacheParams cacheParams =
+//                new ImageCache.ImageCacheParams(this, Constants.IMAGE_CACHE_DIR);
+//        cacheParams.setMemCacheSizePercent(Constants.CACHE_SIZE); // Set memory cache to 25% of app memory
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcher(this, longest);
-        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
+        mImageFetcher.addImageCache(getMySuperApplication());
         mImageFetcher.setImageFadeIn(false);
 
         // Set up ViewPager and backing adapter
@@ -89,8 +85,7 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
         // Set up activity to go full screen
         getWindow().addFlags(LayoutParams.FLAG_FULLSCREEN);
 
-        // Enable some additional newer visibility and ActionBar features to create a more
-        // immersive photo viewing experience
+        // Enable some additional newer visibility and ActionBar features to create a more immersive photo viewing experience
         if (Utils.hasHoneycomb() && getSupportActionBar() != null) {
             final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
 

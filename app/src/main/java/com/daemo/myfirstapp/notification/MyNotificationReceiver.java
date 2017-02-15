@@ -10,16 +10,16 @@ import android.service.notification.StatusBarNotification;
 import android.support.v4.app.RemoteInput;
 import android.support.v7.app.NotificationCompat;
 
-import com.daemo.myfirstapp.Constants;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
-import static com.daemo.myfirstapp.Constants.ACTION_DELETE;
-import static com.daemo.myfirstapp.Constants.NOTIFICATION_GROUP;
-import static com.daemo.myfirstapp.Constants.NOTIFICATION_GROUP_SUMMARY_ID;
+import static com.daemo.myfirstapp.common.Constants.ACTION_DELETE;
+import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_GROUP;
+import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_GROUP_SUMMARY_ID;
 
 public class MyNotificationReceiver extends BroadcastReceiver {
     public MyNotificationReceiver() {

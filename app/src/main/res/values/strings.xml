@@ -86,7 +86,7 @@
     <string name="invalid_lat_long_used">Invlaid Latitude/Longitude</string>
     <string name="no_address_found">No address found</string>
     <string name="address_found">Address found</string>
-    <string name="no_geocoder_available">No Geocodewr available</string>
+    <string name="no_geocoder_available">No Geocoder available</string>
     <!-- Buttons strings -->
 
     <string name="geofences_added">Geofences added</string>
@@ -141,4 +141,7 @@
     <string name="search">Search</string>
     <string name="share">Share</string>
     <string name="reset_button">Reset</string>
+
+    <string name="authority">com.daemo.myfirstapp.threads</string>
+    <string name="settings_location_enable_geofences">location_enable_geofences</string>
 </resources>

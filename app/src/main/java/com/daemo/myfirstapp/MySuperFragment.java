@@ -14,7 +14,7 @@ import com.daemo.myfirstapp.common.Utils;
 public class MySuperFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
     private MySuperFragment inst;
-    private String title;
+    private String title = Utils.getTag(this);
 
     public MySuperFragment() {
         Log.d(Utils.getTag(this), "Called constructor");

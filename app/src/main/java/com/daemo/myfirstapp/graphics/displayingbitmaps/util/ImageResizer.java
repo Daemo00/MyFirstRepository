@@ -22,9 +22,9 @@ import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Build;
+import android.util.Log;
 
-import com.daemo.myfirstapp.common.logger.Log;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.BuildConfig;
+import com.daemo.myfirstapp.BuildConfig;
 
 import java.io.FileDescriptor;
 
@@ -126,7 +126,7 @@ public class ImageResizer extends ImageWorker {
         // END_INCLUDE (read_bitmap_dimensions)
 
         // If we're running on Honeycomb or newer, try to use inBitmap
-        if (Utils.hasHoneycomb()) {
+        if (com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
             addInBitmapOptions(options, cache);
         }
 
@@ -157,7 +157,7 @@ public class ImageResizer extends ImageWorker {
         options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
 
         // If we're running on Honeycomb or newer, try to use inBitmap
-        if (Utils.hasHoneycomb()) {
+        if (com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
             addInBitmapOptions(options, cache);
         }
 
@@ -191,7 +191,7 @@ public class ImageResizer extends ImageWorker {
         options.inJustDecodeBounds = false;
 
         // If we're running on Honeycomb or newer, try to use inBitmap
-        if (Utils.hasHoneycomb()) {
+        if (com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
             addInBitmapOptions(options, cache);
         }
 

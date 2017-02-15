@@ -3,6 +3,9 @@ package com.daemo.myfirstapp;
 import android.app.Application;
 import android.os.StrictMode;
 
+import com.daemo.myfirstapp.common.Constants;
+import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageCache;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -13,6 +16,12 @@ public class MySuperApplication extends Application {
     // actual store of statistics
     private final ArrayList<HashMap<String, Object>> processList = new ArrayList<>();
     private final ArrayList<HashMap<String, Object>> servicesList = new ArrayList<>();
+
+    private ImageCache imageCache;
+
+    public ImageCache getImageCache() {
+        return imageCache;
+    }
 
     @Override
     public void onCreate() {
@@ -29,6 +38,9 @@ public class MySuperApplication extends Application {
                     .build());
         }
         super.onCreate();
+        ImageCache.ImageCacheParams imageCacheParams = new ImageCache.ImageCacheParams(getApplicationContext(), Constants.IMAGE_CACHE_DIR);
+        imageCacheParams.setMemCacheSizePercent(Constants.CACHE_SIZE);
+        imageCache = ImageCache.getInstance(imageCacheParams);
     }
 
     public ArrayList<HashMap<String, Object>> getProcessesList() {

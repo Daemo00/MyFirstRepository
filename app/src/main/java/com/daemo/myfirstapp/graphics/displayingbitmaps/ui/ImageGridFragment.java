@@ -22,6 +22,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Build.VERSION_CODES;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -35,18 +36,15 @@ import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
-import com.daemo.myfirstapp.Constants;
 import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.common.logger.Log;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.BuildConfig;
+import com.daemo.myfirstapp.common.Constants;
+import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.ImageDetailActivity;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.provider.Images;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageCache;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.Utils;
+import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageWorker;
 
 /**
  * The main fragment that powers the ImageGridActivity screen. Fairly straight forward GridView
@@ -57,7 +55,6 @@ import com.daemo.myfirstapp.graphics.displayingbitmaps.util.Utils;
  */
 public class ImageGridFragment extends MySuperFragment implements AdapterView.OnItemClickListener {
     private static final String TAG = "ImageGridFragment";
-    private static final String IMAGE_CACHE_DIR = "thumbs";
 
     private int mImageThumbSize;
     private int mImageThumbSpacing;
@@ -67,7 +64,8 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
     /**
      * Empty constructor as per the Fragment documentation
      */
-    public ImageGridFragment() {}
+    public ImageGridFragment() {
+    }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,14 +77,10 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
 
         mAdapter = new ImageAdapter(getActivity());
 
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(getActivity(), IMAGE_CACHE_DIR);
-
-        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
-
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
-        mImageFetcher = new ImageFetcher(getActivity(), mImageThumbSize);
+        mImageFetcher = new ImageFetcher(getContext(), mImageThumbSize);
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImageFetcher.addImageCache(getActivity().getSupportFragmentManager(), cacheParams);
+        mImageFetcher.addImageCache(getMySuperActivity().getMySuperApplication());
     }
 
     @Override
@@ -102,7 +96,7 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
                 // Pause fetcher to ensure smoother scrolling when flinging
                 if (scrollState == AbsListView.OnScrollListener.SCROLL_STATE_FLING) {
                     // Before Honeycomb pause image loading on scroll to help with performance
-                    if (!Utils.hasHoneycomb()) {
+                    if (!com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
                         mImageFetcher.setPauseWork(true);
                     }
                 } else {
@@ -111,7 +105,8 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
             }
 
             @Override
-            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) { }
+            public void onScroll(AbsListView absListView, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+            }
         });
 
         // This listener is used to get the final width of the GridView and then calculate the number of columns and the width of each column.
@@ -129,10 +124,10 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
                                 final int columnWidth =
                                         (mGridView.getWidth() / numColumns) - mImageThumbSpacing;
                                 mAdapter.setNumColumns(numColumns);
+                                //noinspection SuspiciousNameCombination
                                 mAdapter.setItemHeight(columnWidth);
-                                if (BuildConfig.DEBUG)
-                                    Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
-                                if (Utils.hasJellyBean())
+                                Log.d(TAG, "onCreateView - numColumns set to " + numColumns);
+                                if (com.daemo.myfirstapp.common.Utils.hasJellyBean())
                                     mGridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
                                 else
                                     mGridView.getViewTreeObserver().removeOnGlobalLayoutListener(this);
@@ -174,8 +169,7 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
             // makeThumbnailScaleUpAnimation() looks kind of ugly here as the loading spinner may
             // show plus the thumbnail image in GridView is cropped. so using
             // makeScaleUpAnimation() instead.
-            ActivityOptions options =
-                    ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
+            ActivityOptions options = ActivityOptions.makeScaleUpAnimation(v, 0, 0, v.getWidth(), v.getHeight());
             getActivity().startActivity(i, options.toBundle());
         } else {
             startActivity(i);
@@ -192,7 +186,7 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
         switch (item.getItemId()) {
             case R.id.clear_cache:
                 mImageFetcher.clearCache();
-                Toast.makeText(getActivity(), R.string.clear_cache_complete_toast, Toast.LENGTH_SHORT).show();
+                getMySuperActivity().showToast(R.string.clear_cache_complete_toast);
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -209,8 +203,9 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
         private int mItemHeight = 0;
         private int mNumColumns = 0;
         private GridView.LayoutParams mImageViewLayoutParams;
+        private int numColumns;
 
-        public ImageAdapter(Context context) {
+        ImageAdapter(Context context) {
             super();
             mContext = context;
             mImageViewLayoutParams = new GridView.LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT);
@@ -218,10 +213,6 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
 
         @Override
         public int getCount() {
-            // If columns have yet to be determined, return no items
-            if (getNumColumns() == 0) return 0;
-
-            // Size + number of columns for top empty row
             return Images.imageThumbUrls.length;
         }
 
@@ -241,11 +232,23 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
         }
 
         @Override
-        public View getView(int position, View convertView, ViewGroup container) {
+        public View getView(final int position, View convertView, ViewGroup container) {
             //BEGIN_INCLUDE(load_gridview_item)
 
             // Now handle the main ImageView thumbnails
             ImageView imageView;
+            ImageWorker.OnImageLoadedListener listener = new ImageWorker.OnImageLoadedListener() {
+                @Override
+                public void onImageLoaded(boolean success) {
+                    Log.d(Utils.getTag(this), "Loaded thumb image:" + Images.imageThumbUrls[position] + "\nin position: " + position);
+                }
+
+                @Override
+                public void onImageLoading() {
+                    Log.d(Utils.getTag(this), "Loading thumb image:" + Images.imageThumbUrls[position] + "\nin position: " + position);
+                }
+            };
+
             if (convertView == null) { // if it's not recycled, instantiate and initialize
                 imageView = new RecyclingImageView(mContext);
                 imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -255,13 +258,11 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
             }
 
             // Check the height matches our calculated column width
-            if (imageView.getLayoutParams().height != mItemHeight) {
+            if (imageView.getLayoutParams().height != mItemHeight)
                 imageView.setLayoutParams(mImageViewLayoutParams);
-            }
 
-            // Finally load the image asynchronously into the ImageView, this also takes care of
-            // setting a placeholder image while the background thread runs
-            mImageFetcher.loadImage(Images.imageThumbUrls[position], imageView);
+            // Finally load the image asynchronously into the ImageView, this also takes care of setting a placeholder image while the background thread runs
+            mImageFetcher.loadImage(Images.imageThumbUrls[position], imageView, listener);
             return imageView;
             //END_INCLUDE(load_gridview_item)
         }
@@ -270,9 +271,9 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
          * Sets the item height. Useful for when we know the column width so the height can be set
          * to match.
          *
-         * @param height
+         * @param height height for the item
          */
-        public void setItemHeight(int height) {
+        void setItemHeight(int height) {
             if (height == mItemHeight) {
                 return;
             }
@@ -282,12 +283,12 @@ public class ImageGridFragment extends MySuperFragment implements AdapterView.On
             notifyDataSetChanged();
         }
 
-        public void setNumColumns(int numColumns) {
+        void setNumColumns(int numColumns) {
             mNumColumns = numColumns;
         }
 
         public int getNumColumns() {
-            return mNumColumns;
+            return numColumns;
         }
     }
 }

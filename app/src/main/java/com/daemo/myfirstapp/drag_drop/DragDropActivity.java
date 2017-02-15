@@ -11,10 +11,7 @@ import android.widget.ImageView;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.provider.Images;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageCache;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
-
-import static com.daemo.myfirstapp.Constants.IMAGE_CACHE_DIR;
 
 public class DragDropActivity extends MySuperActivity {
 
@@ -72,9 +69,9 @@ public class DragDropActivity extends MySuperActivity {
     }
 
     private void setupImageFetcher() {
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
+//        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
 
-        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
+//        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
         final DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
@@ -82,7 +79,7 @@ public class DragDropActivity extends MySuperActivity {
 
         mImageFetcher = new ImageFetcher(this, Math.round(width / 4));
         mImageFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
+        mImageFetcher.addImageCache(getMySuperApplication());
     }
 
     @Override

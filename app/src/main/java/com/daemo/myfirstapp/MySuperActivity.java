@@ -19,6 +19,7 @@ import android.support.v7.widget.SearchView;
 import android.support.v7.widget.ShareActionProvider;
 import android.support.v7.widget.Toolbar;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
@@ -32,8 +33,10 @@ import com.daemo.myfirstapp.settings.SettingsActivity;
 import java.util.ArrayList;
 import java.util.List;
 
+import static com.daemo.myfirstapp.common.Utils.debugIntent;
+
 public abstract class MySuperActivity extends AppCompatActivity {
-    private static final int MY_PERMISSIONS_REQUEST = 0;
+    public static final int MY_PERMISSIONS_REQUEST = 0;
     private List<Toast> toastList = new ArrayList<>();
     private List<AlertDialog> alertDialogList = new ArrayList<>();
     private ShareActionProvider mShareActionProvider;
@@ -56,6 +59,10 @@ public abstract class MySuperActivity extends AppCompatActivity {
     }
 
     protected abstract int getLayoutResID();
+
+    public MySuperApplication getMySuperApplication() {
+        return (MySuperApplication) getApplication();
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
@@ -113,6 +120,10 @@ public abstract class MySuperActivity extends AppCompatActivity {
     }
 
     public void checkPermissionsRunTime(final String... permissions) {
+        checkPermissionsRunTime(MY_PERMISSIONS_REQUEST, permissions);
+    }
+
+    public void checkPermissionsRunTime(final int requestCode, final String... permissions) {
         final Activity activity = this;
         boolean shouldShowStuff = false;
         for (String permission : permissions)
@@ -122,16 +133,17 @@ public abstract class MySuperActivity extends AppCompatActivity {
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
-                            ActivityCompat.requestPermissions(activity, permissions, MY_PERMISSIONS_REQUEST);
+                            ActivityCompat.requestPermissions(activity, permissions, requestCode);
                         }
                     }
             );
         else
-            ActivityCompat.requestPermissions(activity, permissions, MY_PERMISSIONS_REQUEST);
+            ActivityCompat.requestPermissions(activity, permissions, requestCode);
     }
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
+        Log.d(Utils.getTag(this), "Received permission result for requestCode: " + requestCode);
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST:
                 List<String> notGrantedPerms = new ArrayList<>();
@@ -174,6 +186,7 @@ public abstract class MySuperActivity extends AppCompatActivity {
 
     public void showToast(final String message) {
         final Activity thisActivity = this;
+        Log.v(Utils.getTag(this), "Toast shown: " + message);
         this.runOnUiThread(new Runnable() {
             @Override
             public void run() {
@@ -187,7 +200,9 @@ public abstract class MySuperActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         // Show that something has been received
-        showToast("Received result with code: " + requestCode + ", result: " + resultCode + " and data: " + data.toString());
+        String msg = "Received result with code: " + requestCode + ", result: " + resultCode + " and data:\n";
+        msg += debugIntent(data);
+        showToast(msg);
         super.onActivityResult(requestCode, resultCode, data);
     }
 

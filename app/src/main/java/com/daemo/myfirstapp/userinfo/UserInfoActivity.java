@@ -36,7 +36,6 @@ import com.daemo.myfirstapp.BuildConfig;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageCache;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
 
 import java.io.FileDescriptor;
@@ -44,7 +43,6 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.util.Arrays;
 
-import static com.daemo.myfirstapp.Constants.IMAGE_CACHE_DIR;
 import static com.daemo.myfirstapp.userinfo.Contract.CONTACT_ID_INDEX;
 import static com.daemo.myfirstapp.userinfo.Contract.CONTACT_LOOKUP_KEY_INDEX;
 import static com.daemo.myfirstapp.userinfo.Contract.CONTACT_NAME_INDEX;
@@ -77,9 +75,9 @@ public class UserInfoActivity extends MySuperActivity implements AdapterView.OnI
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
+//        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
 
-        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
+//        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
         TypedValue value = new TypedValue();
 
@@ -94,7 +92,7 @@ public class UserInfoActivity extends MySuperActivity implements AdapterView.OnI
             }
         };
         mImageFetcher.setLoadingImage(R.drawable.ic_contact_picture_holo_light);
-        mImageFetcher.addImageCache(getSupportFragmentManager(), cacheParams);
+        mImageFetcher.addImageCache(getMySuperApplication());
         // Gets the ListView from the View list of the parent activity
         mContactsList = (ListViewCompat) findViewById(android.R.id.list);
         // Gets a CursorAdapter

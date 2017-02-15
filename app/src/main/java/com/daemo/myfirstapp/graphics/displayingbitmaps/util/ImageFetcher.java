@@ -22,11 +22,11 @@ import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
+import android.util.Log;
 import android.widget.Toast;
 
+import com.daemo.myfirstapp.BuildConfig;
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.common.logger.Log;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.BuildConfig;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -171,10 +171,10 @@ public class ImageFetcher extends ImageResizer {
     }
 
     /**
-    * Simple network connection check.
-    *
-    * @param context
-    */
+     * Simple network connection check.
+     *
+     * @param context
+     */
     private void checkConnection(Context context) {
         final ConnectivityManager cm =
                 (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -193,9 +193,7 @@ public class ImageFetcher extends ImageResizer {
      * @return The downloaded and resized bitmap
      */
     private Bitmap processBitmap(String data) {
-        if (BuildConfig.DEBUG) {
-            Log.d(TAG, "processBitmap - " + data);
-        }
+        Log.d(TAG, "processBitmap - " + data);
 
         final String key = ImageCache.hashKeyForDisk(data);
         FileDescriptor fileDescriptor = null;
@@ -206,16 +204,15 @@ public class ImageFetcher extends ImageResizer {
             while (mHttpDiskCacheStarting) {
                 try {
                     mHttpDiskCacheLock.wait();
-                } catch (InterruptedException e) {}
+                } catch (InterruptedException e) {
+                }
             }
 
             if (mHttpDiskCache != null) {
                 try {
                     snapshot = mHttpDiskCache.get(key);
                     if (snapshot == null) {
-                        if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "processBitmap, not found in http cache, downloading...");
-                        }
+                        Log.d(TAG, "processBitmap, not found in http cache, downloading - " + data);
                         DiskLruCache.Editor editor = mHttpDiskCache.edit(key);
                         if (editor != null) {
                             if (downloadUrlToStream(data,
@@ -240,7 +237,8 @@ public class ImageFetcher extends ImageResizer {
                     if (fileDescriptor == null && fileInputStream != null) {
                         try {
                             fileInputStream.close();
-                        } catch (IOException e) {}
+                        } catch (IOException e) {
+                        }
                     }
                 }
             }
@@ -254,7 +252,8 @@ public class ImageFetcher extends ImageResizer {
         if (fileInputStream != null) {
             try {
                 fileInputStream.close();
-            } catch (IOException e) {}
+            } catch (IOException e) {
+            }
         }
         return bitmap;
     }
@@ -300,7 +299,8 @@ public class ImageFetcher extends ImageResizer {
                 if (in != null) {
                     in.close();
                 }
-            } catch (final IOException e) {}
+            } catch (final IOException e) {
+            }
         }
         return false;
     }
@@ -320,10 +320,10 @@ public class ImageFetcher extends ImageResizer {
      * Decode and sample down a bitmap from a file input stream to the requested width and height.
      *
      * @param fileDescriptor The file descriptor to read from
-     * @param reqWidth The requested width of the resulting bitmap
-     * @param reqHeight The requested height of the resulting bitmap
+     * @param reqWidth       The requested width of the resulting bitmap
+     * @param reqHeight      The requested height of the resulting bitmap
      * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
-     *         that are equal to or greater than the requested width and height
+     * that are equal to or greater than the requested width and height
      */
     public static Bitmap decodeSampledBitmapFromDescriptor(
             FileDescriptor fileDescriptor, int reqWidth, int reqHeight) {

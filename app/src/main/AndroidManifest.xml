@@ -200,6 +200,7 @@
                 android:name="android.accounts.AccountAuthenticator"
                 android:resource="@xml/authenticator"/>
         </service>
+
         <service android:name=".location.aware.FetchAddressIntentService"/>
         <service android:name=".location.aware.GeofenceTransitionsIntentService"/>
 
@@ -317,8 +318,8 @@
 
         <receiver
             android:name=".performance.BatteryStatusReceiver"
-            android:exported="true"
-            android:enabled="true">
+            android:enabled="true"
+            android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.BATTERY_LOW"/>
                 <action android:name="android.intent.action.BATTERY_OKAY"/>
@@ -327,5 +328,4 @@
             </intent-filter>
         </receiver>
     </application>
-
 </manifest>

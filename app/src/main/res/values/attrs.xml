@@ -38,4 +38,9 @@
         <attr name="pointerRadius" format="dimension"/>
         <attr name="showText" format="boolean"/>
     </declare-styleable>
+    <declare-styleable name="ImageDownloaderView">
+        <!-- The sibling to hide after the image is downloaded
+             and show when the image is being downloaded -->
+        <attr format="reference" name="hideShowSibling"/>
+    </declare-styleable>
 </resources>
