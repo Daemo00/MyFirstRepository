@@ -6,11 +6,9 @@ import android.content.Context;
 import android.content.Intent;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
-import android.os.Build;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.media.session.MediaSessionCompat;
 import android.support.v7.widget.AppCompatSpinner;
 import android.support.v7.widget.SwitchCompat;
@@ -21,9 +19,12 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.multimedia.MultimediaActivity;
+import com.daemo.myfirstapp.common.Constants;
+import com.daemo.myfirstapp.common.Utils;
 
 import java.io.File;
 import java.io.IOException;
@@ -32,96 +33,53 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-public class AudioFragment extends Fragment implements View.OnClickListener {
+public class AudioFragment extends MySuperFragment implements View.OnClickListener, MediaPlayer.OnPreparedListener, AudioManager.OnAudioFocusChangeListener, MediaPlayer.OnErrorListener {
 
-    private MultimediaActivity multimediaActivity;
-    private final static String mediaSessionTag = "TAG";
     private MediaSessionCompat mediaSessionCompat;
-    private View root;
     private Map<String, Integer> streams;
     private MediaPlayer mediaPlayer;
     private Intent mReceivedIntent;
 
-    public AudioFragment() {
-        // Required empty public constructor
-        Log.d(this.getClass().getSimpleName(), "onConstructor");
+    private static AudioFragment inst;
+    private AudioManager audioManager;
+    private MediaSessionCompat.Callback mediaSessionCallback = new MediaSessionCompat.Callback() {
+        @Override
+        public boolean onMediaButtonEvent(Intent mediaButtonEvent) {
+            Log.d(Utils.getTag(this), "onMediaButtonEvent(" + Utils.debugIntent(mediaButtonEvent) + ")");
+            return super.onMediaButtonEvent(mediaButtonEvent);
+        }
+    };
 
+    public static AudioFragment getInstance(Bundle args) {
+        if (inst == null)
+            inst = new AudioFragment();
+        inst.setArguments(args);
+        return inst;
     }
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        Log.d(this.getClass().getSimpleName(), "onCreate");
-        multimediaActivity = (MultimediaActivity) getActivity();
-        mediaPlayer = new MediaPlayer();
-        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
-        mediaPlayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-                mp.start();
-                Log.d(this.getClass().getSimpleName(), "mediaPlayer started");
-                ((TextView) root.findViewById(R.id.btnPlay)).setText(R.string.stop);
-            }
-        });
+        audioManager = (AudioManager) getContext().getSystemService(Context.AUDIO_SERVICE);
+        mediaSessionCompat = setupMediaSession(getContext(), mediaSessionCallback);
+        mediaPlayer = setupMediaPlayer(this, this);
     }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        Log.d(this.getClass().getSimpleName(), "onCreateView");
-
-        mediaSessionCompat = new MediaSessionCompat(multimediaActivity, mediaSessionTag);
-        mediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
-        mediaSessionCompat.setActive(true);
-
-        root = inflater.inflate(R.layout.fragment_audio, container, false);
-
-        AppCompatSpinner spinner = (AppCompatSpinner) root.findViewById(R.id.spinner);
-        spinner.setAdapter(new ArrayAdapter<>(multimediaActivity, android.R.layout.simple_list_item_1, getStreamsList()));
-
-        root.findViewById(R.id.btnFocus).setOnClickListener(this);
-        root.findViewById(R.id.btnStream).setOnClickListener(this);
-        root.findViewById(R.id.btnSelectFile).setOnClickListener(this);
-        root.findViewById(R.id.btnPlay).setOnClickListener(this);
-
-        createAFListener();
-//        MediaPlayer mediaPlayer = MediaPlayer.create(multimediaActivity, R.raw.sound_file_1);
-//        mediaPlayer.start();
-        return root;
+        return inflater.inflate(R.layout.fragment_audio, (ViewGroup) super.onCreateView(inflater, container, savedInstanceState), true);
     }
 
-    AudioManager.OnAudioFocusChangeListener afChangeListener;
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        AppCompatSpinner spinner = (AppCompatSpinner) view.findViewById(R.id.spinner);
+        spinner.setAdapter(new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, getStreamsList()));
 
-    private void createAFListener() {
-        final AudioManager am = (AudioManager) multimediaActivity.getSystemService(Context.AUDIO_SERVICE);
-
-        afChangeListener = new AudioManager.OnAudioFocusChangeListener() {
-            @Override
-            public void onAudioFocusChange(int focusChange) {
-                String focusString = "";
-                switch (focusChange) {
-                    case AudioManager.AUDIOFOCUS_GAIN:
-                        focusString = "Gain";
-                        break;
-                    case AudioManager.AUDIOFOCUS_LOSS:
-                        focusString = "Loss";
-                        break;
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
-                        focusString = "Loss transient";
-                        break;
-                    case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
-                        focusString = "Loss transient can duck";
-                        break;
-                }
-                Log.d(this.getClass().getSimpleName(), "onAudioFocusChange(" + focusString + ")");
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK)
-                        am.adjustVolume(AudioManager.ADJUST_MUTE, AudioManager.FLAG_SHOW_UI);
-                    else if (focusChange == AudioManager.AUDIOFOCUS_GAIN)
-                        am.adjustVolume(AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_SHOW_UI);
-                }
-            }
-        };
+        view.findViewById(R.id.btnToggleFocus).setOnClickListener(this);
+        view.findViewById(R.id.btnStream).setOnClickListener(this);
+        view.findViewById(R.id.btnSelectFile).setOnClickListener(this);
+        view.findViewById(R.id.btnPlay).setOnClickListener(this);
     }
 
     @NonNull
@@ -130,7 +88,7 @@ public class AudioFragment extends Fragment implements View.OnClickListener {
         try {
             Class am = Class.forName(AudioManager.class.getName());
             for (Field f : am.getFields())
-                if (f.getName().toUpperCase().startsWith("STREAM") && f.getType() == int.class)
+                if (f.getName().toUpperCase().startsWith("STREAM_") && f.getType() == int.class)
                     streams.put(f.getName().toUpperCase().replace("STREAM_", ""), f.getInt(null));
 
         } catch (ClassNotFoundException | IllegalAccessException e) {
@@ -140,52 +98,44 @@ public class AudioFragment extends Fragment implements View.OnClickListener {
         return ks.toArray(new String[ks.size()]);
     }
 
+    public static MediaPlayer setupMediaPlayer(MediaPlayer.OnPreparedListener onPreparedListener, MediaPlayer.OnErrorListener onErrorListener) {
+        MediaPlayer mediaPlayer = new MediaPlayer();
+        mediaPlayer.setAudioStreamType(AudioManager.STREAM_MUSIC);
+        mediaPlayer.setOnPreparedListener(onPreparedListener);
+        mediaPlayer.setOnErrorListener(onErrorListener);
+        return mediaPlayer;
+    }
+
+    public static MediaSessionCompat setupMediaSession(Context ctx, MediaSessionCompat.Callback mediaSessionCallback) {
+        MediaSessionCompat mediaSessionCompat = new MediaSessionCompat(ctx, Constants.mediaSessionTag);
+        mediaSessionCompat.setCallback(mediaSessionCallback);
+        mediaSessionCompat.setFlags(MediaSessionCompat.FLAG_HANDLES_MEDIA_BUTTONS | MediaSessionCompat.FLAG_HANDLES_TRANSPORT_CONTROLS);
+        mediaSessionCompat.setActive(true);
+        return mediaSessionCompat;
+    }
+
+    private String getSelectedStream() {
+        if (getView() == null) return "";
+        AppCompatSpinner spinner = (AppCompatSpinner) getView().findViewById(R.id.spinner);
+        return (String) spinner.getSelectedItem();
+    }
+
     private void setStream() {
-        AppCompatSpinner spinner = (AppCompatSpinner) root.findViewById(R.id.spinner);
-        String key = (String) spinner.getSelectedItem();
-        multimediaActivity.setVolumeControlStream(streams.get(key));
-        multimediaActivity.showToast("set stream: " + key);
+        getActivity().setVolumeControlStream(streams.get(getSelectedStream()));
+        getMySuperActivity().showToast("Set stream " + getSelectedStream());
     }
 
-    private void focus() {
-        final AudioManager am = (AudioManager) multimediaActivity.getSystemService(Context.AUDIO_SERVICE);
-
-        // Request audio focus for playback
-
-        int result = am.requestAudioFocus(afChangeListener,
-                // Use the music stream.
-                AudioManager.STREAM_MUSIC,
-                // Request permanent focus.
-                AudioManager.AUDIOFOCUS_GAIN);
-
-        if (result == AudioManager.AUDIOFOCUS_REQUEST_GRANTED) {
-            multimediaActivity.showToast("Audio's focus granted");
-        }
-        // Abandon audio focus when playback complete
-        am.abandonAudioFocus(afChangeListener);
+    private void requestFocus() {
+        // Request audio requestFocus for playback
+        if (audioManager.requestAudioFocus(this, streams.get(getSelectedStream()), AudioManager.AUDIOFOCUS_GAIN)
+                == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+            getMySuperActivity().showToast("Audio requestFocus granted for stream " + getSelectedStream());
     }
 
-    @Override
-    public void onPause() {
-        super.onPause();
-        Log.d(this.getClass().getSimpleName(), "onPause");
-
-    }
-
-    @Override
-    public void onStart() {
-        super.onStart();
-        Log.d(this.getClass().getSimpleName(), "onStart");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        Log.d(this.getClass().getSimpleName(), "onDestroy");
-
-        mediaSessionCompat.release();
-        mediaPlayer.release();
-        mediaPlayer = null;
+    private void abandonFocus() {
+        // Abandon audio requestFocus when playback complete
+        if (audioManager.abandonAudioFocus(this) == AudioManager.AUDIOFOCUS_REQUEST_GRANTED)
+            getMySuperActivity().showToast("Audio requestFocus lost");
     }
 
     @Override
@@ -194,8 +144,12 @@ public class AudioFragment extends Fragment implements View.OnClickListener {
             case R.id.btnStream:
                 setStream();
                 break;
-            case R.id.btnFocus:
-                focus();
+            case R.id.btnToggleFocus:
+                if (((ToggleButton) v).isChecked())
+                    requestFocus();
+                else
+                    abandonFocus();
+                break;
             case R.id.btnSelectFile:
                 startActivityForResult((new Intent(Intent.ACTION_PICK)).setType("*/*"), 0);
                 break;
@@ -207,57 +161,105 @@ public class AudioFragment extends Fragment implements View.OnClickListener {
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(this.getClass().getSimpleName(), "onActivityResult");
+        super.onActivityResult(requestCode, resultCode, data);
+        Log.d(Utils.getTag(this), "onActivityResult");
 
         if (resultCode == Activity.RESULT_CANCELED) return;
         mReceivedIntent = data;
 
         try {
-            mediaPlayer.setDataSource(multimediaActivity, data.getData());
+            mediaPlayer.setDataSource(getContext(), data.getData());
         } catch (IOException e) {
             File myFile = new File(data.getData().getPath());
 
-            Log.e(this.getClass().getSimpleName(), "Uri is: " + data.getData().toString());
-            Log.e(this.getClass().getSimpleName(), "Absolute path is: " + myFile.getAbsolutePath());
+            Log.e(Utils.getTag(this), "Uri is: " + data.getData().toString());
+            Log.e(Utils.getTag(this), "Absolute path is: " + myFile.getAbsolutePath());
             e.printStackTrace();
         }
-
-        ((TextView) root.findViewById(R.id.tvSelectedURI)).setText(data.getData().toString());
-        ((TextView) root.findViewById(R.id.btnPlay)).setText(R.string.play);
+        if (getView() == null) return;
+        ((TextView) getView().findViewById(R.id.tvSelectedURI)).setText(data.getData().getLastPathSegment());
+        ((TextView) getView().findViewById(R.id.btnPlay)).setText(R.string.play);
     }
 
     public void play() {
-
-
-        boolean isService = ((SwitchCompat) root.findViewById(R.id.switchService)).isChecked();
+        if (getView() == null) return;
+        boolean isService = ((SwitchCompat) getView().findViewById(R.id.switchService)).isChecked();
 
         if (mediaPlayer.isPlaying() ||
-                (MyService.getInstance() != null &&
-                        MyService.getInstance().getMediaPlayer() != null &&
-                        MyService.getInstance().getMediaPlayer().isPlaying())) {
-            root.findViewById(R.id.switchService).setClickable(true);
+                (MyMediaService.getInstance() != null &&
+                        MyMediaService.getInstance().getMediaPlayer() != null &&
+                        MyMediaService.getInstance().getMediaPlayer().isPlaying())) {
+            getView().findViewById(R.id.switchService).setClickable(true);
             if (isService) {
-                Intent i = new Intent(multimediaActivity, MyService.class);
-                i.setAction(MyService.ACTION_STOP);
-                multimediaActivity.startService(i);
+                Intent i = new Intent(getContext(), MyMediaService.class);
+                i.setAction(Constants.ACTION_STOP);
+                getContext().startService(i);
             } else
                 mediaPlayer.stop();
-            ((TextView) root.findViewById(R.id.btnPlay)).setText(R.string.play);
+            ((TextView) getView().findViewById(R.id.btnPlay)).setText(R.string.play);
         } else {
-            if (TextUtils.isEmpty(((TextView) root.findViewById(R.id.tvSelectedURI)).getText())) {
-                multimediaActivity.showToast("Select a file");
+            if (TextUtils.isEmpty(((TextView) getView().findViewById(R.id.tvSelectedURI)).getText())) {
+                getMySuperActivity().showToast("Select a file");
                 return;
             }
 
-            root.findViewById(R.id.switchService).setClickable(false);
+            getView().findViewById(R.id.switchService).setClickable(false);
             if (isService) {
-                Intent i = new Intent(multimediaActivity, MyService.class);
-                i.setAction(MyService.ACTION_PLAY);
+                Intent i = new Intent(getContext(), MyMediaService.class);
+                i.setAction(Constants.ACTION_PLAY);
                 i.setData(mReceivedIntent.getData());
-                multimediaActivity.startService(i);
+                getContext().startService(i);
             } else {
                 mediaPlayer.prepareAsync();
             }
         }
+    }
+
+    @Override
+    public void onPrepared(MediaPlayer mp) {
+        mp.start();
+        Log.d(Utils.getTag(this), "mediaPlayer started");
+        if (getView() == null) return;
+        ((TextView) getView().findViewById(R.id.btnPlay)).setText(R.string.stop);
+    }
+
+    @Override
+    public void onAudioFocusChange(int focusChange) {
+        String focusString = "";
+        switch (focusChange) {
+            case AudioManager.AUDIOFOCUS_GAIN:
+                focusString = "Gain";
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS:
+                focusString = "Loss";
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT:
+                focusString = "Loss transient";
+                break;
+            case AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK:
+                focusString = "Loss transient can duck";
+                break;
+        }
+        Log.d(Utils.getTag(this), "onAudioFocusChange(" + focusString + ")");
+        if (Utils.hasMarshmallow()) {
+            if (focusChange == AudioManager.AUDIOFOCUS_LOSS_TRANSIENT_CAN_DUCK)
+                audioManager.adjustVolume(AudioManager.ADJUST_MUTE, AudioManager.FLAG_SHOW_UI);
+            else if (focusChange == AudioManager.AUDIOFOCUS_GAIN)
+                audioManager.adjustVolume(AudioManager.ADJUST_UNMUTE, AudioManager.FLAG_SHOW_UI);
+        }
+    }
+
+    @Override
+    public boolean onError(MediaPlayer mp, int what, int extra) {
+        Log.e(this.getClass().getSimpleName(), "onError(" + mp.toString() + ", " + what + ", " + extra + ")");
+        return false;
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mediaSessionCompat.release();
+        mediaPlayer.release();
+        mediaPlayer = null;
     }
 }

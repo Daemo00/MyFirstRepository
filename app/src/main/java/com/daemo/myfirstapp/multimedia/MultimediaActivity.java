@@ -1,57 +1,27 @@
 package com.daemo.myfirstapp.multimedia;
 
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.SectionsPagerAdapter;
 import com.daemo.myfirstapp.multimedia.audio.AudioFragment;
 import com.daemo.myfirstapp.multimedia.video.VideoFragment;
 
 public class MultimediaActivity extends MySuperActivity {
 
-    private ViewPager mViewPager;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_multimedia);
 
-        mViewPager = (ViewPager) findViewById(R.id.pager);
-        mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_multimedia;
-    }
-
-    private class MyFragmentPagerAdapter extends FragmentPagerAdapter {
-
-        Fragment[] fragments = new Fragment[]{
-                new AudioFragment(),
-                VideoFragment.newInstance()
-        };
-
-        MyFragmentPagerAdapter(FragmentManager fm) {
-            super(fm);
-        }
-
-        @Override
-        public CharSequence getPageTitle(int position) {
-            return fragments[position].getClass().getSimpleName();
-        }
-
-        @Override
-        public Fragment getItem(int position) {
-            return fragments[position];
-        }
-
-        @Override
-        public int getCount() {
-            return fragments.length;
-        }
+        ViewPager mViewPager = (ViewPager) findViewById(R.id.pager);
+//        mViewPager.setAdapter(new MyFragmentPagerAdapter(getSupportFragmentManager()));
+        SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP)
+            sectionsPagerAdapter.setFrags(new AudioFragment(), VideoFragment.getInstance());
+        mViewPager.setAdapter(sectionsPagerAdapter);
     }
 }
