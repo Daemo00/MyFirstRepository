@@ -4,9 +4,9 @@ package com.daemo.myfirstapp.location.aware;
 import android.Manifest;
 import android.app.Activity;
 import android.app.PendingIntent;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentSender;
-import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.location.Geocoder;
 import android.location.Location;
@@ -16,14 +16,14 @@ import android.preference.PreferenceManager;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
 import android.support.v4.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.TextView;
+import android.widget.ToggleButton;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.MySuperFragment;
@@ -55,57 +55,24 @@ import java.util.List;
 import java.util.Map;
 
 import static com.daemo.myfirstapp.common.Constants.Location.KEY_REQUEST_GEOFENCE_INTENT;
-import static com.daemo.myfirstapp.common.Constants.Location.REQUEST_CHECK_SETTINGS;
+import static com.daemo.myfirstapp.common.Constants.Location.REQUEST_CODE_CHECK_SETTINGS;
 import static com.daemo.myfirstapp.common.Constants.Location.REQUEST_CONNECTION;
 import static com.daemo.myfirstapp.common.Constants.Location.REQUEST_GEOFENCES;
 import static com.daemo.myfirstapp.common.Constants.Location.REQUEST_LAST_LOCATION;
 import static com.daemo.myfirstapp.common.Constants.Location.REQUEST_LOCATION_UPDATES;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class AwarenessFragment extends MySuperFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener, LocationListener {
-
+public class AwarenessFragment extends MySuperFragment implements GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener, View.OnClickListener, LocationListener, CompoundButton.OnCheckedChangeListener {
 
     private static final String KEY_BOOL_IS_UPDATING = "isUpdating";
     private static final String KEY_STRING_LAST_TIMESTAMP = "lastUpdateString";
     private static final String KEY_LOCATION_LAST = "location";
+    private static final String KEY_BOOL_IS_GEOFENCE_ADDED = "isGeofenceEnabled";
+    protected Location mLastLocation;
     private GoogleApiClient mGoogleApiClient;
     private TextView mLatitudeText;
     private TextView mLongitudeText;
-    private TextView mLastUpdate;
+    private TextView mLastUpdateText;
     private boolean isUpdating;
-    private String mLastUpdateString;
-    private String mAddressOutput;
-    private boolean mAddressRequested;
-    private TextView mAddressText;
-    private PendingIntent mGeofencePendingIntent;
-    private final ResultCallback<Status> mGeoFenceResultCallback = new ResultCallback<Status>() {
-        @Override
-        public void onResult(@NonNull Status status) {
-            if (status.isSuccess()) {
-                // Update state and save in shared preferences.
-                mGeofencesAdded = !mGeofencesAdded;
-                SharedPreferences.Editor editor = mSharedPreferences.edit();
-                editor.putBoolean(getResources().getString(R.string.settings_location_enable_geofences), mGeofencesAdded);
-                editor.apply();
-
-                // Update the UI.
-                // Adding geofences enables the Remove Geofences button, and removing geofences enables the Add Geofences button.
-                setButtonsEnabledState();
-
-                getMySuperActivity().showToast(getString(mGeofencesAdded ? R.string.geofences_added :
-                        R.string.geofences_removed));
-            } else {
-                Log.e(Utils.getTag(this), Constants.Location.getErrorString(getContext(), status.getStatusCode()));
-            }
-        }
-    };
-    private boolean mGeofencesAdded;
-    private Button mAddGeofencesButton;
-    private Button mRemoveGeofencesButton;
-    private SharedPreferences mSharedPreferences;
-    private Bundle mConnectionHint;
     private final ResultCallback<LocationSettingsResult> mLocationSettingsResult = new ResultCallback<LocationSettingsResult>() {
         @Override
         public void onResult(@NonNull LocationSettingsResult locationSettingsResult) {
@@ -116,16 +83,14 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
                 case LocationSettingsStatusCodes.SUCCESS:
                     // All location settings are satisfied.
                     // The client can initialize location requests here.
-                    getMySuperActivity().showToast("Location settings result is success");
-                    // getLastLocation();
-                    startLocationUpdates();
+                    getMySuperActivity().showToast("Result is success");
                     break;
                 case LocationSettingsStatusCodes.RESOLUTION_REQUIRED:
                     getMySuperActivity().showToast("Result is resolution required");
                     // Location settings are not satisfied, but this can be fixed by showing the user a dialog.
                     try {
                         // Show the dialog by calling startResolutionForResult(), and check the result in onActivityResult().
-                        status.startResolutionForResult(getActivity(), REQUEST_CHECK_SETTINGS);
+                        status.startResolutionForResult(getActivity(), REQUEST_CODE_CHECK_SETTINGS);
                     } catch (IntentSender.SendIntentException e) {
                         // Log the error.
                         e.printStackTrace();
@@ -136,36 +101,87 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
                     // Location settings are not satisfied.
                     // However, we have no way to fix the settings so we won't show the dialog.
                     break;
+                default:
+                    getMySuperActivity().showToast("Result is " + status.getStatusCode());
             }
         }
-
     };
+    private String mLastUpdateString;
+    private String mAddressOutput;
+    private boolean mAddressRequested;
+    private TextView mAddressText;
+    private PendingIntent mGeofencePendingIntent;
+    private ToggleButton mToggleGeofencesButton;
+    private ToggleButton mToggleConnectGoogleApiClient;
+    private ToggleButton mToggleLocationUpdates;
 
-    private void setButtonsEnabledState() {
-        mAddGeofencesButton.setEnabled(!mGeofencesAdded);
-        mRemoveGeofencesButton.setEnabled(mGeofencesAdded);
+    public boolean isGeofenceEnabled() {
+        return PreferenceManager.getDefaultSharedPreferences(getContext()).getBoolean(getResources().getString(R.string.settings_location_enable_geofences), false);
     }
 
-    public AwarenessFragment() {
-        // Required empty public constructor
+    public void enableGeofenceValue(boolean mGeofenceAdded) {
+        PreferenceManager.getDefaultSharedPreferences(getContext()).edit()
+                .putBoolean(getResources().getString(R.string.settings_location_enable_geofences), mGeofenceAdded)
+                .apply();
     }
+
+    private final ResultCallback<Status> mGeoFenceResultCallback = new ResultCallback<Status>() {
+        @Override
+        public void onResult(@NonNull Status status) {
+            if (status.isSuccess()) {
+                // Update state and save in shared preferences.
+                // Update the UI.
+                // Adding geofences enables the Remove Geofences button, and removing geofences enables the Add Geofences button.
+                updateUIWidgets(false);
+
+                getMySuperActivity().showToast(getString(isGeofenceEnabled() ? R.string.geofences_added :
+                        R.string.geofences_removed));
+            } else {
+                Log.e(Utils.getTag(this), Constants.Location.getErrorString(getContext(), status.getStatusCode()));
+            }
+        }
+    };
+    private Bundle mConnectionHint;
+    private AddressResultReceiver mResultReceiver;
 
     @Override
     public void onCreate(@Nullable Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        // Create an instance of GoogleAPIClient.
-
         updateValuesFromBundle(savedInstanceState);
+
         mResultReceiver = new AddressResultReceiver(new Handler());
 
-        mGeofencePendingIntent = null;
-        mSharedPreferences = PreferenceManager.getDefaultSharedPreferences(getContext());
-//                getContext().getSharedPreferences(Constants.SHARED_PREFERENCES_NAME, MODE_PRIVATE);
-
-        mGeofencesAdded = mSharedPreferences.getBoolean(getResources().getString(R.string.settings_location_enable_geofences), false);
-//                mSharedPreferences.getBoolean(Constants.GEOFENCES_ADDED_KEY, false);
-
         buildGoogleApiClient();
+    }
+
+    @Override
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        ViewGroup viewGroup = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_awareness, viewGroup, true);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mLatitudeText = (TextView) view.findViewById(R.id.tv_latitude);
+        mLongitudeText = (TextView) view.findViewById(R.id.tv_longitude);
+        mLastUpdateText = (TextView) view.findViewById(R.id.tv_last_update);
+        mAddressText = (TextView) view.findViewById(R.id.tv_address);
+
+        // Get the UI buttons.
+        mToggleGeofencesButton = (ToggleButton) view.findViewById(R.id.toggle_geofences_button);
+        mToggleConnectGoogleApiClient = (ToggleButton) view.findViewById(R.id.toggle_connect_googleapiclient);
+        mToggleLocationUpdates = (ToggleButton) view.findViewById(R.id.toggle_location_updates);
+        mToggleGeofencesButton.setOnCheckedChangeListener(this);
+        mToggleConnectGoogleApiClient.setOnCheckedChangeListener(this);
+        mToggleLocationUpdates.setOnCheckedChangeListener(this);
+
+        view.findViewById(R.id.clear_btn).setOnClickListener(this);
+        view.findViewById(R.id.btn_get_curr_location_sett).setOnClickListener(this);
+        view.findViewById(R.id.btn_get_last_location).setOnClickListener(this);
+        view.findViewById(R.id.address_btn).setOnClickListener(this);
+        updateUIWidgets(false);
     }
 
     public List<Geofence> getGeofenceList() {
@@ -217,67 +233,15 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
             // Update the value of mLastUpdateTime from the Bundle and update the UI.
             if (savedInstanceState.keySet().contains(KEY_STRING_LAST_TIMESTAMP))
                 mLastUpdateString = savedInstanceState.getString(KEY_STRING_LAST_TIMESTAMP);
+
+            if (savedInstanceState.keySet().contains(KEY_BOOL_IS_GEOFENCE_ADDED))
+                enableGeofenceValue(savedInstanceState.getBoolean(KEY_BOOL_IS_GEOFENCE_ADDED));
         }
     }
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        container = (ViewGroup) super.onCreateView(inflater, container, savedInstanceState);
-        // Inflate the layout for this fragment
-        View root = inflater.inflate(R.layout.fragment_awareness, container, true);
-
-        mLatitudeText = (TextView) root.findViewById(R.id.tv_latitude);
-        mLongitudeText = (TextView) root.findViewById(R.id.tv_longitude);
-        mLastUpdate = (TextView) root.findViewById(R.id.tv_last_update);
-        mAddressText = (TextView) root.findViewById(R.id.tv_address);
-
-        // Get the UI buttons.
-        mAddGeofencesButton = (Button) root.findViewById(R.id.enable_geofences_button);
-        mRemoveGeofencesButton = (Button) root.findViewById(R.id.disable_geofences_button);
-        mAddGeofencesButton.setOnClickListener(this);
-        mRemoveGeofencesButton.setOnClickListener(this);
-
-        root.findViewById(R.id.clear_btn).setOnClickListener(this);
-        root.findViewById(R.id.btn_get_curr_location_sett).setOnClickListener(this);
-        root.findViewById(R.id.address_btn).setOnClickListener(this);
-
-        setButtonsEnabledState();
-        return root;
-    }
-
-    @Override
     public void onStart() {
-        mGoogleApiClient.connect();
         super.onStart();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        if (isUpdating)
-            stopLocationUpdates();
-    }
-
-
-    protected synchronized void buildGoogleApiClient() {
-        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(LocationServices.API)
-                .build();
-    }
-
-    public void onSaveInstanceState(Bundle savedInstanceState) {
-        savedInstanceState.putBoolean(KEY_BOOL_IS_UPDATING, isUpdating);
-        savedInstanceState.putParcelable(KEY_LOCATION_LAST, mLastLocation);
-        savedInstanceState.putString(KEY_STRING_LAST_TIMESTAMP, mLastUpdateString);
-        super.onSaveInstanceState(savedInstanceState);
-    }
-
-    protected void stopLocationUpdates() {
-        LocationServices.FusedLocationApi.removeLocationUpdates(
-                mGoogleApiClient, this);
     }
 
     @Override
@@ -287,10 +251,46 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
             startLocationUpdates();
     }
 
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (isUpdating)
+            stopLocationUpdates();
+    }
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        savedInstanceState.putBoolean(KEY_BOOL_IS_UPDATING, isUpdating);
+        savedInstanceState.putParcelable(KEY_LOCATION_LAST, mLastLocation);
+        savedInstanceState.putString(KEY_STRING_LAST_TIMESTAMP, mLastUpdateString);
+        savedInstanceState.putBoolean(KEY_BOOL_IS_GEOFENCE_ADDED, isGeofenceEnabled());
+        super.onSaveInstanceState(savedInstanceState);
+    }
+
+    @Override
+    public void onStop() {
+        if (mGoogleApiClient.isConnecting() || mGoogleApiClient.isConnected())
+            mGoogleApiClient.disconnect();
+        super.onStop();
+    }
+
+    protected synchronized void buildGoogleApiClient() {
+        mGoogleApiClient = new GoogleApiClient.Builder(getContext())
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this)
+                .addApi(LocationServices.API)
+                .build();
+    }
+
+    protected void stopLocationUpdates() {
+        if (mGoogleApiClient.isConnected())
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        else getMySuperActivity().showToast(getString(R.string.googleapi_not_connected));
+    }
+
     private void getCurrentLocationSettings() {
 
-        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder()
-                .addLocationRequest(createLocationRequest());
+        LocationSettingsRequest.Builder builder = new LocationSettingsRequest.Builder().addLocationRequest(createLocationRequest());
 
         PendingResult<LocationSettingsResult> result = LocationServices.SettingsApi.checkLocationSettings(mGoogleApiClient, builder.build());
 
@@ -298,16 +298,9 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
     }
 
     @Override
-    public void onStop() {
-        mGoogleApiClient.disconnect();
-        super.onStop();
-    }
-
-    @Override
     public void onConnected(Bundle connectionHint) {
-        getMySuperActivity().showToast("Connected");
-        mConnectionHint = connectionHint;
-        mLastLocation = getLastLocation(REQUEST_CONNECTION);
+        getMySuperActivity().showToast("GoogleApiClient Connected");
+        Log.d(Utils.getTag(this), "onConnected(" + Utils.debugBundle(connectionHint) + ")");
 
         if (mLastLocation != null) {
             // Determine whether a Geocoder is available.
@@ -316,35 +309,46 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
                 return;
             }
 
-            if (mAddressRequested) {
-                startLocationIntentService();
-            }
+            if (mAddressRequested) startLocationIntentService();
         }
     }
 
-    private Location getLastLocation(int requestCode) {
+    private void getLastLocation(int requestCode) {
         // Gets the best and most recent location currently available, which may be null in rare cases when a location is not available.
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             getMySuperActivity().checkPermissionsRunTime(requestCode, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
-            return null;
+            return;
         }
 
-        mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
-        if (mLastLocation != null) {
-            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+        if (mGoogleApiClient.isConnected()) {
+            mLastLocation = LocationServices.FusedLocationApi.getLastLocation(mGoogleApiClient);
+            updateUIWidgets(true);
+        } else {
+            getMySuperActivity().showOkDialog("Warning", "Connect GoogleApiClient before requesting location", null);
         }
-        return mLastLocation;
     }
 
     @Override
     public void onConnectionSuspended(int i) {
-
+//        CAUSE_SERVICE_DISCONNECTED = 1;
+//        CAUSE_NETWORK_LOST = 2;
+        String msg = "Connection suspended: ";
+        switch (i) {
+            case 1:
+                msg += "Service disconnected";
+                break;
+            case 2:
+                msg += "Network lost";
+                break;
+            default:
+                msg += i;
+        }
+        getMySuperActivity().showToast(msg);
     }
 
     @Override
     public void onConnectionFailed(@NonNull ConnectionResult connectionResult) {
-
+        getMySuperActivity().showToast("Connection failed: " + connectionResult.getErrorMessage());
     }
 
     protected LocationRequest createLocationRequest() {
@@ -360,17 +364,26 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
             getMySuperActivity().checkPermissionsRunTime(REQUEST_LOCATION_UPDATES, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION);
             return;
         }
-        if (mGoogleApiClient.isConnected() && !isUpdating) {
-            LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, createLocationRequest(), this);
-            isUpdating = true;
+        if (mGoogleApiClient.isConnected()) {
+            if (!isUpdating) {
+                LocationServices.FusedLocationApi.requestLocationUpdates(mGoogleApiClient, createLocationRequest(), this);
+                isUpdating = true;
+            }
+        } else {
+            getMySuperActivity().showOkDialog("Warning", "Connect GoogleApiClient before starting location updates", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mToggleLocationUpdates.setChecked(false);
+                }
+            });
         }
     }
 
     @Override
-    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions,
+                                           @NonNull int[] grantResults) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults);
-        Log.d(Utils.getTag(this), String.valueOf(requestCode));
-
+        // Do nothing if something has been denied
         for (int grantResult : grantResults)
             if (grantResult != PackageManager.PERMISSION_GRANTED)
                 return;
@@ -392,12 +405,11 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
         }
     }
 
-
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         switch (requestCode) {
-            case REQUEST_CHECK_SETTINGS:
+            case REQUEST_CODE_CHECK_SETTINGS:
                 LocationSettingsStates states = LocationSettingsStates.fromIntent(data);
                 debugLocationSettingsStates(states);
                 switch (resultCode) {
@@ -439,34 +451,25 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
                 mLatitudeText.setText(null);
                 mLongitudeText.setText(null);
                 mAddressText.setText(null);
-                mLastUpdate.setText(null);
+                mLastUpdateText.setText(null);
                 break;
             case R.id.btn_get_curr_location_sett:
                 getCurrentLocationSettings();
                 break;
             case R.id.address_btn:
-                getLastLocation(REQUEST_LAST_LOCATION);
                 fetchAddressButtonHandler();
                 break;
-            case R.id.enable_geofences_button:
-                enableGeoFences();
-                break;
-            case R.id.disable_geofences_button:
-                disableGeoFences();
+            case R.id.btn_get_last_location:
+                getLastLocation(REQUEST_LAST_LOCATION);
                 break;
         }
     }
 
     @Override
     public void onLocationChanged(Location location) {
-        if (location != null) {
-            mLastLocation = location;
-        }
-        updateUIWidgets();
+        if (location != null) mLastLocation = location;
+        updateUIWidgets(true);
     }
-
-    protected Location mLastLocation;
-    private AddressResultReceiver mResultReceiver;
 
     protected void startLocationIntentService() {
         Intent intent = new Intent(getContext(), FetchAddressIntentService.class);
@@ -475,32 +478,9 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
         getContext().startService(intent);
     }
 
-    class AddressResultReceiver extends ResultReceiver {
-
-        AddressResultReceiver(Handler handler) {
-            super(handler);
-        }
-
-        @Override
-        protected void onReceiveResult(int resultCode, Bundle resultData) {
-
-            // Display the address string or an error message sent from the intent service.
-            mAddressOutput = resultData.getString(Constants.Location.KEY_RESULT_DATA);
-            switch (resultCode) {
-                case Activity.RESULT_OK:
-                    getMySuperActivity().showToast(getString(R.string.address_found));
-                    break;
-                case Activity.RESULT_CANCELED:
-                    getMySuperActivity().showToast(getString(R.string.no_address_found));
-                    break;
-            }
-            updateUIWidgets();
-        }
-    }
-
     public void fetchAddressButtonHandler() {
         // Only start the service to fetch the address if GoogleApiClient is connected.
-        if (mGoogleApiClient.isConnected() && mLastLocation != null) {
+        if (mGoogleApiClient.isConnected()) {
             startLocationIntentService();
             return;
         }
@@ -508,14 +488,26 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
         // Later, when GoogleApiClient connects, launch the service to fetch the address.
         // As far as the user is concerned, pressing the Fetch Address button immediately kicks off the process of getting the address.
         mAddressRequested = true;
-        updateUIWidgets();
+        updateUIWidgets(false);
     }
 
-    void updateUIWidgets() {
-        mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
-        mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
-        mLastUpdate.setText(mLastUpdateString == null ? SimpleDateFormat.getDateTimeInstance().format(new Date()) : mLastUpdateString);
-        mAddressText.setText(mAddressOutput);
+    void updateUIWidgets(boolean newLocationProvided) {
+        if (!newLocationProvided) {
+            mToggleConnectGoogleApiClient.setChecked(mGoogleApiClient.isConnected());
+            mToggleGeofencesButton.setChecked(isGeofenceEnabled());
+            return;
+        }
+
+        if (mLastLocation != null) {
+            mLatitudeText.setText(String.valueOf(mLastLocation.getLatitude()));
+            mLongitudeText.setText(String.valueOf(mLastLocation.getLongitude()));
+            mLastUpdateString = SimpleDateFormat.getDateTimeInstance().format(new Date());
+            mLastUpdateText.setText(mLastUpdateString);
+            mAddressText.setText(mAddressOutput);
+        } else {
+            Log.d(Utils.getTag(this), "Location is null");
+            mAddressText.setText(R.string.location_is_null);
+        }
     }
 
     private GeofencingRequest getGeofencingRequest() {
@@ -542,18 +534,73 @@ public class AwarenessFragment extends MySuperFragment implements GoogleApiClien
             ((MySuperActivity) getActivity()).checkPermissionsRunTime(REQUEST_GEOFENCES, Manifest.permission.ACCESS_FINE_LOCATION);
             return;
         }
-        LocationServices.GeofencingApi.addGeofences(
-                mGoogleApiClient,
-                getGeofencingRequest(),
-                getGeofencePendingIntent()
-        ).setResultCallback(mGeoFenceResultCallback);
+
+        if (mGoogleApiClient.isConnected())
+            LocationServices.GeofencingApi.addGeofences(
+                    mGoogleApiClient,
+                    getGeofencingRequest(),
+                    getGeofencePendingIntent()
+            ).setResultCallback(mGeoFenceResultCallback);
+        else {
+            getMySuperActivity().showOkDialog("Warning", "Connect GoogleApiClient before enabling geofences", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    mToggleGeofencesButton.setChecked(false);
+                }
+            });
+        }
     }
 
     private void disableGeoFences() {
-        LocationServices.GeofencingApi.removeGeofences(
-                mGoogleApiClient,
-                // This is the same pending intent that was used in addGeofences().
-                getGeofencePendingIntent()
-        ).setResultCallback(mGeoFenceResultCallback); // Result processed in onResult().
+        if (mGoogleApiClient.isConnected())
+            LocationServices.GeofencingApi.removeGeofences(
+                    mGoogleApiClient,
+                    // This is the same pending intent that was used in addGeofences().
+                    getGeofencePendingIntent()
+            ).setResultCallback(mGeoFenceResultCallback); // Result processed in onResult().
+        else getMySuperActivity().showToast(getString(R.string.googleapi_not_connected));
+    }
+
+    @Override
+    public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+        switch (buttonView.getId()) {
+            case R.id.toggle_connect_googleapiclient:
+                if (isChecked) mGoogleApiClient.connect();
+                else mGoogleApiClient.disconnect();
+                break;
+            case R.id.toggle_geofences_button:
+                enableGeofenceValue(isChecked);
+                if (isChecked) enableGeoFences();
+                else disableGeoFences();
+                break;
+            case R.id.toggle_location_updates:
+                if (isChecked) startLocationUpdates();
+                else stopLocationUpdates();
+                break;
+        }
+    }
+
+    private class AddressResultReceiver extends ResultReceiver {
+
+        AddressResultReceiver(Handler handler) {
+            super(handler);
+        }
+
+        @Override
+        protected void onReceiveResult(int resultCode, Bundle resultData) {
+            if (resultData == null || !resultData.containsKey(Constants.Location.KEY_RESULT_DATA))
+                return;
+            // Display the address string or an error message sent from the intent service.
+            mAddressOutput = resultData.getString(Constants.Location.KEY_RESULT_DATA);
+            switch (resultCode) {
+                case Activity.RESULT_OK:
+                    getMySuperActivity().showToast(getString(R.string.address_found));
+                    break;
+                case Activity.RESULT_CANCELED:
+                    getMySuperActivity().showToast(getString(R.string.no_address_found));
+                    break;
+            }
+            updateUIWidgets(true);
+        }
     }
 }

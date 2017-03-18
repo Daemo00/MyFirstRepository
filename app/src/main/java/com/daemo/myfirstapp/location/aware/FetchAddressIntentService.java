@@ -37,8 +37,12 @@ public class FetchAddressIntentService extends IntentService {
         Location location = intent.getParcelableExtra(Constants.Location.LOCATION_DATA_EXTRA);
         mReceiver = intent.getParcelableExtra(Constants.Location.RECEIVER);
 
-        List<Address> addresses = null;
+        if (location == null) {
+            deliverResultToReceiver(Activity.RESULT_CANCELED, "Location not provided");
+            return;
+        }
 
+        List<Address> addresses = null;
         try {
             addresses = new Geocoder(this, Locale.getDefault())
                     .getFromLocation(
@@ -47,6 +51,7 @@ public class FetchAddressIntentService extends IntentService {
                             // In this sample, get just a single address.
                             1);
         } catch (IOException ioException) {
+            ioException.printStackTrace();
             // Catch network or other I/O problems.
             errorMessage = getString(R.string.service_not_available);
             Log.e(Utils.getTag(this), errorMessage, ioException);

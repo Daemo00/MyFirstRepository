@@ -1,20 +1,19 @@
 package com.daemo.myfirstapp.location;
 
 import android.Manifest;
-import android.annotation.SuppressLint;
+import android.app.AppOpsManager;
 import android.content.Context;
 import android.content.pm.PackageManager;
-import android.location.Location;
 import android.location.LocationManager;
 import android.location.LocationProvider;
+import android.os.Build;
 import android.os.Bundle;
+import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.Fragment;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.ListViewCompat;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -25,28 +24,27 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.BuildConfig;
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Timer;
 import java.util.TimerTask;
 
-public class ProviderDetailsFragment extends Fragment implements View.OnClickListener, AdapterView.OnItemClickListener {
+public class ProviderDetailsFragment extends MySuperFragment implements View.OnClickListener, AdapterView.OnItemClickListener {
     static final String PROVIDER = "PROVIDER";
 
     private String mLocationProvider;
     private MockLocationProvider mock;
     private Timer t;
     private LocationManager locationManager;
-    private ArrayList<TitleDescription> listItems = new ArrayList<>();
-    private ArrayAdapter adapter;
-    private View root;
-    private TimerTask timerTask;
+    private ArrayAdapter<TitleDescription> adapter;
     private MyLocationListener locationListener;
-    private LocationActivity locationActivity;
 
     public ProviderDetailsFragment() {
     }
@@ -63,84 +61,81 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) mLocationProvider = getArguments().getString(PROVIDER);
+        setTitle(mLocationProvider);
         mock = new MockLocationProvider(mLocationProvider, (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE));
         locationListener = new MyLocationListener(this, mLocationProvider);
     }
 
-    @SuppressWarnings("MissingPermission")
-    @Override
-    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
-        super.onActivityCreated(savedInstanceState);
-        locationActivity = (LocationActivity) getActivity();
-        List<String> missing_permissions = missingPermissions();
-        if (!missing_permissions.isEmpty()) {
-            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions));
-            return;
-        }
-        getLocationManager().requestLocationUpdates(mLocationProvider, 1000, 1, locationListener);
-        Location lastKnown = getLocationManager().getLastKnownLocation(mLocationProvider);
-        if (lastKnown != null)
-            addRow("Last known location is: (" + lastKnown.getLatitude() + ", " + lastKnown.getLongitude() + ")",
-                    MyLocationListener.locationDetails(mLocationProvider, lastKnown));
-        else
-            addRow("Last known location is null");
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        root = inflater.inflate(R.layout.fragment_provider_details, container, false);
+        View root = inflater.inflate(R.layout.fragment_provider_details, container, false);
 
         root.findViewById(R.id.btnMock).setOnClickListener(this);
         root.findViewById(R.id.btnDetails).setOnClickListener(this);
         ((ListView) root.findViewById(R.id.listView)).setOnItemClickListener(this);
 
-        //noinspection unchecked
-        adapter = new ArrayAdapter(getActivity(), R.layout.my_two_line_listitem, listItems) {
-            @SuppressLint("SimpleDateFormat")
+        adapter = new ArrayAdapter<TitleDescription>(getActivity(), R.layout.my_two_line_listitem, new ArrayList<TitleDescription>()) {
+            @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
-                Log.d(this.getClass().getSimpleName(), "getView(" + position + ", " + convertView + ", " + parent + ")");
-                if (convertView == null) {
-                    // inflate layout
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
+                if (convertView == null)
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.my_two_line_listitem, parent, false);
-                }
+
+                TitleDescription titleDescription = getItem(position);
+                if (titleDescription == null) return convertView;
 
                 TextView tvTitle = (TextView) convertView.findViewById(android.R.id.text1);
-                if (tvTitle != null) tvTitle.setText(listItems.get(position).title);
+                if (tvTitle != null) tvTitle.setText(titleDescription.title);
                 TextView tvSubTitle = (TextView) convertView.findViewById(android.R.id.text2);
                 if (tvSubTitle != null)
-                    tvSubTitle.setText(new SimpleDateFormat("[HH:mm:ss.SSS]").format(new Date()));
+                    tvSubTitle.setText(new SimpleDateFormat("[HH:mm:ss.SSS]", Locale.getDefault()).format(new Date()));
 
                 return convertView;
             }
         };
 
-        ((ListViewCompat) root.findViewById(R.id.listView))
-                .setAdapter(adapter);
+        adapter.setNotifyOnChange(true);
+        ((ListViewCompat) root.findViewById(R.id.listView)).setAdapter(adapter);
         return root;
     }
 
+    @Override
+    public void onActivityCreated(@Nullable Bundle savedInstanceState) {
+        super.onActivityCreated(savedInstanceState);
+//        getLocationManager().requestLocationUpdates(mLocationProvider, 1000, 1, locationListener);
+//        if (ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED && ActivityCompat.checkSelfPermission(getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+//            getMySuperActivity().checkPermissionsRunTime(Constants.REQUEST_CODE_LOCATION);
+//            return;
+//        }
+//        Location lastKnown = getLocationManager().getLastKnownLocation(mLocationProvider);
+//        if (lastKnown != null)
+//            addRow("Last known location is: (" + lastKnown.getLatitude() + ", " + lastKnown.getLongitude() + ")",
+//                    MyLocationListener.locationDetails(mLocationProvider, lastKnown));
+//        else
+//            addRow("Last known location is null");
+    }
+
     public void onMockButtonPressed() {
-        Button btnMock = (Button) root.findViewById(R.id.btnMock);
+        Button btnMock = (Button) getView().findViewById(R.id.btnMock);
         if (btnMock == null) return;
 
         if (mock.isEnabled) {
-            if (stopMocking()) btnMock.setText("Start");
+            if (stopMocking()) btnMock.setText(R.string.start);
         } else {
-            if (startMocking()) btnMock.setText("Stop");
+            if (startMocking()) btnMock.setText(R.string.stop);
         }
     }
 
     private boolean startMocking() {
         List<String> missing_permissions = missingPermissions();
         if (!missing_permissions.isEmpty()) {
-            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions));
+            getMySuperActivity().showToast("missing: " + TextUtils.join(", ", missing_permissions));
             return false;
         }
         mock.enable();
 
         // Set test location programmatically
-        timerTask = new TimerTask() {
+        TimerTask timerTask = new TimerTask() {
             @Override
             public boolean cancel() {
                 mock.disable();
@@ -175,11 +170,10 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
         return new Float[]{lat, lon};
     }
 
-    @SuppressWarnings("MissingPermission")
     private boolean stopMocking() {
         List<String> missing_permissions = missingPermissions();
         if (!missing_permissions.isEmpty()) {
-            locationActivity.showToast("missing: " + TextUtils.join(", ", missing_permissions));
+            getMySuperActivity().showToast("missing: " + TextUtils.join(", ", missing_permissions));
             return false;
         }
         mock.disable();
@@ -220,21 +214,17 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
     }
 
     private void onDetailsButtonPressed() {
-        new AlertDialog.Builder(getActivity())
-                .setMessage(missingPermissions().isEmpty() ? providerDetails(getLocationManager().getProvider(mLocationProvider)) : "Need permissions to show details")
-                .setTitle("Details of " + mLocationProvider + " provider")
-                .setPositiveButton("Ok", null)
-                .create()
-                .show();
+        getMySuperActivity().showOkCancelDialog(
+                "Details of " + mLocationProvider + " provider",
+                missingPermissions().isEmpty() ? providerDetails(getLocationManager().getProvider(mLocationProvider)) : "Need permissions " + missingPermissions() + " to show details",
+                null);
     }
 
-    private void showItemDetails(int position) {
-        new AlertDialog.Builder(getActivity())
-                .setMessage(listItems.get(position).description)
-                .setTitle(listItems.get(position).title)
-                .setPositiveButton("Ok", null)
-                .create()
-                .show();
+    private void showItemDetails(TitleDescription titleDescription) {
+        getMySuperActivity().showOkCancelDialog(
+                titleDescription.title,
+                titleDescription.description,
+                null);
     }
 
     protected void addRow(String titleDescription) {
@@ -242,18 +232,17 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
     }
 
     protected void addRow(String title, String description) {
-        listItems.add(listItems.size(), new TitleDescription(title, description));
-        adapter.notifyDataSetChanged();
+        adapter.add(new TitleDescription(title, description));
     }
 
     @Override
     public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-        showItemDetails(position);
+        showItemDetails((TitleDescription) parent.getItemAtPosition(position));
     }
 
     public List<String> missingPermissions() {
         List<String> missing_permissions = new ArrayList<>();
-        if (!locationActivity.isMockLocationEnabled()) missing_permissions.add("mock setting");
+        if (!isMockLocationEnabled()) missing_permissions.add("mock setting");
 
         if (ActivityCompat.checkSelfPermission(getActivity(), Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED)
             missing_permissions.add(Manifest.permission.ACCESS_FINE_LOCATION);
@@ -264,6 +253,27 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
         return missing_permissions;
     }
 
+    public boolean isMockLocationEnabled() {
+        boolean isMockLocation;
+        try {
+            //if marshmallow
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                AppOpsManager opsManager = (AppOpsManager) getContext().getSystemService(Context.APP_OPS_SERVICE);
+                isMockLocation = (opsManager.checkOp(AppOpsManager.OPSTR_MOCK_LOCATION, android.os.Process.myUid(), BuildConfig.APPLICATION_ID) == AppOpsManager.MODE_ALLOWED);
+            } else {
+                // in marshmallow this will always return true
+                isMockLocation = !Settings.Secure.getString(getContext().getContentResolver(), Settings.Secure.ALLOW_MOCK_LOCATION).equals("0");
+            }
+        } catch (Exception e) {
+            return false;
+        }
+        return isMockLocation;
+    }
+
+    public LocationManager getLocationManager() {
+        return locationManager == null ? locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE) : locationManager;
+    }
+
     private class TitleDescription {
         String title;
         String description;
@@ -272,9 +282,5 @@ public class ProviderDetailsFragment extends Fragment implements View.OnClickLis
             this.title = title;
             this.description = description;
         }
-    }
-
-    public LocationManager getLocationManager() {
-        return locationManager == null ? locationManager = (LocationManager) getActivity().getSystemService(Context.LOCATION_SERVICE) : locationManager;
     }
 }

@@ -7,21 +7,18 @@ import android.os.Bundle;
 
 import com.daemo.myfirstapp.common.Utils;
 
-/**
- * Created by admin on 17/07/2016.
- */
-public class MyLocationListener implements LocationListener {
+class MyLocationListener implements LocationListener {
 
     private final ProviderDetailsFragment fragment;
     private final String providerName;
 
-    public MyLocationListener(ProviderDetailsFragment fragment, String providerName) {
+    MyLocationListener(ProviderDetailsFragment fragment, String providerName) {
         this.fragment = fragment;
         this.providerName = providerName;
     }
 
     static String locationDetails(String providerName, Location location) {
-        if(location == null) return "Location is null for provider " + providerName;
+        if (location == null) return "Location is null for provider " + providerName;
         return "Provider" + ": " + location.getProvider() + '\n' +
                 "Describe contents" + ": " + location.describeContents() + '\n' +
                 "Accuracy" + ": " + location.getAccuracy() + '\n' +
@@ -38,24 +35,30 @@ public class MyLocationListener implements LocationListener {
 
     @Override
     public void onLocationChanged(Location location) {
-        if(location != null){
-        fragment.addRow(
-                "Location has changed: (" + location.getLatitude() + ", " + location.getLongitude() + ")",
-                locationDetails(providerName, location));
-        }
-        else
+        if (location != null) {
+            fragment.addRow(
+                    "Location has changed: (" + location.getLatitude() + ", " + location.getLongitude() + ")",
+                    locationDetails(providerName, location));
+        } else
             fragment.addRow("Location is null");
     }
 
     @Override
     public void onStatusChanged(String s, int i, Bundle bundle) {
-        String res =  Utils.capitalize(s) + " provider is now ";
+        String res = Utils.capitalize(s) + " provider is now ";
         String status = "";
-        switch (i){
-            case LocationProvider.AVAILABLE: status = "available";break;
-            case LocationProvider.OUT_OF_SERVICE: status = "out of service"; break;
-            case LocationProvider.TEMPORARILY_UNAVAILABLE: status = "temporarily unavailable"; break;
-            default: break;
+        switch (i) {
+            case LocationProvider.AVAILABLE:
+                status = "available";
+                break;
+            case LocationProvider.OUT_OF_SERVICE:
+                status = "out of service";
+                break;
+            case LocationProvider.TEMPORARILY_UNAVAILABLE:
+                status = "temporarily unavailable";
+                break;
+            default:
+                break;
         }
         res += status + "\n";
 

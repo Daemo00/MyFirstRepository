@@ -1,32 +1,28 @@
 package com.daemo.myfirstapp.location;
 
-import android.content.Context;
 import android.location.Location;
 import android.location.LocationManager;
 import android.support.annotation.NonNull;
 import android.util.Log;
 
-/**
- * Created by admin on 18/07/2016.
- */
-public class MockLocationProvider {
-    String providerName;
+class MockLocationProvider {
+    private String providerName;
     Boolean isEnabled = false;
-    LocationManager lm;
+    private LocationManager lm;
 
-    public MockLocationProvider(String name, LocationManager lm) {
+    MockLocationProvider(String name, LocationManager lm) {
         this.providerName = name;
         this.lm = lm;
     }
 
-    public void enable() {
+    void enable() {
         if (isEnabled) return;
         lm.addTestProvider(providerName, false, false, false, false, false, true, true, 0, 5);
         lm.setTestProviderEnabled(providerName, true);
         isEnabled = true;
     }
 
-    public void pushLocation(Float[] coords) throws Exception {
+    void pushLocation(Float[] coords) throws Exception {
         if (!isEnabled) throw new Exception(providerName + " is not enabled!");
         lm.setTestProviderLocation(providerName, getMockLocation(coords[0], coords[1]));
         Log.d("MockLocationProvider", "Location (" + coords[0] + ", " + coords[1] + ") set with mock " + providerName + " provider");
@@ -44,7 +40,7 @@ public class MockLocationProvider {
         return mockLocation;
     }
 
-    public void disable() {
+    void disable() {
         if (!isEnabled) return;
         lm.setTestProviderEnabled(providerName, false);
         lm.removeTestProvider(providerName);

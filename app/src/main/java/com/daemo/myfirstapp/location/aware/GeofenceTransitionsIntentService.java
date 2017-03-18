@@ -11,12 +11,11 @@ import android.support.v7.app.NotificationCompat;
 import android.text.TextUtils;
 import android.util.Log;
 
-import com.daemo.myfirstapp.MainActivity;
 import com.daemo.myfirstapp.MySuperApplication;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
-import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
+import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageResizer;
 import com.daemo.myfirstapp.location.LocationActivity;
 import com.google.android.gms.location.Geofence;
 import com.google.android.gms.location.GeofencingEvent;
@@ -92,7 +91,7 @@ public class GeofenceTransitionsIntentService extends IntentService {
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this)
 
                 // Add the main Activity to the task stack as the parent.
-                .addParentStack(MainActivity.class)
+                .addParentStack(LocationActivity.class)
 
                 // Create an explicit content Intent that starts the location Activity and push it onto the stack.
                 .addNextIntent(new Intent(getApplicationContext(), LocationActivity.class));
@@ -105,10 +104,11 @@ public class GeofenceTransitionsIntentService extends IntentService {
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this);
 
         // Define the notification settings.
-        builder.setSmallIcon(android.R.drawable.ic_menu_mylocation)//    R.drawable.ic_launcher)
+        builder
+                .setSmallIcon(android.R.drawable.ic_menu_mylocation)//    R.drawable.ic_launcher)
                 // In a real app, you may want to use a library like Volley to decode the Bitmap.
                 .setLargeIcon(
-                        ImageFetcher.decodeSampledBitmapFromResource(getResources(),
+                        ImageResizer.decodeSampledBitmapFromResource(getResources(),
                                 android.R.drawable.ic_menu_mylocation,
                                 10,
                                 10,
