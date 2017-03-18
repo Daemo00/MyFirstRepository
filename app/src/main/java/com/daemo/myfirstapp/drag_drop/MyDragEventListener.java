@@ -10,7 +10,7 @@ import android.widget.ImageView;
 
 import com.daemo.myfirstapp.common.Utils;
 
-public class MyDragEventListener implements View.OnDragListener {
+class MyDragEventListener implements View.OnDragListener {
 
     // This is the method that the system calls when it dispatches a drag event to the listener.
     public boolean onDrag(View view, DragEvent event) {
@@ -37,13 +37,14 @@ public class MyDragEventListener implements View.OnDragListener {
                     return true;
                 }
 
-                // Returns false. During the current drag and drop operation, this View will
-                // not receive events again until ACTION_DRAG_ENDED is sent.
+                // Returns false.
+                // During the current drag and drop operation, this View will not receive events again until ACTION_DRAG_ENDED is sent.
                 return false;
 
             case DragEvent.ACTION_DRAG_ENTERED:
 
-                // Applies a green tint to the View. Return true; the return value is ignored.
+                // Applies a green tint to the View.
+                // Return true; the return value is ignored.
 
                 imageView.setBackgroundColor(Color.GREEN);
 
