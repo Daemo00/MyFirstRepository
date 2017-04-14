@@ -11,13 +11,8 @@ public class OtherActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_other);
     }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_other;
-    }
-
 
     public void search_click(View view) {
         onSearchRequested();

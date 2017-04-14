@@ -29,7 +29,7 @@ import com.daemo.myfirstapp.connectivity.syncAdapter.provider.FeedContract;
 /**
  * Static helper methods for working with the sync framework.
  */
-public class SyncUtils {
+class SyncUtils {
     private static final long SYNC_FREQUENCY = 60 * 60;  // 1 hour (in seconds)
     private static final String CONTENT_AUTHORITY = FeedContract.CONTENT_AUTHORITY;
     private static final String PREF_SETUP_COMPLETE = "setup_complete";
@@ -39,7 +39,7 @@ public class SyncUtils {
      *
      * @param context Context
      */
-    public static void CreateSyncAccount(Context context) {
+    static void CreateSyncAccount(Context context) {
         boolean newAccount = false;
         boolean setupComplete = PreferenceManager
                 .getDefaultSharedPreferences(context).getBoolean(PREF_SETUP_COMPLETE, false);
@@ -70,7 +70,7 @@ public class SyncUtils {
     }
 
     /**
-     * Helper method to trigger an immediate sync ("refresh").
+     * FirebaseAuthenticationFragment method to trigger an immediate sync ("refresh").
      * <p>
      * <p>This should only be used when we need to preempt the normal sync schedule. Typically, this
      * means the user has pressed the "refresh" button.
@@ -80,7 +80,7 @@ public class SyncUtils {
      * but the user is not actively waiting for that data, you should omit this flag; this will give
      * the OS additional freedom in scheduling your sync request.
      */
-    public static void TriggerRefresh() {
+    static void TriggerRefresh() {
         Bundle b = new Bundle();
         // Disable sync backoff and ignore sync preferences. In other words...perform sync NOW!
         b.putBoolean(ContentResolver.SYNC_EXTRAS_MANUAL, true);

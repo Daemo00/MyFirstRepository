@@ -39,16 +39,12 @@ public class ActivityB extends MySuperActivity {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_b);
         mActivityName = getString(R.string.activity_b_label);
         mStatusView = (TextView)findViewById(R.id.status_view_b);
         mStatusAllView = (TextView)findViewById(R.id.status_view_all_b);
         mStatusTracker.setStatus(mActivityName, getString(R.string.on_create));
         Utils.printStatus(mStatusView, mStatusAllView);
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_b;
     }
 
     @Override

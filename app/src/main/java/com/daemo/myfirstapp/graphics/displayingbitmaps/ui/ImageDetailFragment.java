@@ -78,7 +78,7 @@ public class ImageDetailFragment extends Fragment implements ImageWorker.OnImage
             Bundle savedInstanceState) {
         // Inflate and locate the main ImageView
         final View v = inflater.inflate(R.layout.image_detail_fragment, container, false);
-        mImageView = (ImageView) v.findViewById(R.id.imageView);
+        mImageView = (ImageView) v.findViewById(R.id.imageView_draggable);
         mProgressBar = (ProgressBar) v.findViewById(R.id.progressbar);
         return v;
     }

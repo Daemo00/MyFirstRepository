@@ -23,7 +23,6 @@ import android.content.res.TypedArray;
 import android.graphics.BlurMaskFilter;
 import android.graphics.Canvas;
 import android.graphics.Color;
-import android.graphics.Matrix;
 import android.graphics.Paint;
 import android.graphics.PointF;
 import android.graphics.RectF;
@@ -97,11 +96,6 @@ public class PieChart extends ViewGroup {
     public static final int TEXTPOS_LEFT = 0;
 
     /**
-     * Draw text to the right of the pie chart
-     */
-    public static final int TEXTPOS_RIGHT = 1;
-
-    /**
      * The initial fling velocity is divided by this amount.
      */
     public static final int FLING_VELOCITY_DOWNSCALE = 4;
@@ -115,7 +109,7 @@ public class PieChart extends ViewGroup {
      * Interface definition for a callback to be invoked when the current
      * item changes.
      */
-    public interface OnCurrentItemChangedListener {
+    interface OnCurrentItemChangedListener {
         void OnCurrentItemChanged(PieChart source, int currentItem);
     }
 
@@ -123,7 +117,7 @@ public class PieChart extends ViewGroup {
      * Class constructor taking only a context. Use this constructor to create
      * {@link PieChart} objects from your own code.
      *
-     * @param context
+     * @param context Context
      */
     public PieChart(Context context) {
         super(context);
@@ -135,7 +129,7 @@ public class PieChart extends ViewGroup {
      * is used by the layout engine to construct a {@link PieChart} from a set of
      * XML attributes.
      *
-     * @param context
+     * @param context Context
      * @param attrs   An attribute set which can contain attributes from
      *                {@link com.daemo.myfirstapp.customView.PieChart} as well as attributes inherited
      *                from {@link android.view.View}.
@@ -191,151 +185,6 @@ public class PieChart extends ViewGroup {
     }
 
     /**
-     * Controls whether the text label is visible or not. Setting this property to
-     * false allows the pie chart graphic to take up the entire visible area of
-     * the control.
-     *
-     * @param showText true if the text label should be visible, false otherwise
-     */
-    public void setShowText(boolean showText) {
-        mShowText = showText;
-        invalidate();
-    }
-
-    /**
-     * Returns the Y position of the label text, in pixels.
-     *
-     * @return The Y position of the label text, in pixels.
-     */
-    public float getTextY() {
-        return mTextY;
-    }
-
-    /**
-     * Set the Y position of the label text, in pixels.
-     *
-     * @param textY the Y position of the label text, in pixels.
-     */
-    public void setTextY(float textY) {
-        mTextY = textY;
-        invalidate();
-    }
-
-    /**
-     * Returns the width reserved for label text, in pixels.
-     *
-     * @return The width reserved for label text, in pixels.
-     */
-    public float getTextWidth() {
-        return mTextWidth;
-    }
-
-    /**
-     * Set the width of the area reserved for label text. This width is constant; it does not
-     * change based on the actual width of the label as the label text changes.
-     *
-     * @param textWidth The width reserved for label text, in pixels.
-     */
-    public void setTextWidth(float textWidth) {
-        mTextWidth = textWidth;
-        invalidate();
-    }
-
-    /**
-     * Returns the height of the label font, in pixels.
-     *
-     * @return The height of the label font, in pixels.
-     */
-    public float getTextHeight() {
-        return mTextHeight;
-    }
-
-    /**
-     * Set the height of the label font, in pixels.
-     *
-     * @param textHeight The height of the label font, in pixels.
-     */
-    public void setTextHeight(float textHeight) {
-        mTextHeight = textHeight;
-        invalidate();
-    }
-
-    /**
-     * Returns a value that specifies whether the label text is to the right
-     * or the left of the pie chart graphic.
-     *
-     * @return One of TEXTPOS_LEFT or TEXTPOS_RIGHT.
-     */
-    public int getTextPos() {
-        return mTextPos;
-    }
-
-    /**
-     * Set a value that specifies whether the label text is to the right
-     * or the left of the pie chart graphic.
-     *
-     * @param textPos TEXTPOS_LEFT to draw the text to the left of the graphic,
-     *                or TEXTPOS_RIGHT to draw the text to the right of the graphic.
-     */
-    public void setTextPos(int textPos) {
-        if (textPos != TEXTPOS_LEFT && textPos != TEXTPOS_RIGHT) {
-            throw new IllegalArgumentException(
-                    "TextPos must be one of TEXTPOS_LEFT or TEXTPOS_RIGHT");
-        }
-        mTextPos = textPos;
-        invalidate();
-    }
-
-    /**
-     * Returns the strength of the highlighting applied to each pie segment.
-     *
-     * @return The highlight strength.
-     */
-    public float getHighlightStrength() {
-        return mHighlightStrength;
-    }
-
-    /**
-     * Set the strength of the highlighting that is applied to each pie segment.
-     * This number is a floating point number that is multiplied by the base color of
-     * each segment to get the highlight color. A value of exactly one produces no
-     * highlight at all. Values greater than one produce highlights that are lighter
-     * than the base color, while values less than one produce highlights that are darker
-     * than the base color.
-     *
-     * @param highlightStrength The highlight strength.
-     */
-    public void setHighlightStrength(float highlightStrength) {
-        if (highlightStrength < 0.0f) {
-            throw new IllegalArgumentException(
-                    "highlight strength cannot be negative");
-        }
-        mHighlightStrength = highlightStrength;
-        invalidate();
-    }
-
-    /**
-     * Returns the radius of the filled circle that is drawn at the tip of the current-item
-     * pointer.
-     *
-     * @return The radius of the pointer tip, in pixels.
-     */
-    public float getPointerRadius() {
-        return mPointerRadius;
-    }
-
-    /**
-     * Set the radius of the filled circle that is drawn at the tip of the current-item
-     * pointer.
-     *
-     * @param pointerRadius The radius of the pointer tip, in pixels.
-     */
-    public void setPointerRadius(float pointerRadius) {
-        mPointerRadius = pointerRadius;
-        invalidate();
-    }
-
-    /**
      * Returns the current rotation of the pie graphic.
      *
      * @return The current pie rotation, in degrees.
@@ -388,24 +237,10 @@ public class PieChart extends ViewGroup {
      */
     private void setCurrentItem(int currentItem, boolean scrollIntoView) {
         mCurrentItem = currentItem;
-        if (mCurrentItemChangedListener != null) {
+        if (mCurrentItemChangedListener != null)
             mCurrentItemChangedListener.OnCurrentItemChanged(this, currentItem);
-        }
-        if (scrollIntoView) {
-            centerOnCurrentItem();
-        }
+        if (scrollIntoView) centerOnCurrentItem();
         invalidate();
-    }
-
-
-    /**
-     * Register a callback to be invoked when the currently selected item changes.
-     *
-     * @param listener Can be null.
-     *                 The current item changed listener to attach to this view.
-     */
-    public void setOnCurrentItemChangedListener(OnCurrentItemChangedListener listener) {
-        mCurrentItemChangedListener = listener;
     }
 
     /**
@@ -481,12 +316,10 @@ public class PieChart extends ViewGroup {
 
         // If the API level is less than 11, we can't rely on the view animation system to
         // do the scrolling animation. Need to tick it here and call postInvalidate() until the scrolling is done.
-        if (Build.VERSION.SDK_INT < 11) {
             tickScrollAnimation();
             if (!mScroller.isFinished()) {
                 postInvalidate();
             }
-        }
     }
 
 
@@ -688,7 +521,6 @@ public class PieChart extends ViewGroup {
 
         // Set up an animator to animate the PieRotation property.
         // This is used to correct the pie's orientation after the user lets go of it.
-        if (Build.VERSION.SDK_INT >= 11) {
             mAutoCenterAnimator = ObjectAnimator.ofInt(PieChart.this, "PieRotation", 0);
 
             // Add a listener to hook the onAnimationEnd event so that we can do some cleanup when the pie stops moving.
@@ -706,27 +538,21 @@ public class PieChart extends ViewGroup {
                 public void onAnimationRepeat(Animator animator) {
                 }
             });
-        }
+
 
 
         // Create a Scroller to handle the fling gesture.
-        if (Build.VERSION.SDK_INT < 11) {
-            mScroller = new Scroller(getContext());
-        } else {
             mScroller = new Scroller(getContext(), null, true);
-        }
         // The scroller doesn't have any built-in animation functions--it just supplies values when we ask it to.
         // So we have to have a way to call it every frame until the fling ends.
         // This code (ab)uses a ValueAnimator object to generate a callback on every animation frame.
         // We don't use the animated value at all.
-        if (Build.VERSION.SDK_INT >= 11) {
             mScrollAnimator = ValueAnimator.ofFloat(0, 1);
             mScrollAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 public void onAnimationUpdate(ValueAnimator valueAnimator) {
                     tickScrollAnimation();
                 }
             });
-        }
 
         // Create a gesture detector to handle onTouch messages
         mDetector = new GestureDetector(PieChart.this.getContext(), new GestureListener());
@@ -736,13 +562,13 @@ public class PieChart extends ViewGroup {
 
 
         // In edit mode it's nice to have some demo data, so add that here.
-        if (this.isInEditMode()) {
+        if (this.isInEditMode() && Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             Resources res = getResources();
-            addItem("Annabelle", 3, res.getColor(R.color.bluegrass));
-            addItem("Brunhilde", 4, res.getColor(R.color.chartreuse));
-            addItem("Carolina", 2, res.getColor(R.color.emerald));
-            addItem("Dahlia", 3, res.getColor(R.color.seafoam));
-            addItem("Ekaterina", 1, res.getColor(R.color.slate));
+            addItem("Ekaterina", 1, res.getColor(R.color.slate, getContext().getTheme()));
+            addItem("Annabelle", 3, res.getColor(R.color.bluegrass, getContext().getTheme()));
+            addItem("Brunhilde", 4, res.getColor(R.color.chartreuse, getContext().getTheme()));
+            addItem("Carolina", 2, res.getColor(R.color.emerald, getContext().getTheme()));
+            addItem("Dahlia", 3, res.getColor(R.color.seafoam, getContext().getTheme()));
         }
 
     }
@@ -752,23 +578,17 @@ public class PieChart extends ViewGroup {
             mScroller.computeScrollOffset();
             setPieRotation(mScroller.getCurrY());
         } else {
-            if (Build.VERSION.SDK_INT >= 11) {
                 mScrollAnimator.cancel();
-            }
             onScrollFinished();
         }
     }
 
     private void setLayerToSW(View v) {
-        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
-            setLayerType(View.LAYER_TYPE_SOFTWARE, null);
-        }
+        if (!v.isInEditMode()) setLayerType(View.LAYER_TYPE_SOFTWARE, null);
     }
 
     private void setLayerToHW(View v) {
-        if (!v.isInEditMode() && Build.VERSION.SDK_INT >= 11) {
-            setLayerType(View.LAYER_TYPE_HARDWARE, null);
-        }
+        if (!v.isInEditMode()) setLayerType(View.LAYER_TYPE_HARDWARE, null);
     }
 
     /**
@@ -776,9 +596,7 @@ public class PieChart extends ViewGroup {
      */
     private void stopScrolling() {
         mScroller.forceFinished(true);
-        if (Build.VERSION.SDK_INT >= 11) {
             mAutoCenterAnimator.cancel();
-        }
 
         onScrollFinished();
     }
@@ -803,14 +621,9 @@ public class PieChart extends ViewGroup {
         targetAngle -= mCurrentItemAngle;
         if (targetAngle < 90 && mPieRotation > 180) targetAngle += 360;
 
-        if (Build.VERSION.SDK_INT >= 11) {
             // Fancy animated version
             mAutoCenterAnimator.setIntValues(targetAngle);
             mAutoCenterAnimator.setDuration(AUTOCENTER_ANIM_DURATION).start();
-        } else {
-            // Dull non-animated version
-            //mPieView.rotateTo(targetAngle);
-        }
     }
 
     /**
@@ -818,15 +631,11 @@ public class PieChart extends ViewGroup {
      * when necessary.
      */
     private class PieView extends View {
-        // Used for SDK < 11
-        private float mRotation = 0;
-        private Matrix mTransform = new Matrix();
+
         private PointF mPivot = new PointF();
 
         /**
          * Construct a PieView
-         *
-         * @param context
          */
         public PieView(Context context) {
             super(context);
@@ -850,12 +659,6 @@ public class PieChart extends ViewGroup {
         protected void onDraw(Canvas canvas) {
             super.onDraw(canvas);
 
-            if (Build.VERSION.SDK_INT < 11) {
-                mTransform.set(canvas.getMatrix());
-                mTransform.preRotate(mRotation, mPivot.x, mPivot.y);
-                canvas.setMatrix(mTransform);
-            }
-
             for (Item it : mData) {
                 mPiePaint.setShader(it.mShader);
                 canvas.drawArc(mBounds,
@@ -873,23 +676,14 @@ public class PieChart extends ViewGroup {
         RectF mBounds;
 
         public void rotateTo(float pieRotation) {
-            mRotation = pieRotation;
-            if (Build.VERSION.SDK_INT >= 11) {
                 setRotation(pieRotation);
-            } else {
-                invalidate();
-            }
         }
 
         public void setPivot(float x, float y) {
             mPivot.x = x;
             mPivot.y = y;
-            if (Build.VERSION.SDK_INT >= 11) {
                 setPivotX(x);
                 setPivotY(y);
-            } else {
-                invalidate();
-            }
         }
     }
 
@@ -900,8 +694,6 @@ public class PieChart extends ViewGroup {
 
         /**
          * Construct a PointerView object
-         *
-         * @param context
          */
         public PointerView(Context context) {
             super(context);
@@ -918,16 +710,16 @@ public class PieChart extends ViewGroup {
      * Maintains the state for a data item.
      */
     private class Item {
-        public String mLabel;
-        public float mValue;
-        public int mColor;
+        String mLabel;
+        float mValue;
+        int mColor;
 
         // computed values
-        public int mStartAngle;
-        public int mEndAngle;
+        int mStartAngle;
+        int mEndAngle;
 
-        public int mHighlight;
-        public Shader mShader;
+        int mHighlight;
+        Shader mShader;
     }
 
     /**
@@ -957,7 +749,7 @@ public class PieChart extends ViewGroup {
                     e2.getY() - mPieBounds.centerY());
             mScroller.fling(
                     0,
-                    (int) getPieRotation(),
+                    getPieRotation(),
                     0,
                     (int) scrollTheta / FLING_VELOCITY_DOWNSCALE,
                     0,
@@ -966,10 +758,8 @@ public class PieChart extends ViewGroup {
                     Integer.MAX_VALUE);
 
             // Start the animator and tell it to animate for the expected duration of the fling.
-            if (Build.VERSION.SDK_INT >= 11) {
                 mScrollAnimator.setDuration(mScroller.getDuration());
                 mScrollAnimator.start();
-            }
             return true;
         }
 
@@ -986,11 +776,11 @@ public class PieChart extends ViewGroup {
     }
 
     private boolean isAnimationRunning() {
-        return !mScroller.isFinished() || (Build.VERSION.SDK_INT >= 11 && mAutoCenterAnimator.isRunning());
+        return !mScroller.isFinished() || mAutoCenterAnimator.isRunning();
     }
 
     /**
-     * Helper method for translating (x,y) scroll vectors into scalar rotation of the pie.
+     * FirebaseAuthenticationFragment method for translating (x,y) scroll vectors into scalar rotation of the pie.
      *
      * @param dx The x component of the current scroll vector.
      * @param dy The y component of the current scroll vector.
@@ -1004,7 +794,7 @@ public class PieChart extends ViewGroup {
 
         // decide if the scalar should be negative or positive by finding the dot product of the vector perpendicular to (x,y).
         float crossX = -y;
-        float crossY = x;
+        @SuppressWarnings("SuspiciousNameCombination") float crossY = x;
 
         float dot = (crossX * dx + crossY * dy);
         float sign = Math.signum(dot);

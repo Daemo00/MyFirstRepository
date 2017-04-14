@@ -17,21 +17,39 @@ import java.util.List;
 
 public final class Constants {
 
-    public static final String NOTIFICATION_GROUP = BuildConfig.APPLICATION_ID.concat(".NOTIFICATION_GROUP");
-    public static final int NOTIFICATION_GROUP_SUMMARY_ID = 100;
-
     public static final String ACTION_DELETE = BuildConfig.APPLICATION_ID.concat(".ACTION_DELETE");
     public static final String ACTION_UPDATE = BuildConfig.APPLICATION_ID.concat(".ACTION_UPDATE");
     public static final String ACTION_DISMISS = BuildConfig.APPLICATION_ID.concat(".ACTION_DISMISS");
     public static final String ACTION_SNOOZE = BuildConfig.APPLICATION_ID.concat(".ACTION_SNOOZE");
+    public static final String ACTION_PLAY = BuildConfig.APPLICATION_ID.concat(".ACTION_PLAY");
+    public static final String ACTION_STOP = BuildConfig.APPLICATION_ID.concat(".ACTION_STOP");
+    public static final String ACTION_RETURN_FILE = BuildConfig.APPLICATION_ID.concat(".ACTION_RETURN_FILE");
 
+    public static final String EXTRA_IMAGE = BuildConfig.APPLICATION_ID.concat(".EXTRA_IMAGE");
+    public static final String NOTIFICATION_GROUP = BuildConfig.APPLICATION_ID.concat(".NOTIFICATION_GROUP");
+    public static final int NOTIFICATION_GROUP_SUMMARY_ID = 100;
+    public static final int NOTIFICATION_ID_MUSIC = 1;
+    public static final int NOTIFICATION_ID_FIREBASE = 2;
+
+    public static final int REQUEST_CODE_MUSIC = 1;
+    public static final int REQUEST_CODE_VIDEO_PERMISSIONS = 2;
+    public static final int REQUEST_CODE_LOCATION = 3;
+
+    public static final int REQUEST_CODE_OVERLAY_PERMISSION = 4;
     public static final int KEY_ACTION_DELETE = 101;
     public static final int KEY_ACTION_UPDATE = 102;
-
     public static final String IMAGE_CACHE_DIR = "image_cache";
-    public static final String EXTRA_IMAGE = "extra_image";
     public static final float CACHE_SIZE = 0.25f;
-    public static final String MY_SUPER_FRAGMENT_TITLE = "MY_SUPER_FRAGMENT_TITLE";
+    public static final int WIDGET_INTENT = 1;
+    public static final String ARTICLE_SELECTED = BuildConfig.APPLICATION_ID.concat(".article_selected");
+    public final static String mediaSessionTag = BuildConfig.APPLICATION_ID.concat(".mediaSessionTag");
+    // Create a string for the ImageView label
+    public static final String IMAGE_TAG = "icon bitmap";
+    public static final String ACTION_REPLACE_FRAGMENT = "replace_fragment";
+    public static final String ACTION_FRAGMENT = "action_fragment";
+    public static final String ACTION_ADDTOBACKSTACK = "action_addtobackstack";
+    public static final String ACTION_FIREBASE_LOGIN = "Firebase_login";
+    public static boolean SERVICE_CHAT_HEAD_RUNNING = false;
 
     public static final class Cache {
         // Constants to easily toggle various caches
@@ -51,7 +69,7 @@ public final class Constants {
 
         private static final String PACKAGE_NAME = "com.daemo.myfirstapp.location";
 
-        public static final int REQUEST_CHECK_SETTINGS = 1;
+        public static final int REQUEST_CODE_CHECK_SETTINGS = 1;
         public static final int REQUEST_LAST_LOCATION = 2;
         public static final int REQUEST_CONNECTION = 3;
         public static final int REQUEST_LOCATION_UPDATES = 4;

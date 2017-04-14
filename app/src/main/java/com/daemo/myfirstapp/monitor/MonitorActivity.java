@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.ServiceConnection;
 import android.os.Bundle;
 import android.os.IBinder;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
 import com.daemo.myfirstapp.MySuperActivity;
-import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.SectionsPagerAdapter;
 
@@ -20,6 +20,7 @@ public class MonitorActivity extends MySuperActivity implements MonitorService.S
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_monitor);
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -36,11 +37,6 @@ public class MonitorActivity extends MySuperActivity implements MonitorService.S
                 new Intent(this, MonitorService.class),
                 serviceConnection,
                 Context.BIND_AUTO_CREATE);
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_monitor;
     }
 
     private ServiceConnection serviceConnection = new ServiceConnection() {
@@ -80,7 +76,7 @@ public class MonitorActivity extends MySuperActivity implements MonitorService.S
 
     @Override
     public void sendResults(int resultCode, Bundle b) {
-        for (MySuperFragment fragment : ((SectionsPagerAdapter) mViewPager.getAdapter()).getFrags())
+        for (Fragment fragment : ((SectionsPagerAdapter) mViewPager.getAdapter()).getFrags())
             ((MonitorService.ServiceCallback) fragment).sendResults(resultCode, b);
     }
 }

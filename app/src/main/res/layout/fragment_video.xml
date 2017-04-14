@@ -14,22 +14,19 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        app:fabSize="mini"
         app:srcCompat="@android:drawable/ic_menu_camera"
         android:layout_alignParentBottom="true"
         android:layout_alignParentEnd="true"
-        android:layout_marginEnd="43dp"
-        android:layout_marginBottom="21dp"
+        android:layout_margin="@dimen/margin_medium"
         android:id="@+id/picture" />
 
     <android.support.design.widget.FloatingActionButton
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:clickable="true"
-        app:fabSize="mini"
         app:srcCompat="@android:drawable/presence_video_online"
-        android:layout_marginEnd="37dp"
         android:id="@+id/video"
-        android:layout_alignTop="@+id/picture"
+        android:layout_alignParentBottom="true"
+        android:layout_marginBottom="@dimen/margin_medium"
         android:layout_toStartOf="@+id/picture" />
 </RelativeLayout>

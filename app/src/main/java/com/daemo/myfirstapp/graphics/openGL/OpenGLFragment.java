@@ -10,24 +10,8 @@ import com.daemo.myfirstapp.MySuperFragment;
 
 public class OpenGLFragment extends MySuperFragment {
 
-    private MyGLSurfaceView myGLSurfaceView;
-
-    public OpenGLFragment() {
-        // Required empty public constructor
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-
-    }
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        // return inflater.inflate(R.layout.fragment_open_gl, container, false);
-        myGLSurfaceView = new MyGLSurfaceView(getActivity());
-        return myGLSurfaceView;
+        return new MyGLSurfaceView(getActivity());
     }
-
 }

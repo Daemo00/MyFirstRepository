@@ -8,7 +8,7 @@ import com.daemo.myfirstapp.MySuperFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 
-    private MySuperFragment[] frags;
+    private Fragment[] frags;
 
     public SectionsPagerAdapter(FragmentManager fm) {
         super(fm);
@@ -24,16 +24,17 @@ public class SectionsPagerAdapter extends FragmentPagerAdapter {
         return frags.length;
     }
 
-    public void setFrags(MySuperFragment... frags) {
+    public SectionsPagerAdapter setFrags(MySuperFragment... frags) {
         this.frags = frags;
+        return this;
     }
 
     @Override
     public CharSequence getPageTitle(int position) {
-        return frags[position].getTitle();
+        return frags[position] instanceof MySuperFragment ? ((MySuperFragment) frags[position]).getTitle() : Utils.getTag(frags[position]);
     }
 
-    public MySuperFragment[] getFrags() {
+    public Fragment[] getFrags() {
         return frags;
     }
 }

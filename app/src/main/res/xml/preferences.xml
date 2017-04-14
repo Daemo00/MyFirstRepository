@@ -8,6 +8,11 @@
     <PreferenceScreen
         android:key="network_settings"
         android:title="Network">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.daemo.myfirstapp"
+            android:targetClass="com.daemo.myfirstapp.settings.SettingsActivity">
+        </intent>
         <ListPreference
             android:defaultValue="Wi-Fi"
             android:title="Download Feed"
@@ -19,6 +24,11 @@
     <PreferenceScreen
         android:key="location_settings"
         android:title="Location">
+        <intent
+            android:action="android.intent.action.VIEW"
+            android:targetPackage="com.daemo.myfirstapp"
+            android:targetClass="com.daemo.myfirstapp.settings.SettingsActivity">
+        </intent>
         <SwitchPreference
             android:title="Enable Geofences"
             android:key="@string/settings_location_enable_geofences"

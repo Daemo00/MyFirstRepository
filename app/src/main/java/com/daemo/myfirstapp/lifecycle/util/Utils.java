@@ -25,7 +25,7 @@ public class Utils {
     private static StatusTracker mStatusTracker = StatusTracker.getInstance();
 
     /**
-     * Helper method to print out the lifecycle state of each Activity.  Note this has
+     * FirebaseAuthenticationFragment method to print out the lifecycle state of each Activity.  Note this has
      * been wrapped in a Handler to delay the output due to overlaps in lifecycle state
      * changes as one Activity launches another.
      *

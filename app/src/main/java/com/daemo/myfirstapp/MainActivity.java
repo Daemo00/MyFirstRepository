@@ -1,19 +1,27 @@
 package com.daemo.myfirstapp;
 
+import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ComponentName;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.pm.ActivityInfo;
+import android.content.pm.PackageItemInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
+import android.support.v4.content.LocalBroadcastManager;
+import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,43 +30,40 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.common.Constants;
+import com.daemo.myfirstapp.common.Utils;
+import com.daemo.myfirstapp.firebase.FirebaseAuthenticationFragment;
+import com.daemo.myfirstapp.firebase.database.FirebaseDatabaseFragment;
+import com.google.common.base.Strings;
+
 import java.util.ArrayList;
-import java.util.List;
+import java.util.Arrays;
 
 public class MainActivity extends MySuperActivity {
 
-    private String mTitle;
-    private String mDrawerTitle;
-    private DrawerLayout mDrawerLayout;
+    private static final String TARGETS = "targets";
     private ActionBarDrawerToggle mDrawerToggle;
-    private ListView mDrawerList;
+    private DrawerLayout mDrawerLayout;
+    private ArrayList<String> targets;
+    private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            try {
+                fillRadioActivities();
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+            replaceFragment((MySuperFragment) Fragment.instantiate(getBaseContext(), FirebaseAuthenticationFragment.class.getName()), false);
+        }
+    };
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         setTheme(R.style.AppTheme_NoActionBar);
         super.onCreate(savedInstanceState);
-        mTitle = getTitle().toString();
-        mDrawerTitle = "Select an Activity";
+        setContentView(R.layout.activity_main);
         mDrawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-        mDrawerList = (ListView) findViewById(R.id.list_activities);
-
-
-//        mDrawerToggle = new ActionBarDrawerToggle(this, mDrawerLayout, (Toolbar) findViewById(R.id.toolbar), R.string.drawer_open, R.string.drawer_close) {
-//
-//            /** Called when a drawer has settled in a completely closed state. */
-//            public void onDrawerClosed(View view) {
-//                super.onDrawerClosed(view);
-//                getSupportActionBar().setTitle(mTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//
-//            /** Called when a drawer has settled in a completely open state. */
-//            public void onDrawerOpened(View drawerView) {
-//                super.onDrawerOpened(drawerView);
-//                getSupportActionBar().setTitle(mDrawerTitle);
-//                invalidateOptionsMenu(); // creates call to onPrepareOptionsMenu()
-//            }
-//        };
+        mDrawerLayout.setDrawerShadow(R.drawable.drawer_shadow, GravityCompat.START);
 
         mDrawerToggle = new ActionBarDrawerToggle(
                 this,                  /* host Activity */
@@ -66,36 +71,17 @@ public class MainActivity extends MySuperActivity {
                 (Toolbar) findViewById(R.id.toolbar),  /* nav drawer icon to replace 'Up' caret */
                 R.string.drawer_open,  /* "open drawer" description */
                 R.string.drawer_close  /* "close drawer" description */
-        ) {
+        );
 
-            /**
-             * Called when a drawer has settled in a completely closed state.
-             */
-            public void onDrawerClosed(View view) {
-                super.onDrawerClosed(view);
-                getSupportActionBar().setTitle(mTitle);
-            }
-
-            /**
-             * Called when a drawer has settled in a completely open state.
-             */
-            public void onDrawerOpened(View drawerView) {
-                super.onDrawerOpened(drawerView);
-                getSupportActionBar().setTitle(mDrawerTitle);
-            }
-        };
         mDrawerLayout.addDrawerListener(mDrawerToggle);
-        try {
-            fillRadioActivities();
-        } catch (PackageManager.NameNotFoundException e) {
-            e.printStackTrace();
-        }
-
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_main;
+        if (savedInstanceState == null)
+            try {
+                fillRadioActivities();
+            } catch (PackageManager.NameNotFoundException e) {
+                e.printStackTrace();
+            }
+        LocalBroadcastManager.getInstance(getBaseContext())
+                .registerReceiver(mBroadcastReceiver, new IntentFilter(Constants.ACTION_FIREBASE_LOGIN));
     }
 
     @Override
@@ -114,75 +100,119 @@ public class MainActivity extends MySuperActivity {
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // Pass the event to ActionBarDrawerToggle, if it returns true, then it has handled the app icon touch event
-        if (mDrawerToggle.onOptionsItemSelected(item)) {
-            return true;
-        }
-        // Handle your other action bar items...
-
-        return super.onOptionsItemSelected(item);
+        return mDrawerToggle.onOptionsItemSelected(item) || super.onOptionsItemSelected(item);
     }
 
-    /* Called whenever we call invalidateOptionsMenu() */
+    public void replaceFragment(MySuperFragment fragment, boolean addToBackStack) {
+        FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+        ft.replace(R.id.content_frame, fragment, Utils.getTag(fragment));
+        if (addToBackStack) ft.addToBackStack("replace with " + Utils.getTag(fragment));
+        ft.commit();
+
+        // update selected item title, then close the drawer
+        setTitle(fragment.getTitle());
+        mDrawerLayout.closeDrawers();
+    }
+
     @Override
-    public boolean onPrepareOptionsMenu(Menu menu) {
-        // If the nav drawer is open, hide action items related to the content view
-        boolean drawerOpen = mDrawerLayout.isDrawerOpen(mDrawerList);
-//        menu.findItem(R.id.action_websearch).setVisible(!drawerOpen);
-        return super.onPrepareOptionsMenu(menu);
+    public void onFragmentInteraction(MySuperFragment fragment, Bundle bundle) {
+        Log.d(Utils.getTag(this), "Bundle " + Utils.debugBundle(bundle) + " received from fragment: " + fragment);
+        String action = bundle.getString(Constants.ACTION_FRAGMENT);
+        boolean addToBackstack = bundle.getBoolean(Constants.ACTION_ADDTOBACKSTACK);
+        if (Constants.ACTION_REPLACE_FRAGMENT.equals(action))
+            replaceFragment(fragment, addToBackstack);
     }
 
-    private List<ActivityInfo> activityInfos = new ArrayList<>();
+    @Override
+    protected void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putStringArrayList(TARGETS, targets);
+    }
+
+    @Override
+    protected void onRestoreInstanceState(Bundle savedInstanceState) {
+        super.onRestoreInstanceState(savedInstanceState);
+        targets = savedInstanceState.getStringArrayList(TARGETS);
+        try {
+            fillRadioActivities();
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
 
     private void fillRadioActivities() throws PackageManager.NameNotFoundException {
         ListView list_activities = (ListView) findViewById(R.id.list_activities);
-        for (ActivityInfo activityInfo : getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_ACTIVITIES).activities)
-            if (activityInfo.parentActivityName != null && activityInfo.parentActivityName.equals(this.getClass().getName()))
-                activityInfos.add(activityInfo);
+        ActivityInfo[] activities = getPackageManager().getPackageInfo(getPackageName(), PackageManager.GET_ACTIVITIES).activities;
+        Arrays.sort(activities, new PackageItemInfo.DisplayNameComparator(getPackageManager()));
 
-        //noinspection unchecked
-        ArrayAdapter adapter = new ArrayAdapter(this, android.R.layout.simple_list_item_1, activityInfos) {
+        if (targets == null) {
+            targets = new ArrayList<>();
+            for (ActivityInfo activityInfo : activities)
+                if (activityInfo.parentActivityName != null && activityInfo.parentActivityName.equals(this.getClass().getName()))
+                    targets.add(activityInfo.name);
+
+            targets.add(FirebaseAuthenticationFragment.class.getName());
+        }
+
+        if (Strings.isNullOrEmpty(getUid()) && targets.contains(FirebaseDatabaseFragment.class.getName())) {
+            targets.remove(FirebaseDatabaseFragment.class.getName());
+        } else if (!Strings.isNullOrEmpty(getUid()) && !targets.contains(FirebaseDatabaseFragment.class.getName())) {
+            targets.add(FirebaseDatabaseFragment.class.getName());
+        }
+
+        final int list_item_layout = android.R.layout.simple_list_item_1;
+        ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, list_item_layout, targets) {
             @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
                 // inflate layout
                 if (convertView == null)
-                    convertView = LayoutInflater.from(getContext()).inflate(android.R.layout.simple_list_item_1, parent, false);
+                    convertView = LayoutInflater.from(getContext()).inflate(list_item_layout, parent, false);
+                String target = getItem(position);
 
                 TextView tv = (TextView) convertView.findViewById(android.R.id.text1);
-                if (tv != null)
-                    tv.setText(activityInfos.get(position).name.substring(
-                            activityInfos.get(position).packageName.length() + 1));
+                if (tv != null && target != null)
+                    tv.setText(target.substring(target.lastIndexOf(".") + 1));
 
                 return convertView;
             }
         };
 
         list_activities.setAdapter(adapter);
-
-        list_activities.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                ActivityInfo selectedAI = activityInfos.get(position);
-                ComponentName name = new ComponentName(selectedAI.packageName, selectedAI.name);
-                Intent i = new Intent()
-                        .setComponent(name);
-                startActivity(i);
-            }
-        });
+        list_activities.setOnItemClickListener(
+                new AdapterView.OnItemClickListener() {
+                    @Override
+                    public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                        String selectedItem = (String) parent.getItemAtPosition(position);
+                        try {
+                            Class aClass = Class.forName(selectedItem);
+                            aClass.asSubclass(Activity.class);
+                            startActivity(new Intent().setComponent(new ComponentName(view.getContext(), aClass)));
+                        } catch (ClassNotFoundException e) {
+                            e.printStackTrace();
+                        } catch (ClassCastException e) {
+                            replaceFragment((MySuperFragment) Fragment.instantiate(getBaseContext(), selectedItem), false);
+                        }
+                    }
+                });
     }
 
     @Override
     public void onBackPressed() {
-        new AlertDialog.Builder(this)
-                .setMessage("Are you sure you want to exit?")
-                .setCancelable(false)
-                .setPositiveButton("Yes", new DialogInterface.OnClickListener() {
-                    public void onClick(DialogInterface dialog, int id) {
-                        MainActivity.this.finish();
-                        MainActivity.super.onBackPressed();
-                    }
-                })
-                .setNegativeButton("No", null)
-                .show();
+        if (getSupportFragmentManager().getBackStackEntryCount() > 0)
+            getSupportFragmentManager().popBackStack();
+        else
+            showOkCancelDialog("Sure?", "Are you sure you want to exit?", new DialogInterface.OnClickListener() {
+                public void onClick(DialogInterface dialog, int id) {
+                    MainActivity.this.finish();
+                    MainActivity.super.onBackPressed();
+                }
+            });
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        LocalBroadcastManager.getInstance(getBaseContext()).unregisterReceiver(mBroadcastReceiver);
     }
 }

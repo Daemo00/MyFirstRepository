@@ -1,6 +1,7 @@
 package com.daemo.myfirstapp;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v4.app.Fragment;
 import android.support.v4.widget.SwipeRefreshLayout;
@@ -11,9 +12,10 @@ import android.view.ViewGroup;
 
 import com.daemo.myfirstapp.common.Utils;
 
+import java.util.Arrays;
+
 public class MySuperFragment extends Fragment implements SwipeRefreshLayout.OnRefreshListener {
 
-    private MySuperFragment inst;
     private String title = Utils.getTag(this);
 
     public MySuperFragment() {
@@ -42,6 +44,7 @@ public class MySuperFragment extends Fragment implements SwipeRefreshLayout.OnRe
             viewGroup.addView(swipeRefreshLayout);
             return viewGroup;
         }
+
         return swipeRefreshLayout;
     }
 
@@ -70,9 +73,31 @@ public class MySuperFragment extends Fragment implements SwipeRefreshLayout.OnRe
     }
 
     public MySuperActivity getMySuperActivity() {
-        if (getActivity() instanceof MySuperActivity) {
-            return (MySuperActivity) getActivity();
-        }
+        if (getActivity() instanceof MySuperActivity) return (MySuperActivity) getActivity();
         return null;
+    }
+
+    @Override
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
+        super.onRequestPermissionsResult(requestCode, permissions, grantResults);
+        Log.d(Utils.getTag(this), "onRequestPermissionsResult(" + requestCode + ", " + Arrays.toString(permissions) + ", " + Arrays.toString(grantResults) + ")");
+    }
+
+    /**
+     * This interface must be implemented by activities that contain this
+     * fragment to allow an interaction in this fragment to be communicated
+     * to the activity and potentially other fragments contained in that
+     * activity.
+     * <p>
+     * See the Android Training lesson <a href=
+     * "http://developer.android.com/training/basics/fragments/communicating.html"
+     * >Communicating with Other Fragments</a> for more information.
+     */
+    interface OnFragmentInteractionListener {
+        void onFragmentInteraction(MySuperFragment fragment, Bundle bundle);
+    }
+
+    public String getUid() {
+        return getMySuperActivity().getUid();
     }
 }

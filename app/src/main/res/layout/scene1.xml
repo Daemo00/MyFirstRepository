@@ -22,21 +22,21 @@
     tools:context="com.daemo.myfirstapp.graphics.transitions.TransitionsFragment">
 
     <View
-        android:id="@+id/view_1"
+        android:id="@+id/NWQuadrant"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="8dp"
         android:background="#f00" />
 
     <View
-        android:id="@+id/view_2"
+        android:id="@+id/NEQuadrant"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="8dp"
         android:background="#0f0" />
 
     <View
-        android:id="@+id/view_3"
+        android:id="@+id/SWQuadrant"
         android:layout_width="64dp"
         android:layout_height="64dp"
         android:layout_margin="8dp"

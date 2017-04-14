@@ -43,6 +43,12 @@ public class DragDropActivity extends MySuperActivity {
                         null,      // no need to use local data
                         0          // flags (not currently used, set to 0)
                 );
+            } else {
+                //noinspection deprecation
+                v.startDrag(dragData,
+                        myShadow,
+                        null,
+                        0);
             }
             return true;
         }
@@ -53,12 +59,21 @@ public class DragDropActivity extends MySuperActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_drag_drop);
         setupImageFetcher();
-        setupImageView((ImageView) findViewById(R.id.imageView));
-        int[] ids = {R.id.view_1, R.id.view_2, R.id.view_3, R.id.view_4};
+        setupDraggableImageView((ImageView) findViewById(R.id.imageView_draggable));
+        int[] ids = {R.id.NWQuadrant, R.id.NEQuadrant, R.id.SWQuadrant, R.id.SEQuadrant};
         for (int id : ids) findViewById(id).setOnDragListener(new MyDragEventListener());
     }
 
-    void setupImageView(ImageView imageView) {
+    private void setupImageFetcher() {
+        final DisplayMetrics displayMetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+
+        mImageFetcher = new ImageFetcher(this, Math.round(displayMetrics.widthPixels / 4));
+        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
+        mImageFetcher.addImageCache(getMySuperApplication());
+    }
+
+    void setupDraggableImageView(ImageView imageView) {
         // Sets the tag
         imageView.setTag(Constants.IMAGE_TAG);
         // Sets the bitmap for the ImageView from an icon bit map (defined elsewhere)
@@ -66,15 +81,5 @@ public class DragDropActivity extends MySuperActivity {
 
         // Sets a long click listener for the ImageView using an anonymous listener object that implements the OnLongClickListener interface
         imageView.setOnLongClickListener(onLongClickListener);
-    }
-
-    private void setupImageFetcher() {
-        final DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        final int width = displayMetrics.widthPixels;
-
-        mImageFetcher = new ImageFetcher(this, Math.round(width / 4));
-        mImageFetcher.setLoadingImage(R.drawable.empty_photo);
-        mImageFetcher.addImageCache(getMySuperApplication());
     }
 }

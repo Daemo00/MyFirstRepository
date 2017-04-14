@@ -21,8 +21,9 @@
         android:layout_alignParentTop="true"
         android:layout_alignParentEnd="true" />
 
-    <FrameLayout
+    <RelativeLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:id="@+id/frags_container" />
+        android:id="@+id/frags_container"
+        android:layout_below="@+id/spinner"/>
 </RelativeLayout>

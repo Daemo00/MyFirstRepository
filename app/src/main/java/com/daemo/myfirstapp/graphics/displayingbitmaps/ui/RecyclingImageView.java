@@ -19,8 +19,8 @@ package com.daemo.myfirstapp.graphics.displayingbitmaps.ui;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.LayerDrawable;
+import android.support.v7.widget.AppCompatImageView;
 import android.util.AttributeSet;
-import android.widget.ImageView;
 
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.RecyclingBitmapDrawable;
 
@@ -28,7 +28,7 @@ import com.daemo.myfirstapp.graphics.displayingbitmaps.util.RecyclingBitmapDrawa
  * Sub-class of ImageView which automatically notifies the drawable when it is
  * being displayed.
  */
-public class RecyclingImageView extends ImageView {
+public class RecyclingImageView extends AppCompatImageView {
 
     public RecyclingImageView(Context context) {
         super(context);
@@ -85,5 +85,4 @@ public class RecyclingImageView extends ImageView {
             }
         }
     }
-
 }

@@ -9,7 +9,6 @@ import javax.microedition.khronos.opengles.GL10;
 
 class MyGLRenderer implements GLSurfaceView.Renderer {
 
-    private Square mSquare;
     private Triangle mTriangle;
     private float[] mRotationMatrix = new float[16];
     private volatile float mAngle;
@@ -54,8 +53,6 @@ class MyGLRenderer implements GLSurfaceView.Renderer {
         GLES30.glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
         // initialize a triangle
         mTriangle = new Triangle();
-        // initialize a square
-        mSquare = new Square();
     }
 
     // mMVPMatrix is an abbreviation for "Model View Projection Matrix"

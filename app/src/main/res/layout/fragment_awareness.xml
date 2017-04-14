@@ -1,78 +1,97 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context="com.daemo.myfirstapp.location.aware.AwarenessFragment">
+                xmlns:tools="http://schemas.android.com/tools"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                tools:context="com.daemo.myfirstapp.location.aware.AwarenessFragment">
+
+    <ToggleButton
+        android:id="@+id/toggle_connect_googleapiclient"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textOff="@string/disconnected"
+        android:textOn="@string/connected"/>
+
+    <Button
+        android:id="@+id/btn_get_last_location"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/toggle_connect_googleapiclient"
+        android:text="@string/get_last_location"/>
 
     <TextView
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
         android:id="@+id/tv_latitude"
-        android:text="TextView" />
-
-    <TextView
-        android:text="TextView"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/tv_latitude"
-        android:layout_alignParentStart="true"
-        android:id="@+id/tv_longitude" />
-
-    <Button
-        android:text="Clear"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/clear_btn"
-        android:layout_below="@+id/tv_longitude"
-        android:layout_alignParentStart="true" />
-
-    <Button
-        android:text="Check settings"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/btn_get_curr_location_sett"
-        android:layout_below="@+id/clear_btn"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentEnd="true"
+        android:layout_alignTop="@+id/btn_get_last_location"
+        android:layout_marginTop="9dp"
+        android:layout_toEndOf="@+id/btn_get_last_location"
+        android:hint="@string/latitude"/>
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/tv_longitude"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/tv_latitude"
+        android:layout_toEndOf="@+id/btn_get_last_location"
+        android:hint="@string/longitude"/>
+
+    <Button
+        android:id="@+id/clear_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/toggle_location_updates"
+        android:text="@string/clear"/>
+
+    <Button
+        android:id="@+id/btn_get_curr_location_sett"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/clear_btn"
+        android:text="@string/check_settings"/>
+
+    <TextView
         android:id="@+id/tv_last_update"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/clear_btn"
         android:layout_alignBottom="@+id/clear_btn"
-        android:layout_toEndOf="@+id/clear_btn" />
+        android:layout_toEndOf="@+id/clear_btn"/>
 
     <Button
-        android:text="Address"
+        android:id="@+id/address_btn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/btn_get_curr_location_sett"
         android:layout_alignParentStart="true"
-        android:id="@+id/address_btn" />
+        android:layout_below="@+id/btn_get_curr_location_sett"
+        android:text="@string/address"/>
 
     <TextView
-        android:text="TextView"
+        android:id="@+id/tv_address"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/tv_address"
         android:layout_alignBaseline="@+id/address_btn"
         android:layout_alignBottom="@+id/address_btn"
-        android:layout_toEndOf="@+id/address_btn" />
+        android:layout_toEndOf="@+id/address_btn"/>
 
-    <Button
-        android:text="Enable Geofences"
+    <ToggleButton
+        android:id="@+id/toggle_geofences_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/enable_geofences_button"
+        android:layout_alignParentStart="true"
         android:layout_below="@+id/address_btn"
-        android:layout_alignParentStart="true" />
+        android:textOff="@string/geofences_removed"
+        android:textOn="@string/geofences_added"/>
 
-    <Button
-        android:text="Disable Geofence"
+    <ToggleButton
+        android:id="@+id/toggle_location_updates"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/enable_geofences_button"
-        android:id="@+id/disable_geofences_button" />
-
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_get_last_location"
+        android:textOn="@string/location_updates_enabled"
+        android:textOff="@string/location_updates_disabled"/>
 </RelativeLayout>

@@ -24,6 +24,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.app.NavUtils;
 import android.support.v4.view.ViewPager;
+import android.support.v7.app.ActionBar;
 import android.util.DisplayMetrics;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -50,30 +51,23 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-//        setContentView(R.layout.image_detail_pager);
+        setContentView(R.layout.image_detail_pager);
 
-        // Fetch screen height and width, to use as our max size when loading images as this
-        // activity runs full screen
+        // Fetch screen height and width, to use as our max size when loading images as this activity runs full screen
         final DisplayMetrics displayMetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
         final int height = displayMetrics.heightPixels;
         final int width = displayMetrics.widthPixels;
 
-        // For this sample we'll use half of the longest width to resize our images. As the
-        // image scaling ensures the image is larger than this, we should be left with a
-        // resolution that is appropriate for both portrait and landscape. For best image quality
-        // we shouldn't divide by 2, but this will use more memory and require a larger memory
-        // cache.
+        // For this sample we'll use half of the longest width to resize our images.
+        // As the image scaling ensures the image is larger than this, we should be left with a resolution that is appropriate for both portrait and landscape.
+        // For best image quality we shouldn't divide by 2, but this will use more memory and require a larger memory cache.
         final int longest = (height > width ? height : width) / 2;
-
-//        ImageCache.ImageCacheParams cacheParams =
-//                new ImageCache.ImageCacheParams(this, Constants.IMAGE_CACHE_DIR);
-//        cacheParams.setMemCacheSizePercent(Constants.CACHE_SIZE); // Set memory cache to 25% of app memory
 
         // The ImageFetcher takes care of loading images into our ImageView children asynchronously
         mImageFetcher = new ImageFetcher(this, longest);
         mImageFetcher.addImageCache(getMySuperApplication());
-        mImageFetcher.setImageFadeIn(false);
+        mImageFetcher.setImageFadeIn(true);
 
         // Set up ViewPager and backing adapter
         mAdapter = new ImagePagerAdapter(getSupportFragmentManager(), Images.imageUrls.length);
@@ -87,7 +81,7 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
 
         // Enable some additional newer visibility and ActionBar features to create a more immersive photo viewing experience
         if (Utils.hasHoneycomb() && getSupportActionBar() != null) {
-            final android.support.v7.app.ActionBar actionBar = getSupportActionBar();
+            final ActionBar actionBar = getSupportActionBar();
 
             // Hide title text and set home as up
             actionBar.setDisplayShowTitleEnabled(false);
@@ -116,11 +110,6 @@ public class ImageDetailActivity extends MySuperActivity implements OnClickListe
         if (extraCurrentItem != -1) {
             mPager.setCurrentItem(extraCurrentItem);
         }
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.image_detail_pager;
     }
 
     @Override

@@ -8,9 +8,7 @@ import android.database.Cursor;
 import android.net.Uri;
 import android.nfc.NfcAdapter;
 import android.nfc.NfcEvent;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.ParcelFileDescriptor;
 import android.provider.MediaStore;
 import android.provider.OpenableColumns;
 import android.text.TextUtils;
@@ -21,28 +19,24 @@ import android.widget.TextView;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Utils;
 
 import java.io.File;
-import java.io.FileDescriptor;
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Locale;
 
 public class FileSelectClientActivity extends MySuperActivity {
 
     private Intent mRequestFileIntent;
-    private ParcelFileDescriptor mInputPFD;
-    private NfcAdapter mNfcAdapter;
-    private boolean mAndroidBeamAvailable;
-    private FileUriCallback mFileUriCallback;
     private Intent mIntent;
     private File receivedFile;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_sharing_simple_data);
         if (savedInstanceState == null) // i.e. activity started for first time
-            checkPermissionsRunTime(new String[]{Manifest.permission.READ_EXTERNAL_STORAGE});
+            checkPermissionsRunTime(Manifest.permission.READ_EXTERNAL_STORAGE);
 
         mRequestFileIntent = new Intent(Intent.ACTION_PICK);
         mRequestFileIntent.setType("*/*");//image/jpg");//
@@ -60,22 +54,15 @@ public class FileSelectClientActivity extends MySuperActivity {
              * NFC-related features
              */
             // Android Beam file transfer isn't supported
-        } else if (Build.VERSION.SDK_INT <
-                Build.VERSION_CODES.JELLY_BEAN_MR1) {
-            // If Android Beam isn't available, don't continue.
-            mAndroidBeamAvailable = false;
-            /*
-             * Disable Android Beam file transfer features here.
-             */
-            // Android Beam file transfer is available, continue
+            Log.d(Utils.getTag(this), "We don't have NFC");
         } else {
             Log.d(this.getClass().getSimpleName(), "NfcAdpater instantiated");
-            mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
+            NfcAdapter mNfcAdapter = NfcAdapter.getDefaultAdapter(this);
         /*
          * Instantiate a new FileUriCallback to handle requests for
          * URIs
          */
-            mFileUriCallback = new FileUriCallback();
+            FileUriCallback mFileUriCallback = new FileUriCallback();
             // Set the dynamic callback for URI requests.
             mNfcAdapter.setBeamPushUrisCallback(mFileUriCallback, this);
         }
@@ -89,8 +76,6 @@ public class FileSelectClientActivity extends MySuperActivity {
      * files to share
      */
     private class FileUriCallback implements NfcAdapter.CreateBeamUrisCallback {
-        public FileUriCallback() {
-        }
 
         /**
          * Create content URIs as needed to share with another device
@@ -133,6 +118,7 @@ public class FileSelectClientActivity extends MySuperActivity {
              * Handle content URIs for other content providers
              */
             // For a MediaStore content URI
+            Log.d(Utils.getTag(this), "Authority is not 'media'");
         } else {
             // Get the column that contains the file name
             String[] projection = {MediaStore.MediaColumns.DATA};
@@ -160,11 +146,6 @@ public class FileSelectClientActivity extends MySuperActivity {
     }
 
     public void requestFile(View v) {
-        /**
-         * When the user requests a file, send an Intent to the
-         * server app.
-         * files.
-         */
         startActivityForResult(mRequestFileIntent, 0);
     }
 
@@ -175,13 +156,9 @@ public class FileSelectClientActivity extends MySuperActivity {
      * selection worked or not.
      */
     @Override
-    public void onActivityResult(int requestCode, int resultCode,
-                                 Intent returnIntent) {
+    public void onActivityResult(int requestCode, int resultCode, Intent returnIntent) {
         // If the selection didn't work
-        if (resultCode != RESULT_OK) {
-            // Exit without doing anything else
-            return;
-        } else {
+        if (resultCode == RESULT_OK) {
             // Get the file's content URI from the incoming Intent
             Uri returnUri = returnIntent.getData();
             /*
@@ -189,21 +166,22 @@ public class FileSelectClientActivity extends MySuperActivity {
              * returned URI. If the file isn't found, write to the
              * error log and return.
              */
-            try {
-                /*
-                 * Get the content resolver instance for this context, and use it
-                 * to get a ParcelFileDescriptor for the file.
-                 */
-                mInputPFD = getContentResolver().openFileDescriptor(returnUri, "r");
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-                Log.e(this.getClass().getSimpleName(), "File not found.");
-                return;
-            }
+//            ParcelFileDescriptor mInputPFD;
+//            try {
+//                /*
+//                 * Get the content resolver instance for this context, and use it
+//                 * to get a ParcelFileDescriptor for the file.
+//                 */
+//                mInputPFD = getContentResolver().openFileDescriptor(returnUri, "r");
+//            } catch (FileNotFoundException e) {
+//                e.printStackTrace();
+//                Log.e(this.getClass().getSimpleName(), "File not found.");
+//                return;
+//            }
             // Get a regular file descriptor for the file
-            if (mInputPFD != null) {
-                FileDescriptor fd = mInputPFD.getFileDescriptor();
-            }
+//            if (mInputPFD != null) {
+//                FileDescriptor fd = mInputPFD.getFileDescriptor();
+//            }
             mFileUris[0] = returnUri;
 
             // Get the file's content URI from the incoming Intent, then get the file's MIME type
@@ -251,20 +229,15 @@ public class FileSelectClientActivity extends MySuperActivity {
     }
 
     private void handleSendMultipleImages(Intent intent) {
-        showToast("handleSendMultipleImages");
+        showToast("handleSendMultipleImages(" + Utils.debugIntent(intent) + ")");
     }
 
     private void handleSendImage(Intent intent) {
-        showToast("handleSendImage");
+        showToast("handleSendImage(" + Utils.debugIntent(intent) + ")");
     }
 
     private void handleSendText(Intent intent) {
-        showToast("handleSendText");
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_sharing_simple_data;
+        showToast("handleSendText(" + Utils.debugIntent(intent) + ")");
     }
 
     public void sendIntent(View v) {
@@ -276,7 +249,6 @@ public class FileSelectClientActivity extends MySuperActivity {
         String[] selectionArgs = {};
 
         ArrayList<Uri> imageUris = new ArrayList<>();
-        ArrayList<String> imageDatas = new ArrayList<>();
         try (Cursor cursor = getContentResolver().query(
                 MediaStore.Images.Media.EXTERNAL_CONTENT_URI,
                 projection,
@@ -296,19 +268,14 @@ public class FileSelectClientActivity extends MySuperActivity {
 
                     Log.d(this.getClass().getSimpleName(), "btw, uriToImage is " + imageUri + " and its path is " + imageData);
                     imageUris.add(imageUri);
-                    imageDatas.add(imageData);
                 }
             }
         }
 
         Intent sendIntent = new Intent();
-//        sendIntent.setAction(Intent.ACTION_SEND);
         sendIntent.setAction(Intent.ACTION_SEND_MULTIPLE);
 
-//        sendIntent.setData(Uri.fromFile(new File(data)));
-//        sendIntent.putExtra(Intent.EXTRA_STREAM, uriToImage);
         sendIntent.putParcelableArrayListExtra(Intent.EXTRA_STREAM, imageUris);
-//        sendIntent.putStringArrayListExtra(Intent.EXTRA_TEXT, imageDatas);
         sendIntent.putExtra(Intent.EXTRA_TEXT, "some text");
         sendIntent.setType("image/*");
 

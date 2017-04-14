@@ -25,6 +25,7 @@ import android.os.Build;
 import android.util.Log;
 
 import com.daemo.myfirstapp.BuildConfig;
+import com.daemo.myfirstapp.common.Utils;
 
 import java.io.FileDescriptor;
 
@@ -34,48 +35,27 @@ import java.io.FileDescriptor;
  * memory.
  */
 public class ImageResizer extends ImageWorker {
-    private static final String TAG = "ImageResizer";
-    protected int mImageWidth;
-    protected int mImageHeight;
+    int mImageWidth;
+    int mImageHeight;
 
     /**
      * Initialize providing a single target image size (used for both width and height);
-     *
-     * @param context
-     * @param imageWidth
-     * @param imageHeight
      */
-    public ImageResizer(Context context, int imageWidth, int imageHeight) {
-        super(context);
-        setImageSize(imageWidth, imageHeight);
-    }
-
-    /**
-     * Initialize providing a single target image size (used for both width and height);
-     *
-     * @param context
-     * @param imageSize
-     */
-    public ImageResizer(Context context, int imageSize) {
+    ImageResizer(Context context, int imageSize) {
         super(context);
         setImageSize(imageSize);
     }
 
     /**
      * Set the target image width and height.
-     *
-     * @param width
-     * @param height
      */
-    public void setImageSize(int width, int height) {
+    private void setImageSize(int width, int height) {
         mImageWidth = width;
         mImageHeight = height;
     }
 
     /**
      * Set the target image size (width and height will be the same).
-     *
-     * @param size
      */
     public void setImageSize(int size) {
         setImageSize(size, size);
@@ -84,13 +64,10 @@ public class ImageResizer extends ImageWorker {
     /**
      * The main processing method. This happens in a background task. In this case we are just
      * sampling down the bitmap and returning it from a resource.
-     *
-     * @param resId
-     * @return
      */
     private Bitmap processBitmap(int resId) {
         if (BuildConfig.DEBUG) {
-            Log.d(TAG, "processBitmap - " + resId);
+            Log.d(Utils.getTag(this), "processBitmap - " + resId);
         }
         return decodeSampledBitmapFromResource(mResources, resId, mImageWidth,
                 mImageHeight, getImageCache());
@@ -126,7 +103,7 @@ public class ImageResizer extends ImageWorker {
         // END_INCLUDE (read_bitmap_dimensions)
 
         // If we're running on Honeycomb or newer, try to use inBitmap
-        if (com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
+        if (Utils.hasHoneycomb()) {
             addInBitmapOptions(options, cache);
         }
 
@@ -135,36 +112,36 @@ public class ImageResizer extends ImageWorker {
         return BitmapFactory.decodeResource(res, resId, options);
     }
 
-    /**
-     * Decode and sample down a bitmap from a file to the requested width and height.
-     *
-     * @param filename The full path of the file to decode
-     * @param reqWidth The requested width of the resulting bitmap
-     * @param reqHeight The requested height of the resulting bitmap
-     * @param cache The ImageCache used to find candidate bitmaps for use with inBitmap
-     * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
-     *         that are equal to or greater than the requested width and height
-     */
-    public static Bitmap decodeSampledBitmapFromFile(String filename,
-            int reqWidth, int reqHeight, ImageCache cache) {
-
-        // First decode with inJustDecodeBounds=true to check dimensions
-        final BitmapFactory.Options options = new BitmapFactory.Options();
-        options.inJustDecodeBounds = true;
-        BitmapFactory.decodeFile(filename, options);
-
-        // Calculate inSampleSize
-        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-
-        // If we're running on Honeycomb or newer, try to use inBitmap
-        if (com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
-            addInBitmapOptions(options, cache);
-        }
-
-        // Decode bitmap with inSampleSize set
-        options.inJustDecodeBounds = false;
-        return BitmapFactory.decodeFile(filename, options);
-    }
+//    /**
+//     * Decode and sample down a bitmap from a file to the requested width and height.
+//     *
+//     * @param filename The full path of the file to decode
+//     * @param reqWidth The requested width of the resulting bitmap
+//     * @param reqHeight The requested height of the resulting bitmap
+//     * @param cache The ImageCache used to find candidate bitmaps for use with inBitmap
+//     * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
+//     *         that are equal to or greater than the requested width and height
+//     */
+//    public static Bitmap decodeSampledBitmapFromFile(String filename,
+//            int reqWidth, int reqHeight, ImageCache cache) {
+//
+//        // First decode with inJustDecodeBounds=true to check dimensions
+//        final BitmapFactory.Options options = new BitmapFactory.Options();
+//        options.inJustDecodeBounds = true;
+//        BitmapFactory.decodeFile(filename, options);
+//
+//        // Calculate inSampleSize
+//        options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
+//
+//        // If we're running on Honeycomb or newer, try to use inBitmap
+//        if (com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
+//            addInBitmapOptions(options, cache);
+//        }
+//
+//        // Decode bitmap with inSampleSize set
+//        options.inJustDecodeBounds = false;
+//        return BitmapFactory.decodeFile(filename, options);
+//    }
 
     /**
      * Decode and sample down a bitmap from a file input stream to the requested width and height.
@@ -176,7 +153,7 @@ public class ImageResizer extends ImageWorker {
      * @return A bitmap sampled down from the original with the same aspect ratio and dimensions
      *         that are equal to or greater than the requested width and height
      */
-    public static Bitmap decodeSampledBitmapFromDescriptor(
+    static Bitmap decodeSampledBitmapFromDescriptor(
             FileDescriptor fileDescriptor, int reqWidth, int reqHeight, ImageCache cache) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
@@ -191,7 +168,7 @@ public class ImageResizer extends ImageWorker {
         options.inJustDecodeBounds = false;
 
         // If we're running on Honeycomb or newer, try to use inBitmap
-        if (com.daemo.myfirstapp.common.Utils.hasHoneycomb()) {
+        if (Utils.hasHoneycomb()) {
             addInBitmapOptions(options, cache);
         }
 
@@ -228,8 +205,7 @@ public class ImageResizer extends ImageWorker {
      * @param reqHeight The requested height of the resulting bitmap
      * @return The value to be used for inSampleSize
      */
-    public static int calculateInSampleSize(BitmapFactory.Options options,
-            int reqWidth, int reqHeight) {
+    static int calculateInSampleSize(BitmapFactory.Options options, float reqWidth, float reqHeight) {
         // BEGIN_INCLUDE (calculate_sample_size)
         // Raw height and width of image
         final int height = options.outHeight;
@@ -257,7 +233,7 @@ public class ImageResizer extends ImageWorker {
             long totalPixels = width * height / inSampleSize;
 
             // Anything more than 2x the requested pixels we'll sample down further
-            final long totalReqPixelsCap = reqWidth * reqHeight * 2;
+            final float totalReqPixelsCap = reqWidth * reqHeight * 2;
 
             while (totalPixels > totalReqPixelsCap) {
                 inSampleSize *= 2;

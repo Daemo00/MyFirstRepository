@@ -13,11 +13,7 @@ public class SearchableActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_searchable;
+        setContentView(R.layout.activity_searchable);
     }
 
     public void search_click(View view) {

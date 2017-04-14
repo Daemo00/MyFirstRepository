@@ -1,14 +1,16 @@
 package com.daemo.myfirstapp.graphics.transitions;
 
 
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.transition.Fade;
+import android.support.annotation.Nullable;
 import android.transition.Scene;
+import android.transition.Slide;
 import android.transition.Transition;
 import android.transition.TransitionInflater;
 import android.transition.TransitionManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,99 +19,93 @@ import android.widget.TextView;
 
 import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Utils;
 
-import static android.transition.Fade.IN;
-
-/**
- * A simple {@link Fragment} subclass.
- */
 public class TransitionsFragment extends MySuperFragment implements View.OnClickListener, Transition.TransitionListener {
 
-
-    private ViewGroup mSceneRoot;
-    private ViewGroup root;
-    private Scene mSceneA;
-    private Scene mSceneB;
-    private Transition mFadeTransition;
-    private Transition mMultiTransition;
-    private TextView mLabelText;
-    private ViewGroup mFragmentRoot;
-    private Fade mFade;
-    private int mCurrentScene;
+    private int mCurrentTextScene, mCurrentScene;
+    private static final String STATE_CURRENT_TEXT_SCENE = "current_text_scene";
     private static final String STATE_CURRENT_SCENE = "current_scene";
-    private Scene[] mScenes;
-    private Transition mCustomTransition;
-
-    public TransitionsFragment() {
-        // Required empty public constructor
-    }
-
+    private Scene[] mTextScenes, mScenes;
+    private Transition mMultiTransition, mCustomTransition;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        root = (ViewGroup) inflater.inflate(R.layout.fragment_transitions, container, false);
-        if (null != savedInstanceState) {
-            mCurrentScene = savedInstanceState.getInt(STATE_CURRENT_SCENE);
-        }
-        FrameLayout scenes_container = (FrameLayout) root.findViewById(R.id.scenes_container);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+        return inflater.inflate(R.layout.fragment_transitions, container, false);
+    }
 
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        ViewGroup mTextSceneRoot = (ViewGroup) view.findViewById(R.id.scene_root);
+        mTextScenes = new Scene[]{
+                Scene.getSceneForLayout(mTextSceneRoot, R.layout.text_scene_a, getActivity()),
+                Scene.getSceneForLayout(mTextSceneRoot, R.layout.text_scene_b, getActivity())
+        };
 
-// Create the scene root for the scenes in this app
-        mSceneRoot = (ViewGroup) root.findViewById(R.id.scene_root);
-
-// Create the scenes
-        mSceneA = Scene.getSceneForLayout(mSceneRoot, R.layout.scene_a, getActivity());
-        mSceneB = Scene.getSceneForLayout(mSceneRoot, R.layout.scene_b, getActivity());
+        FrameLayout scenes_container = (FrameLayout) view.findViewById(R.id.scenes_container);
+        mScenes = new Scene[]{
+                Scene.getSceneForLayout(scenes_container, R.layout.scene1, getActivity()),
+                Scene.getSceneForLayout(scenes_container, R.layout.scene2, getActivity()),
+                Scene.getSceneForLayout(scenes_container, R.layout.scene3, getActivity()),
+        };
 
         mMultiTransition = TransitionInflater.
                 from(getActivity()).
                 inflateTransition(R.transition.multiple_transition)
                 .addListener(this);
 
-        mFadeTransition = TransitionInflater.
-                from(getActivity()).
-                inflateTransition(R.transition.fade_transition)
-                .addListener(this);
-
         mCustomTransition = new CustomTransition().addListener(this);
 
-        root.findViewById(R.id.button).setOnClickListener(this);
-        root.findViewById(R.id.button_delayed).setOnClickListener(this);
-        root.findViewById(R.id.button_custom).setOnClickListener(this);
+        view.findViewById(R.id.button_go).setOnClickListener(this);
+        view.findViewById(R.id.button_delayed).setOnClickListener(this);
+        view.findViewById(R.id.button_custom).setOnClickListener(this);
+    }
 
-        // We set up the Scenes here.
-        mScenes = new Scene[]{
-                Scene.getSceneForLayout(scenes_container, R.layout.scene1, getActivity()),
-                Scene.getSceneForLayout(scenes_container, R.layout.scene2, getActivity()),
-                Scene.getSceneForLayout(scenes_container, R.layout.scene3, getActivity()),
-        };
+    @Override
+    public void onViewStateRestored(@Nullable Bundle savedInstanceState) {
+        super.onViewStateRestored(savedInstanceState);
+        if (savedInstanceState != null) {
+            mCurrentScene = savedInstanceState.getInt(STATE_CURRENT_SCENE);
+            mCurrentTextScene = savedInstanceState.getInt(STATE_CURRENT_TEXT_SCENE);
+        }
+    }
+
+    @Override
+    public void onStart() {
+        super.onStart();
         // This is the custom Transition.
         // Show the initial Scene.
         TransitionManager.go(mScenes[mCurrentScene % mScenes.length]);
-
-        return root;
+        TransitionManager.go(mTextScenes[mCurrentTextScene], mMultiTransition);
     }
 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button:
-                TransitionManager.go(mSceneB, mMultiTransition);
+            case R.id.button_go:
+                mCurrentTextScene = (mCurrentTextScene + 1) % mTextScenes.length;
+                TransitionManager.go(mTextScenes[mCurrentTextScene], mMultiTransition);
                 break;
             case R.id.button_delayed:
                 // Create a new TextView and set some View properties
-                mLabelText = new TextView(getActivity());
+                TextView mLabelText = new TextView(getActivity());
                 mLabelText.setText(R.string.label);
                 mLabelText.setId(R.id.tv_volley);
 
-                Log.d(this.getClass().getSimpleName(), "root is " + root.toString());
+                ViewGroup rootView = (ViewGroup) getView();
                 // Start recording changes to the view hierarchy
-                TransitionManager.beginDelayedTransition(
-                        root,
-                        new Fade(IN).addListener(this));
+                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+                    TransitionManager.beginDelayedTransition(
+                            rootView,
+                            new Slide(Gravity.LEFT)
+//                            new Fade(Visibility.MODE_IN)
+//                            new Explode()
+//                            new ChangeBounds()
+                    );
+                }
                 // Add the new TextView to the view hierarchy
-                root.addView(mLabelText);
+                if (rootView != null) rootView.addView(mLabelText);
                 break;
             case R.id.button_custom: {
                 mCurrentScene = (mCurrentScene + 1) % mScenes.length;
@@ -124,34 +120,31 @@ public class TransitionsFragment extends MySuperFragment implements View.OnClick
     public void onSaveInstanceState(Bundle outState) {
         super.onSaveInstanceState(outState);
         outState.putInt(STATE_CURRENT_SCENE, mCurrentScene);
+        outState.putInt(STATE_CURRENT_TEXT_SCENE, mCurrentTextScene);
     }
 
     @Override
     public void onTransitionStart(Transition transition) {
-        Log.d(this.getClass().getSimpleName(), "onTransitionStart(" + transition.toString() + ")");
-    }
-
-    @Override
-    public void onTransitionEnd(Transition transition) {
-        Log.d(this.getClass().getSimpleName(), "onTransitionEnd(" + transition.toString() + ")");
-
-    }
-
-    @Override
-    public void onTransitionCancel(Transition transition) {
-        Log.d(this.getClass().getSimpleName(), "onTransitionCancel(" + transition.toString() + ")");
-
+        Log.d(Utils.getTag(this), "onTransitionStart(" + transition.toString() + ")");
     }
 
     @Override
     public void onTransitionPause(Transition transition) {
-        Log.d(this.getClass().getSimpleName(), "onTransitionPause(" + transition.toString() + ")");
-
+        Log.d(Utils.getTag(this), "onTransitionPause(" + transition.toString() + ")");
     }
 
     @Override
     public void onTransitionResume(Transition transition) {
-        Log.d(this.getClass().getSimpleName(), "onTransitionResume(" + transition.toString() + ")");
+        Log.d(Utils.getTag(this), "onTransitionResume(" + transition.toString() + ")");
+    }
 
+    @Override
+    public void onTransitionEnd(Transition transition) {
+        Log.d(Utils.getTag(this), "onTransitionEnd(" + transition.toString() + ")");
+    }
+
+    @Override
+    public void onTransitionCancel(Transition transition) {
+        Log.d(Utils.getTag(this), "onTransitionCancel(" + transition.toString() + ")");
     }
 }

@@ -1,50 +1,35 @@
 package com.daemo.myfirstapp.graphics.animators;
 
 
+import android.graphics.Color;
 import android.os.Bundle;
-import android.support.v4.app.Fragment;
+import android.support.annotation.ColorInt;
+import android.support.annotation.Nullable;
+import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
 import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
-import com.daemo.myfirstapp.graphics.GraphicsActivity;
 
-/**
- * A simple {@link Fragment} subclass.
- */
-public class AnimationsFragment extends MySuperFragment implements View.OnClickListener, AdapterView.OnItemSelectedListener {
+import static com.daemo.myfirstapp.graphics.animators.AnimationsFragment.AnimatedFragment.COLOR;
 
+public class AnimationsFragment extends MySuperFragment implements View.OnClickListener {
 
-    private boolean mMainLoaded = true;
-    private View root;
+    private boolean mBlueLoaded = true;
     private Spinner mSpinner;
-    private GraphicsActivity graphicsActivity;
-
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
-        if (getActivity().getFragmentManager().getBackStackEntryCount() > 0) {
-            getActivity().getFragmentManager().popBackStack();
-            mMainLoaded = true;
-        }
-    }
 
     private void loadMain() {
         getActivity().getFragmentManager()
                 .beginTransaction()
-                .replace(R.id.frags_container, new MainFragment())
+                .replace(R.id.frags_container, AnimatedFragment.getInstance(mBlueLoaded ? Color.GREEN : Color.BLUE))
                 .commit();
 
-        mMainLoaded = true;
-    }
-
-    @Override
-    public void onNothingSelected(AdapterView<?> parent) {
-
+//        mBlueLoaded = true;
     }
 
     private enum Animations {
@@ -52,28 +37,28 @@ public class AnimationsFragment extends MySuperFragment implements View.OnClickL
         CardFlip
     }
 
-    public AnimationsFragment() {
-        // Required empty public constructor
-    }
-
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        root = inflater.inflate(R.layout.fragment_animations, container, false);
-        graphicsActivity = (GraphicsActivity) getActivity();
-        mSpinner = (Spinner) root.findViewById(R.id.spinner);
+        return inflater.inflate(R.layout.fragment_animations, container, false);
+    }
+
+    @Override
+    public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+        mSpinner = (Spinner) view.findViewById(R.id.spinner);
         mSpinner.setAdapter(new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, Animations.values()));
-        mSpinner.setOnItemSelectedListener(this);
 
-        root.findViewById(R.id.animateButton).setOnClickListener(this);
-        if (savedInstanceState == null) {
-            loadMain();
-        } else {
-            mMainLoaded = !(getActivity().getFragmentManager().getBackStackEntryCount() > 0);
-        }
+        view.findViewById(R.id.animateButton).setOnClickListener(this);
+        if (savedInstanceState != null && savedInstanceState.containsKey(COLOR))
+            mBlueLoaded = savedInstanceState.getBoolean(COLOR);
+        loadMain();
+    }
 
-        return root;
+    @Override
+    public void onSaveInstanceState(Bundle outState) {
+        super.onSaveInstanceState(outState);
+        outState.putBoolean(COLOR, mBlueLoaded);
     }
 
     @Override
@@ -86,11 +71,7 @@ public class AnimationsFragment extends MySuperFragment implements View.OnClickL
     }
 
     private void animate() {
-//        try {
-//            this.getClass().getDeclaredMethod(mSpinner.getSelectedItem().toString()).invoke(this);
-//        } catch (NoSuchMethodException | InvocationTargetException | IllegalAccessException e) {
-//            e.printStackTrace();
-//        }
+        mBlueLoaded = !mBlueLoaded;
         switch (Animations.valueOf(mSpinner.getSelectedItem().toString())) {
             case CrossFade:
                 crossFade();
@@ -99,17 +80,9 @@ public class AnimationsFragment extends MySuperFragment implements View.OnClickL
                 cardFlip();
                 break;
         }
-        mMainLoaded = !mMainLoaded;
     }
 
     private void cardFlip() {
-        if (!mMainLoaded) {
-            getActivity().getFragmentManager().popBackStack();
-            return;
-        }
-
-        // Create and commit a new fragment transaction that adds the fragment for the back of the card, uses custom animations, and is part of the fragment manager's back stack.
-
         getActivity().getFragmentManager()
                 .beginTransaction()
 
@@ -119,21 +92,13 @@ public class AnimationsFragment extends MySuperFragment implements View.OnClickL
                         R.animator.card_flip_left_in, R.animator.card_flip_left_out)
 
                 // Replace any fragments currently in the container view with a fragment representing the next page (indicated by the just-incremented currentPage variable).
-                .replace(R.id.frags_container, new AlterFragment())
-
-                // Add this transaction to the back stack, allowing users to press Back to get to the front of the card.
-                .addToBackStack(null)
+                .replace(R.id.frags_container, AnimatedFragment.getInstance(mBlueLoaded ? Color.GREEN : Color.BLUE))
 
                 // Commit the transaction.
                 .commit();
     }
 
     private void crossFade() {
-        if (!mMainLoaded) {
-            getActivity().getFragmentManager().popBackStack();
-            return;
-        }
-
         getActivity().getFragmentManager()
                 .beginTransaction()
 
@@ -143,12 +108,38 @@ public class AnimationsFragment extends MySuperFragment implements View.OnClickL
                         R.animator.cross_fade_in, R.animator.cross_fade_out)
 
                 // Replace any fragments currently in the container view with a fragment representing the next page (indicated by the just-incremented currentPage variable).
-                .replace(R.id.frags_container, new AlterFragment())
-
-                // Add this transaction to the back stack, allowing users to press Back to get to the front of the card.
-                .addToBackStack(null)
+                .replace(R.id.frags_container, AnimatedFragment.getInstance(mBlueLoaded ? Color.GREEN : Color.BLUE))
 
                 // Commit the transaction.
                 .commit();// Decide which view to hide and which to show.
+    }
+
+    public static class AnimatedFragment extends android.app.Fragment {
+
+        static final String COLOR = "color";
+        private static AnimatedFragment inst;
+
+        public static AnimatedFragment getInstance(@ColorInt int color) {
+            inst = new AnimatedFragment();
+            Bundle args = new Bundle();
+            args.putInt(COLOR, color);
+            inst.setArguments(args);
+            return inst;
+        }
+
+        @Nullable
+        @Override
+        public View onCreateView(LayoutInflater inflater, @Nullable ViewGroup container, @Nullable Bundle savedInstanceState) {
+            Bundle args = getArguments();
+            int color = args.getInt(COLOR);
+            View view = new View(getActivity());
+            view.setId(R.id.square);
+            view.setBackgroundColor(color);
+            int dim = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 200, getResources().getDisplayMetrics());
+            RelativeLayout.LayoutParams layoutParams = new RelativeLayout.LayoutParams(dim, dim);
+            layoutParams.addRule(RelativeLayout.CENTER_IN_PARENT);
+            view.setLayoutParams(layoutParams);
+            return view;
+        }
     }
 }

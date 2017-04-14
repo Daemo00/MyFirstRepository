@@ -13,9 +13,11 @@ import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
+import android.widget.TextView;
 
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 
 import java.io.File;
@@ -30,8 +32,9 @@ public class FileSelectServerActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_file_select);
         // Set up an Intent to send back to apps that request a file
-        mResultIntent = new Intent("com.daemo.myfirstapp.ACTION_RETURN_FILE");
+        mResultIntent = new Intent(Constants.ACTION_RETURN_FILE);
         configSpinner();
         configSwitches();
         configList();
@@ -115,24 +118,21 @@ public class FileSelectServerActivity extends MySuperActivity {
         });
     }
 
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_file_select;
-    }
-
     private void fillList() {
         fillList("");
     }
 
     private void fillList(String subDir) {
         File dir = subDir.isEmpty() ? getSelectedDir() : new File(getSelectedDir(), subDir);
+        ((TextView) findViewById(R.id.textView4)).setText(dir.getAbsolutePath());
 
         File[] mImageFiles = dir.listFiles() == null ? new File[]{} : dir.listFiles();
 
         // Set the Activity's result to null to begin with
         setResult(Activity.RESULT_CANCELED, null);
 
-        // Display the file names in the ListView mFileListView. Back the ListView with the array mImageFilenames, which you can create by iterating through mImageFiles and calling File.getAbsolutePath() for each File
+        // Display the file names in the ListView mFileListView.
+        // Back the ListView with the array mImageFilenames, which you can create by iterating through mImageFiles and calling File.getAbsolutePath() for each File
         mImageFilenames = new String[mImageFiles.length];
         for (int i = 0; i < mImageFiles.length; i++)
             mImageFilenames[i] = mImageFiles[i].getAbsolutePath();

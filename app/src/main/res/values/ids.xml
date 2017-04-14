@@ -9,4 +9,6 @@
     <item name="DBList" type="id" />
     <item name="Reset" type="id"/>
     <item name="Pie" type="id"/>
+    <item name="mapContainer" type="id"/>
+    <item name="scroll_layout_superFragment" type="id"/>
 </resources>

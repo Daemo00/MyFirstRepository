@@ -1,6 +1,7 @@
 package com.daemo.myfirstapp;
 
 import android.app.Activity;
+import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.content.ComponentName;
 import android.content.Context;
@@ -11,6 +12,7 @@ import android.os.Bundle;
 import android.provider.SearchRecentSuggestions;
 import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.FragmentManager;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AlertDialog;
@@ -29,13 +31,16 @@ import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.search.MySuggestionProvider;
 import com.daemo.myfirstapp.search.SearchableActivity;
 import com.daemo.myfirstapp.settings.SettingsActivity;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import static com.daemo.myfirstapp.common.Utils.debugIntent;
 
-public abstract class MySuperActivity extends AppCompatActivity {
+public abstract class MySuperActivity extends AppCompatActivity implements MySuperFragment.OnFragmentInteractionListener {
     public static final int MY_PERMISSIONS_REQUEST = 0;
     private List<Toast> toastList = new ArrayList<>();
     private List<AlertDialog> alertDialogList = new ArrayList<>();
@@ -44,28 +49,31 @@ public abstract class MySuperActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(getLayoutResID());
+        FragmentManager.enableDebugLogging(true);
+        handleIntent(getIntent());
+    }
+
+    @Override
+    protected void onStart() {
+        super.onStart();
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
         ActionBar bar = getSupportActionBar();
         if (bar != null) {
             bar.setDisplayShowTitleEnabled(true);
-            bar.setTitle(Utils.getTag(this));
+            bar.setTitle(this.getTitle() == null ? Utils.getTag(this) : this.getTitle());
             bar.setDisplayHomeAsUpEnabled(true);
             bar.setHomeButtonEnabled(true);
         }
-        handleIntent(getIntent());
     }
-
-    protected abstract int getLayoutResID();
 
     public MySuperApplication getMySuperApplication() {
         return (MySuperApplication) getApplication();
     }
 
     @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
+    public boolean onCreateOptionsMenu(final Menu menu) {
         MenuInflater inflater = getMenuInflater();
         inflater.inflate(R.menu.menu, menu);
 
@@ -75,15 +83,38 @@ public abstract class MySuperActivity extends AppCompatActivity {
 
         // Get the SearchView and set the searchable configuration
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        SearchView searchView = (SearchView) menu.findItem(R.id.menu_item_search).getActionView();
+        MenuItem searchItem = menu.findItem(R.id.menu_item_search);
+        SearchView searchView = (SearchView) searchItem.getActionView();
         // Assumes current activity is the searchable activity
         searchView.setQueryRefinementEnabled(true);
         searchView.setSubmitButtonEnabled(true);
         searchView.setSearchableInfo(searchManager.getSearchableInfo(new ComponentName(this, SearchableActivity.class)));
         searchView.setIconifiedByDefault(false); // Do not iconify the widget; expand it by default
+        // Detect SearchView actions
+        MenuItemCompat.OnActionExpandListener searchItemExpansionListener = new MenuItemCompat.OnActionExpandListener() {
+            @Override
+            public boolean onMenuItemActionExpand(MenuItem item) {
+                setItemsVisibility(menu, item, false);
+                return true;
+            }
 
-        // Return true to display menu
-        return true;
+            @Override
+            public boolean onMenuItemActionCollapse(MenuItem item) {
+                setItemsVisibility(menu, item, true);
+                invalidateOptionsMenu();
+                return true;
+            }
+        };
+        MenuItemCompat.setOnActionExpandListener(searchItem, searchItemExpansionListener);
+
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    private void setItemsVisibility(Menu menu, MenuItem exception, boolean visible) {
+        for (int i = 0; i < menu.size(); ++i) {
+            MenuItem item = menu.getItem(i);
+            if (item != exception) item.setVisible(visible);
+        }
     }
 
     private Intent createDummyIntent() {
@@ -127,9 +158,13 @@ public abstract class MySuperActivity extends AppCompatActivity {
         final Activity activity = this;
         boolean shouldShowStuff = false;
         for (String permission : permissions)
-            shouldShowStuff = shouldShowStuff || ActivityCompat.shouldShowRequestPermissionRationale(activity, permission);
+            if (ActivityCompat.shouldShowRequestPermissionRationale(activity, permission)) {
+                shouldShowStuff = true;
+                break;
+            }
+
         if (shouldShowStuff)
-            showOkCancelDialog("Pliiis", "I really need " + TextUtils.join(", ", permissions) + " because bla bla",
+            showOkCancelDialog(getText(R.string.request_permission), "I really need " + TextUtils.join(", ", permissions) + " because bla bla",
                     new DialogInterface.OnClickListener() {
                         @Override
                         public void onClick(DialogInterface dialogInterface, int i) {
@@ -143,7 +178,7 @@ public abstract class MySuperActivity extends AppCompatActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, @NonNull String permissions[], @NonNull int[] grantResults) {
-        Log.d(Utils.getTag(this), "Received permission result for requestCode: " + requestCode);
+        Log.d(Utils.getTag(this), "onRequestPermissionsResult(" + requestCode + ", " + Arrays.toString(permissions) + ", " + Arrays.toString(grantResults) + ")");
         switch (requestCode) {
             case MY_PERMISSIONS_REQUEST:
                 List<String> notGrantedPerms = new ArrayList<>();
@@ -167,7 +202,11 @@ public abstract class MySuperActivity extends AppCompatActivity {
         }
     }
 
-    public void showOkCancelDialog(final String title, final String message, final DialogInterface.OnClickListener clickListener) {
+    public void showOkCancelDialog(final CharSequence title, final String message, final DialogInterface.OnClickListener okClickListener) {
+        showOkCancelDialog(title, message, okClickListener, null);
+    }
+
+    public void showOkCancelDialog(final CharSequence title, final String message, final DialogInterface.OnClickListener okClickListener, final DialogInterface.OnClickListener cancelClickListener) {
         final Activity thisActivity = this;
         this.runOnUiThread(new Runnable() {
             @Override
@@ -175,8 +214,9 @@ public abstract class MySuperActivity extends AppCompatActivity {
                 AlertDialog alertDialog = new AlertDialog.Builder(thisActivity)
                         .setMessage(message)
                         .setTitle(title)
-                        .setPositiveButton("Ok", clickListener)
-                        .setNegativeButton("Cancel", null)
+                        .setPositiveButton("Ok", okClickListener)
+                        .setNegativeButton("Cancel", cancelClickListener)
+                        .setCancelable(false)
                         .create();
                 alertDialog.show();
                 alertDialogList.add(alertDialog);
@@ -216,7 +256,8 @@ public abstract class MySuperActivity extends AppCompatActivity {
         if (Intent.ACTION_SEARCH.equals(intent.getAction())) {
             Bundle appData = getIntent().getBundleExtra(SearchManager.APP_DATA);
             Boolean jargon = null;
-            if (appData != null) jargon = appData.getBoolean(SearchableActivity.JARGON);
+            if (appData != null)
+                jargon = appData.getBoolean(SearchableActivity.JARGON);
             String query = intent.getStringExtra(SearchManager.QUERY);
             SearchRecentSuggestions suggestions = new SearchRecentSuggestions(this, MySuggestionProvider.AUTHORITY, MySuggestionProvider.MODE);
             suggestions.saveRecentQuery(query, null);
@@ -242,6 +283,59 @@ public abstract class MySuperActivity extends AppCompatActivity {
     }
 
     public void showToast(int intMsg) {
-        showToast(getResources().getString(intMsg));
+        showToast(getString(intMsg));
+    }
+
+    public void showOkDialog(final String title, final String message, final DialogInterface.OnClickListener okClickListener) {
+        this.runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                AlertDialog alertDialog = new AlertDialog.Builder(MySuperActivity.this)
+                        .setMessage(message)
+                        .setTitle(title)
+                        .setPositiveButton("Ok", okClickListener)
+                        .setCancelable(false)
+                        .create();
+                alertDialog.show();
+                alertDialogList.add(alertDialog);
+            }
+        });
+    }
+
+    @Override
+    public void onFragmentInteraction(MySuperFragment fragment, Bundle bundle) {
+        Log.d(Utils.getTag(this), "Bundle " + Utils.debugBundle(bundle) + " received from fragment: " + fragment);
+    }
+
+    private ProgressDialog mProgressDialog;
+
+    public void showProgressDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog == null) {
+                    mProgressDialog = new ProgressDialog(MySuperActivity.this);
+                    mProgressDialog.setCancelable(false);
+                    mProgressDialog.setMessage("Loading...");
+                }
+                mProgressDialog.show();
+            }
+        });
+    }
+
+    public void hideProgressDialog() {
+        runOnUiThread(new Runnable() {
+            @Override
+            public void run() {
+                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                    mProgressDialog.dismiss();
+                }
+            }
+        });
+    }
+
+    public String getUid() {
+        FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
+        return currentUser != null ? currentUser.getUid() : null;
     }
 }

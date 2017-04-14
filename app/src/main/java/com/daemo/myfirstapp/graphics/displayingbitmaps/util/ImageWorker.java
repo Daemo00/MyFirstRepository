@@ -25,6 +25,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.TransitionDrawable;
+import android.os.Build;
 import android.util.Log;
 import android.widget.ImageView;
 
@@ -47,10 +48,10 @@ public abstract class ImageWorker {
     private Bitmap mLoadingBitmap;
     private boolean mFadeInBitmap = true;
     private boolean mExitTasksEarly = false;
-    protected boolean mPauseWork = false;
+    private boolean mPauseWork = false;
     private final Object mPauseWorkLock = new Object();
 
-    protected Resources mResources;
+    Resources mResources;
 
     private static final int MESSAGE_CLEAR = 0;
     private static final int MESSAGE_INIT_DISK_CACHE = 1;
@@ -59,6 +60,7 @@ public abstract class ImageWorker {
 
     protected ImageWorker(Context context) {
         mResources = context.getResources();
+
         mLoadingBitmap = Bitmap.createBitmap(1, 1, Bitmap.Config.ARGB_8888);
         mLoadingBitmap.eraseColor(Color.GRAY);
     }
@@ -90,7 +92,6 @@ public abstract class ImageWorker {
             imageView.setImageDrawable(value);
             if (listener != null) listener.onImageLoaded(true);
         } else if (cancelPotentialWork(data, imageView)) {
-            //BEGIN_INCLUDE(execute_background_task)
             final BitmapWorkerTask task = new BitmapWorkerTask(data, imageView, listener);
             final AsyncDrawable asyncDrawable = new AsyncDrawable(mResources, mLoadingBitmap, task);
             imageView.setImageDrawable(asyncDrawable);
@@ -98,7 +99,6 @@ public abstract class ImageWorker {
             // NOTE: This uses a custom version of AsyncTask that has been pulled from the framework and slightly modified.
             // Refer to the docs at the top of the class for more info on what was changed.
             task.executeOnExecutor(AsyncTask.DUAL_THREAD_EXECUTOR);
-            //END_INCLUDE(execute_background_task)
         }
     }
 
@@ -119,17 +119,6 @@ public abstract class ImageWorker {
 
     /**
      * Set placeholder bitmap that shows when the the background thread is running.
-     *
-     * @param bitmap
-     */
-    public void setLoadingImage(Bitmap bitmap) {
-        mLoadingBitmap = bitmap;
-    }
-
-    /**
-     * Set placeholder bitmap that shows when the the background thread is running.
-     *
-     * @param resId
      */
     public void setLoadingImage(int resId) {
         mLoadingBitmap = BitmapFactory.decodeResource(mResources, resId);
@@ -138,8 +127,6 @@ public abstract class ImageWorker {
     /**
      * Adds an {@link ImageCache} to this {@link ImageWorker} to handle disk and memory bitmap
      * caching.
-     *
-     * @param mySuperApplication
      */
     public void addImageCache(MySuperApplication mySuperApplication) {
         mImageCache = mySuperApplication.getImageCache();
@@ -172,14 +159,12 @@ public abstract class ImageWorker {
     /**
      * @return The {@link ImageCache} object currently being used by this ImageWorker.
      */
-    protected ImageCache getImageCache() {
+    ImageCache getImageCache() {
         return mImageCache;
     }
 
     /**
      * Cancels any pending work attached to the provided ImageView.
-     *
-     * @param imageView
      */
     public static void cancelWork(ImageView imageView) {
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
@@ -198,7 +183,7 @@ public abstract class ImageWorker {
      * Returns false if the work in progress deals with the same data. The work is not
      * stopped in that case.
      */
-    public static boolean cancelPotentialWork(Object data, ImageView imageView) {
+    private static boolean cancelPotentialWork(Object data, ImageView imageView) {
         //BEGIN_INCLUDE(cancel_potential_work)
         final BitmapWorkerTask bitmapWorkerTask = getBitmapWorkerTask(imageView);
 
@@ -242,11 +227,7 @@ public abstract class ImageWorker {
         private final WeakReference<ImageView> imageViewReference;
         private final OnImageLoadedListener mOnImageLoadedListener;
 
-        public BitmapWorkerTask(Object data, ImageView imageView) {
-            this(data, imageView, null);
-        }
-
-        public BitmapWorkerTask(Object data, ImageView imageView, OnImageLoadedListener listener) {
+        BitmapWorkerTask(Object data, ImageView imageView, OnImageLoadedListener listener) {
             mData = data;
             imageViewReference = new WeakReference<>(imageView);
             mOnImageLoadedListener = listener;
@@ -276,6 +257,7 @@ public abstract class ImageWorker {
                     try {
                         mPauseWorkLock.wait();
                     } catch (InterruptedException e) {
+                        e.printStackTrace();
                     }
                 }
             }
@@ -384,12 +366,12 @@ public abstract class ImageWorker {
     private static class AsyncDrawable extends BitmapDrawable {
         private final WeakReference<BitmapWorkerTask> bitmapWorkerTaskReference;
 
-        public AsyncDrawable(Resources res, Bitmap bitmap, BitmapWorkerTask bitmapWorkerTask) {
+        AsyncDrawable(Resources res, Bitmap bitmap, BitmapWorkerTask bitmapWorkerTask) {
             super(res, bitmap);
             bitmapWorkerTaskReference = new WeakReference<>(bitmapWorkerTask);
         }
 
-        public BitmapWorkerTask getBitmapWorkerTask() {
+        BitmapWorkerTask getBitmapWorkerTask() {
             return bitmapWorkerTaskReference.get();
         }
     }
@@ -397,19 +379,17 @@ public abstract class ImageWorker {
     /**
      * Called when the processing is complete and the final drawable should be
      * set on the ImageView.
-     *
-     * @param imageView
-     * @param drawable
      */
     private void setImageDrawable(ImageView imageView, Drawable drawable) {
         if (mFadeInBitmap) {
             // Transition drawable with a transparent drawable and the final drawable
-            int color = -1;
-            if (Utils.hasMarshmallow()) {
+            int color;
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                 color = imageView.getResources().getColor(
                         android.R.color.transparent,
                         imageView.getContext().getTheme());
             } else {
+                //noinspection deprecation
                 color = imageView.getResources().getColor(android.R.color.transparent);
             }
             TransitionDrawable td = new TransitionDrawable(new Drawable[]{
@@ -447,7 +427,7 @@ public abstract class ImageWorker {
         }
     }
 
-    protected class CacheAsyncTask extends AsyncTask<Object, Void, Void> {
+    private class CacheAsyncTask extends AsyncTask<Object, Void, Void> {
 
         @Override
         protected Void doInBackground(Object... params) {

@@ -37,7 +37,7 @@ import java.util.Collections;
 import java.util.Map;
 
 /**
- * Helper for building selection clauses for {@link SQLiteDatabase}. Each
+ * FirebaseAuthenticationFragment for building selection clauses for {@link SQLiteDatabase}. Each
  * appended clause is combined using {@code AND}. This class is <em>not</em>
  * thread safe.
  */
@@ -121,7 +121,7 @@ public class SelectionBuilder {
      *
      * @see #getSelection()
      */
-    public String[] getSelectionArgs() {
+    private String[] getSelectionArgs() {
         return mSelectionArgs.toArray(new String[mSelectionArgs.size()]);
     }
 

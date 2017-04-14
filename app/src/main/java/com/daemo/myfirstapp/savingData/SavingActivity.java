@@ -15,7 +15,7 @@ public class SavingActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_saving_data);
         // Set up the ViewPager with the sections adapter.
         mViewPager = (ViewPager) findViewById(R.id.container);
         SectionsPagerAdapter sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
@@ -34,10 +34,4 @@ public class SavingActivity extends MySuperActivity {
 
         checkPermissionsRunTime(Manifest.permission.READ_EXTERNAL_STORAGE, Manifest.permission.WRITE_EXTERNAL_STORAGE);
     }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_saving_data;
-    }
-
 }

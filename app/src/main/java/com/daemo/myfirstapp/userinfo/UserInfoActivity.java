@@ -37,6 +37,7 @@ import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;
+import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageWorker;
 
 import java.io.FileDescriptor;
 import java.io.FileNotFoundException;
@@ -68,27 +69,27 @@ public class UserInfoActivity extends MySuperActivity implements AdapterView.OnI
     private EditText mTextView;
     private String mContactName;
     private Intent editIntent;
-    private ImageFetcher mImageFetcher;
+    private ImageWorker mImageFetcher;
     private LoaderManager loaderManager;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
+        setContentView(R.layout.activity_user_info);
 //        ImageCache.ImageCacheParams cacheParams = new ImageCache.ImageCacheParams(this, IMAGE_CACHE_DIR);
 
 //        cacheParams.setMemCacheSizePercent(0.25f); // Set memory cache to 25% of app memory
 
-        TypedValue value = new TypedValue();
-
+        final TypedValue value = new TypedValue();
         getTheme().resolveAttribute(android.R.attr.listPreferredItemHeight, value, true);
-        DisplayMetrics metrics = new DisplayMetrics();
+        final DisplayMetrics metrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(metrics);
 
-        mImageFetcher = new ImageFetcher(this, Math.round(value.getDimension(metrics))) {
+
+        mImageFetcher = new ImageWorker(this) {
             @Override
             protected Bitmap processBitmap(Object data) {
-                return loadContactPhotoThumbnail((String) data, getImageSize());
+                return loadContactPhotoThumbnail(data.toString(), value.getDimension(metrics));
             }
         };
         mImageFetcher.setLoadingImage(R.drawable.ic_contact_picture_holo_light);
@@ -177,12 +178,7 @@ public class UserInfoActivity extends MySuperActivity implements AdapterView.OnI
         mTextView = (EditText) findViewById(android.R.id.text1);
     }
 
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_user_info;
-    }
-
-    private Bitmap loadContactPhotoThumbnail(String photoData, int imageSize) {
+    private Bitmap loadContactPhotoThumbnail(String photoData, float imageSize) {
         // Instantiates an AssetFileDescriptor. Given a content Uri pointing to an image file, the
         // ContentResolver can return an AssetFileDescriptor for the file.
         AssetFileDescriptor afd = null;
@@ -206,8 +202,7 @@ public class UserInfoActivity extends MySuperActivity implements AdapterView.OnI
             }
 
             if (fileDescriptor != null) {
-                // Decodes a Bitmap from the image pointed to by the FileDescriptor, and scales it
-                // to the specified width and height
+                // Decodes a Bitmap from the image pointed to by the FileDescriptor, and scales it to the specified width and height
                 return ImageFetcher.decodeSampledBitmapFromDescriptor(
                         fileDescriptor, imageSize, imageSize);
             }

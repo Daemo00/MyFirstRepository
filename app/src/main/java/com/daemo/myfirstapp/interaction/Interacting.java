@@ -22,11 +22,7 @@ public class Interacting extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_interacting;
+        setContentView(R.layout.activity_interacting);
     }
 
     public void sendIntent(View v) {

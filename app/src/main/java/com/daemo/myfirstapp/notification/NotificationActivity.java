@@ -40,6 +40,7 @@ public class NotificationActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_notification);
         // Gets an instance of the NotificationManager service
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -52,11 +53,6 @@ public class NotificationActivity extends MySuperActivity {
             if (Objects.equal(getIntent().getAction(), Constants.ACTION_DELETE))
                 updateNumberOfNotifications();
         }
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_notification;
     }
 
     public void issueNotification(View v) {

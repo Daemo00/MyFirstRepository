@@ -2,11 +2,15 @@
   <dictionary name="admin">
     <words>
       <w>automagically</w>
+      <w>backstack</w>
       <w>coords</w>
       <w>crossfade</w>
+      <w>firebase</w>
+      <w>geocoder</w>
       <w>geofence</w>
       <w>geofences</w>
       <w>geofencing</w>
+      <w>resizer</w>
       <w>viceversa</w>
     </words>
   </dictionary>

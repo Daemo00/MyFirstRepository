@@ -1,5 +1,8 @@
 package com.daemo.myfirstapp.common;
 
+import android.annotation.SuppressLint;
+import android.app.ActivityManager;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Build;
 import android.os.Bundle;
@@ -8,29 +11,36 @@ import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
 import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.chatHeads.ChatHeadService;
 
 import java.io.File;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.Locale;
 
+@SuppressWarnings("unused")
 public class Utils {
 
     public static String getTag(Object inst) {
-        String className = inst.getClass().getSimpleName();
-        return className.isEmpty() ? "Anonymous Class" : className;
+        return getTag(inst.getClass());
     }
 
+    public static String getTag(Class clazz) {
+        String className = clazz.getSimpleName();
+        return className.isEmpty() ? "Anonymous Class" : className;
+    }
     public static String capitalize(final String line) {
         return Character.toUpperCase(line.charAt(0)) + line.substring(1).toLowerCase();
     }
 
     public static String printList(Collection list) {
         StringBuilder res = new StringBuilder("{");
+        res.append(System.getProperty("line.separator"));
         int index = 0;
         for (Object o : list)
-            res.append("item ").append(index++).append(": ").append(o.toString())
+            res.append(String.format(Locale.getDefault(), "\titem %d:\t%s\t(%s)", index++, o.toString(), o.getClass().getName()))
                     .append(System.getProperty("line.separator"));
 
         res.append("}");
@@ -65,21 +75,25 @@ public class Utils {
     }
 
     public static String debugIntent(Intent data) {
+        if (data == null) return "Intent is null";
         String msg = "Intent has action: " + data.getAction() + "\n";
         msg += "and extras:\n";
         if (data.getExtras() != null) {
             msg += debugBundle(data.getExtras());
-        }
+        } else msg += "null";
         return msg;
     }
 
     public static String debugBundle(Bundle bundle) {
+        if (bundle == null) return "Bundle is null";
         String msg = "Bundle is:\n";
         for (String key : bundle.keySet()) {
             Object value = bundle.get(key);
-            if (value instanceof Bundle) msg += debugBundle(bundle);
-            else
+            if (value instanceof Bundle) msg += debugBundle((Bundle) value);
+            else if (value instanceof Collection) msg += printList((Collection) value) + "\n";
+            else if (value != null) {
                 msg += String.format("\t%s\t%s\t(%s)\n", key, value.toString(), value.getClass().getName());
+            }
         }
         return msg;
     }
@@ -92,24 +106,41 @@ public class Utils {
         return true;
     }
 
+    public static boolean isMyServiceRunning(Context context, Class<?> serviceClass) {
+        if (ChatHeadService.class.getName().equals(serviceClass.getName()))
+            return Constants.SERVICE_CHAT_HEAD_RUNNING;
+        ActivityManager manager = (ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE);
+        for (ActivityManager.RunningServiceInfo service : manager.getRunningServices(Integer.MAX_VALUE)) {
+            if (serviceClass.getName().equals(service.service.getClassName())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @SuppressLint("ObsoleteSdkInt")
     public static boolean hasFroyo() {
         // Can use static final constants like FROYO, declared in later versions
         // of the OS since they are inlined at compile time. This is guaranteed behavior.
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.FROYO;
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     public static boolean hasGingerbread() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD;
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     public static boolean hasHoneycomb() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     public static boolean hasHoneycombMR1() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB_MR1;
     }
 
+    @SuppressLint("ObsoleteSdkInt")
     public static boolean hasJellyBean() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN;
     }

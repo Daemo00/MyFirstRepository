@@ -21,12 +21,12 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Build;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.daemo.myfirstapp.BuildConfig;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Utils;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -42,11 +42,9 @@ import java.net.URL;
  * A simple subclass of {@link ImageResizer} that fetches and resizes images fetched from a URL.
  */
 public class ImageFetcher extends ImageResizer {
-    private static final String TAG = "ImageFetcher";
     private static final int HTTP_CACHE_SIZE = 10 * 1024 * 1024; // 10MB
     private static final String HTTP_CACHE_DIR = "http";
     private static final int IO_BUFFER_SIZE = 8 * 1024;
-    private int mImageSize;
 
     private DiskLruCache mHttpDiskCache;
     private File mHttpCacheDir;
@@ -55,31 +53,11 @@ public class ImageFetcher extends ImageResizer {
     private static final int DISK_CACHE_INDEX = 0;
 
     /**
-     * Initialize providing a target image width and height for the processing images.
-     *
-     * @param context
-     * @param imageWidth
-     * @param imageHeight
-     */
-    public ImageFetcher(Context context, int imageWidth, int imageHeight) {
-        super(context, imageWidth, imageHeight);
-        init(context);
-    }
-
-    /**
      * Initialize providing a single target image size (used for both width and height);
-     *
-     * @param context
-     * @param imageSize
      */
     public ImageFetcher(Context context, int imageSize) {
         super(context, imageSize);
         init(context);
-        mImageSize = imageSize;
-    }
-
-    public int getImageSize() {
-        return mImageSize;
     }
 
     private void init(Context context) {
@@ -95,14 +73,15 @@ public class ImageFetcher extends ImageResizer {
 
     private void initHttpDiskCache() {
         if (!mHttpCacheDir.exists()) {
-            mHttpCacheDir.mkdirs();
+            boolean mkdir = mHttpCacheDir.mkdirs();
+            Log.d(Utils.getTag(this), "Http cache dir creation result: " + mkdir);
         }
         synchronized (mHttpDiskCacheLock) {
             if (ImageCache.getUsableSpace(mHttpCacheDir) > HTTP_CACHE_SIZE) {
                 try {
                     mHttpDiskCache = DiskLruCache.open(mHttpCacheDir, 1, 1, HTTP_CACHE_SIZE);
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "HTTP cache initialized");
+                        Log.d(Utils.getTag(this), "HTTP cache initialized");
                     }
                 } catch (IOException e) {
                     mHttpDiskCache = null;
@@ -121,10 +100,10 @@ public class ImageFetcher extends ImageResizer {
                 try {
                     mHttpDiskCache.delete();
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "HTTP cache cleared");
+                        Log.d(Utils.getTag(this), "HTTP cache cleared");
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "clearCacheInternal - " + e);
+                    Log.e(Utils.getTag(this), "clearCacheInternal - " + e);
                 }
                 mHttpDiskCache = null;
                 mHttpDiskCacheStarting = true;
@@ -141,10 +120,10 @@ public class ImageFetcher extends ImageResizer {
                 try {
                     mHttpDiskCache.flush();
                     if (BuildConfig.DEBUG) {
-                        Log.d(TAG, "HTTP cache flushed");
+                        Log.d(Utils.getTag(this), "HTTP cache flushed");
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "flush - " + e);
+                    Log.e(Utils.getTag(this), "flush - " + e);
                 }
             }
         }
@@ -160,11 +139,11 @@ public class ImageFetcher extends ImageResizer {
                         mHttpDiskCache.close();
                         mHttpDiskCache = null;
                         if (BuildConfig.DEBUG) {
-                            Log.d(TAG, "HTTP cache closed");
+                            Log.d(Utils.getTag(this), "HTTP cache closed");
                         }
                     }
                 } catch (IOException e) {
-                    Log.e(TAG, "closeCacheInternal - " + e);
+                    Log.e(Utils.getTag(this), "closeCacheInternal - " + e);
                 }
             }
         }
@@ -172,8 +151,6 @@ public class ImageFetcher extends ImageResizer {
 
     /**
      * Simple network connection check.
-     *
-     * @param context
      */
     private void checkConnection(Context context) {
         final ConnectivityManager cm =
@@ -181,7 +158,7 @@ public class ImageFetcher extends ImageResizer {
         final NetworkInfo networkInfo = cm.getActiveNetworkInfo();
         if (networkInfo == null || !networkInfo.isConnectedOrConnecting()) {
             Toast.makeText(context, R.string.no_network_connection_toast, Toast.LENGTH_LONG).show();
-            Log.e(TAG, "checkConnection - no connection found");
+            Log.e(Utils.getTag(this), "checkConnection - no connection found");
         }
     }
 
@@ -193,7 +170,7 @@ public class ImageFetcher extends ImageResizer {
      * @return The downloaded and resized bitmap
      */
     private Bitmap processBitmap(String data) {
-        Log.d(TAG, "processBitmap - " + data);
+        Log.d(Utils.getTag(this), "processBitmap - " + data);
 
         final String key = ImageCache.hashKeyForDisk(data);
         FileDescriptor fileDescriptor = null;
@@ -205,6 +182,7 @@ public class ImageFetcher extends ImageResizer {
                 try {
                     mHttpDiskCacheLock.wait();
                 } catch (InterruptedException e) {
+                    e.printStackTrace();
                 }
             }
 
@@ -212,7 +190,7 @@ public class ImageFetcher extends ImageResizer {
                 try {
                     snapshot = mHttpDiskCache.get(key);
                     if (snapshot == null) {
-                        Log.d(TAG, "processBitmap, not found in http cache, downloading - " + data);
+                        Log.d(Utils.getTag(this), "processBitmap, not found in http cache, downloading - " + data);
                         DiskLruCache.Editor editor = mHttpDiskCache.edit(key);
                         if (editor != null) {
                             if (downloadUrlToStream(data,
@@ -229,15 +207,14 @@ public class ImageFetcher extends ImageResizer {
                                 (FileInputStream) snapshot.getInputStream(DISK_CACHE_INDEX);
                         fileDescriptor = fileInputStream.getFD();
                     }
-                } catch (IOException e) {
-                    Log.e(TAG, "processBitmap - " + e);
-                } catch (IllegalStateException e) {
-                    Log.e(TAG, "processBitmap - " + e);
+                } catch (IOException | IllegalStateException e) {
+                    Log.e(Utils.getTag(this), "processBitmap - " + e);
                 } finally {
                     if (fileDescriptor == null && fileInputStream != null) {
                         try {
                             fileInputStream.close();
                         } catch (IOException e) {
+                            e.printStackTrace();
                         }
                     }
                 }
@@ -253,6 +230,7 @@ public class ImageFetcher extends ImageResizer {
             try {
                 fileInputStream.close();
             } catch (IOException e) {
+                e.printStackTrace();
             }
         }
         return bitmap;
@@ -269,7 +247,7 @@ public class ImageFetcher extends ImageResizer {
      * @param urlString The URL to fetch
      * @return true if successful, false otherwise
      */
-    public boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
+    private boolean downloadUrlToStream(String urlString, OutputStream outputStream) {
         disableConnectionReuseIfNecessary();
         HttpURLConnection urlConnection = null;
         BufferedOutputStream out = null;
@@ -287,7 +265,7 @@ public class ImageFetcher extends ImageResizer {
             }
             return true;
         } catch (final IOException e) {
-            Log.e(TAG, "Error in downloadBitmap - " + e);
+            Log.e(Utils.getTag(this), "Error in downloadBitmap - " + e);
         } finally {
             if (urlConnection != null) {
                 urlConnection.disconnect();
@@ -300,6 +278,7 @@ public class ImageFetcher extends ImageResizer {
                     in.close();
                 }
             } catch (final IOException e) {
+                e.printStackTrace();
             }
         }
         return false;
@@ -309,11 +288,8 @@ public class ImageFetcher extends ImageResizer {
      * Workaround for bug pre-Froyo, see here for more info:
      * http://android-developers.blogspot.com/2011/09/androids-http-clients.html
      */
-    public static void disableConnectionReuseIfNecessary() {
+    private static void disableConnectionReuseIfNecessary() {
         // HTTP connection reuse which was buggy pre-froyo
-        if (Build.VERSION.SDK_INT < Build.VERSION_CODES.FROYO) {
-            System.setProperty("http.keepAlive", "false");
-        }
     }
 
     /**
@@ -326,7 +302,7 @@ public class ImageFetcher extends ImageResizer {
      * that are equal to or greater than the requested width and height
      */
     public static Bitmap decodeSampledBitmapFromDescriptor(
-            FileDescriptor fileDescriptor, int reqWidth, int reqHeight) {
+            FileDescriptor fileDescriptor, float reqWidth, float reqHeight) {
 
         // First decode with inJustDecodeBounds=true to check dimensions
         final BitmapFactory.Options options = new BitmapFactory.Options();

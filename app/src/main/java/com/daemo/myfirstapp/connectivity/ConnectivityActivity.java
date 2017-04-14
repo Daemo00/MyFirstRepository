@@ -19,13 +19,9 @@ public class ConnectivityActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_connectivity);
         ((ViewPager) findViewById(R.id.pager)).
                 setAdapter(new MyPagerAdapter(getSupportFragmentManager()));
-    }
-
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_connectivity;
     }
 
     private class MyPagerAdapter extends FragmentPagerAdapter {

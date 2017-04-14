@@ -6,6 +6,7 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 import android.support.v7.widget.ListViewCompat;
 import android.util.Log;
@@ -27,6 +28,7 @@ import com.daemo.myfirstapp.savingData.DBUtils.FeedReaderDbHelper;
 
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.Locale;
 import java.util.Map;
 import java.util.TreeMap;
 
@@ -44,7 +46,7 @@ public class SavingDB extends MySuperFragment {
     }
 
     @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         savingActivity = (SavingActivity) getActivity();
     }
@@ -80,24 +82,22 @@ public class SavingDB extends MySuperFragment {
         ListView listView = (ListView) root.findViewById(R.id.DBList);
 
         readDBrow();
-        final Object[] elements = rowsMap.keySet().toArray();
+        final Long[] elements = rowsMap.keySet().toArray(new Long[]{});
 
-        Log.d(this.getClass().getSimpleName(), "keyset has " + rowsMap.keySet().toArray().length + " elements");
-        //noinspection unchecked
-        ArrayAdapter adapter = new ArrayAdapter(savingActivity, R.layout.my_two_line_listitem, elements) {
+        Log.d(Utils.getTag(this), "keyset has " + elements.length + " elements");
+        ArrayAdapter adapter = new ArrayAdapter<Long>(savingActivity, R.layout.my_two_line_listitem, elements) {
+            @NonNull
             @Override
-            public View getView(int position, View convertView, ViewGroup parent) {
+            public View getView(int position, View convertView, @NonNull ViewGroup parent) {
 
-                if (convertView == null) {
-                    // inflate layout
+                if (convertView == null)
                     convertView = LayoutInflater.from(getContext()).inflate(R.layout.my_two_line_listitem, parent, false);
-                }
 
                 TextView tvTitle = (TextView) convertView.findViewById(android.R.id.text1);
-                if (tvTitle != null) tvTitle.setText(rowsMap.get(elements[position])[0]);
+                if (tvTitle != null) tvTitle.setText(rowsMap.get(getItem(position))[0]);
 
                 TextView tvSubTitle = (TextView) convertView.findViewById(android.R.id.text2);
-                if (tvSubTitle != null) tvSubTitle.setText(rowsMap.get(elements[position])[1]);
+                if (tvSubTitle != null) tvSubTitle.setText(rowsMap.get(getItem(position))[1]);
 
                 return convertView;
             }
@@ -108,7 +108,7 @@ public class SavingDB extends MySuperFragment {
 
         listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v, int position, long id) {
-                showRowOptions((Long) elements[position]);
+                showRowOptions((Long) parent.getAdapter().getItem(position));
             }
         });
     }
@@ -177,7 +177,7 @@ public class SavingDB extends MySuperFragment {
     public Long insertDBrow(String title, String subtitle) {
         // Gets the data repository in write mode
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
         // Create a new map of values, where column names are the keys
         ContentValues values = new ContentValues();
@@ -249,7 +249,7 @@ public class SavingDB extends MySuperFragment {
 
     public int updateDBrow(Long rowId, String title, String subtitle) {
         SQLiteDatabase db = mDbHelper.getReadableDatabase();
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.getDefault());
 
         // New value for one column
         ContentValues values = new ContentValues();

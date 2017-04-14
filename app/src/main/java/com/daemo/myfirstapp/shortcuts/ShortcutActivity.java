@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.daemo.myfirstapp.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
-import java.util.Arrays;
+import java.util.Collections;
 
 public class ShortcutActivity extends MySuperActivity {
 
@@ -22,6 +22,7 @@ public class ShortcutActivity extends MySuperActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_shortcut);
         isMultiWindow_tv2 = (TextView) findViewById(R.id.textView2);
     }
 
@@ -34,11 +35,6 @@ public class ShortcutActivity extends MySuperActivity {
     }
 
     @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_shortcut;
-    }
-
-    @Override
     public void onMultiWindowModeChanged(boolean isInMultiWindowMode) {
         super.onMultiWindowModeChanged(isInMultiWindowMode);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
@@ -48,7 +44,7 @@ public class ShortcutActivity extends MySuperActivity {
 
     public void addShortcut(View view) {
         ShortcutManager shortcutManager = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             shortcutManager = getSystemService(ShortcutManager.class);
         }
 
@@ -64,18 +60,16 @@ public class ShortcutActivity extends MySuperActivity {
 
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             if (shortcutManager != null) {
-                shortcutManager.addDynamicShortcuts(Arrays.asList(shortcut));
+                shortcutManager.addDynamicShortcuts(Collections.singletonList(shortcut));
             }
         }
     }
 
     public void resetDynamicShortcuts(View view) {
-        ShortcutManager shortcutManager = null;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+        ShortcutManager shortcutManager;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
             shortcutManager = getSystemService(ShortcutManager.class);
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N_MR1) {
-                shortcutManager.removeAllDynamicShortcuts();
-            }
+            shortcutManager.removeAllDynamicShortcuts();
         }
     }
 

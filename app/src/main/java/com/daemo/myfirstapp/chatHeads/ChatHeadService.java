@@ -86,7 +86,7 @@ public class ChatHeadService extends Service {
 
     public void attachChatHead() {
         windowManager.addView(chatHead, params);
-        Constants.SERVICE_RUNNING_CHATHEAD = true;
+        Constants.SERVICE_CHAT_HEAD_RUNNING = true;
         if (resultReceiver != null) resultReceiver.send(Activity.RESULT_OK, null);
     }
 
@@ -96,7 +96,7 @@ public class ChatHeadService extends Service {
         Log.d(Utils.getTag(this), "onDestroy");
         if (chatHead != null)
             windowManager.removeView(chatHead);
-        Constants.SERVICE_RUNNING_CHATHEAD = false;
+        Constants.SERVICE_CHAT_HEAD_RUNNING = false;
         if (resultReceiver != null) resultReceiver.send(Activity.RESULT_CANCELED, null);
     }
 

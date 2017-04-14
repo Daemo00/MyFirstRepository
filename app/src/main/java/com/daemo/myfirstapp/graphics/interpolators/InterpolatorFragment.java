@@ -44,10 +44,6 @@ import com.daemo.myfirstapp.R;
 public class InterpolatorFragment extends MySuperFragment {
 
     /**
-     * View that is animated.
-     */
-    private View mView;
-    /**
      * Spinner for selection of interpolator.
      */
     private Spinner mInterpolatorSpinner;
@@ -86,7 +82,7 @@ public class InterpolatorFragment extends MySuperFragment {
     /**
      * String used for logging.
      */
-    public static final String TAG = "InterpolatorplaygroundFragment";
+    public static final String TAG = "InterpolatorPlaygroundFragment";
 
     public InterpolatorFragment() {
         // Required empty public constructor
@@ -95,15 +91,14 @@ public class InterpolatorFragment extends MySuperFragment {
 
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         // Inflate the fragment_animation layout
         View v = inflater.inflate(R.layout.interpolator_fragment, container, false);
 
-        // Set up the 'animate' button, when it is clicked the view is animated with the options
-        // selected: the Interpolator, duration and animation path
+        // Set up the 'animate' button, when it is clicked the view is animated with the options selected: the Interpolator, duration and animation path
         Button button = (Button) v.findViewById(R.id.interpolateButton);
+        final View square = v.findViewById(R.id.square);
         button.setOnClickListener(new View.OnClickListener() {
             @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
             @Override
@@ -116,7 +111,7 @@ public class InterpolatorFragment extends MySuperFragment {
                 Path path = mIsOut ? mPathIn : mPathOut;
 
                 // Start the animation with the selected options
-                startAnimation(interpolator, duration, path);
+                startAnimation(square, interpolator, duration, path);
 
                 // Toggle direction of animation (path)
                 mIsOut = !mIsOut;
@@ -126,17 +121,12 @@ public class InterpolatorFragment extends MySuperFragment {
         // Get the label to display the selected duration
         mDurationLabel = (TextView) v.findViewById(R.id.durationLabel);
 
-        // Initialize Interpolators programmatically by loading them from their XML definitions
-        // provided by the framework.
+        // Initialize Interpolators programmatically by loading them from their XML definitions provided by the framework.
         mInterpolators = new Interpolator[]{
-                AnimationUtils.loadInterpolator(getActivity(),
-                        android.R.interpolator.linear),
-                AnimationUtils.loadInterpolator(getActivity(),
-                        android.R.interpolator.fast_out_linear_in),
-                AnimationUtils.loadInterpolator(getActivity(),
-                        android.R.interpolator.fast_out_slow_in),
-                AnimationUtils.loadInterpolator(getActivity(),
-                        android.R.interpolator.linear_out_slow_in)
+                AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear),
+                AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.fast_out_linear_in),
+                AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.fast_out_slow_in),
+                AnimationUtils.loadInterpolator(getActivity(), android.R.interpolator.linear_out_slow_in)
         };
 
         // Load names of interpolators from a resource
@@ -144,9 +134,7 @@ public class InterpolatorFragment extends MySuperFragment {
 
         // Set up the Spinner with the names of interpolators
         mInterpolatorSpinner = (Spinner) v.findViewById(R.id.interpolatorSpinner);
-        ArrayAdapter<String> spinnerAdapter =
-                new ArrayAdapter<>(getActivity(),
-                        android.R.layout.simple_spinner_dropdown_item, interpolatorNames);
+        ArrayAdapter<String> spinnerAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_spinner_dropdown_item, interpolatorNames);
         mInterpolatorSpinner.setAdapter(spinnerAdapter);
 
         // Set up SeekBar that defines the duration of the animation
@@ -171,20 +159,17 @@ public class InterpolatorFragment extends MySuperFragment {
         // Set initial progress to trigger SeekBarChangeListener and update UI
         mDurationSeekbar.setProgress(INITIAL_DURATION_MS);
 
-        // Get the view that will be animated
-        mView = v.findViewById(R.id.square);
-
         // The following Path definitions are used by the ObjectAnimator to scale the view.
 
         // Path for 'in' animation: growing from 20% to 100%
         mPathIn = new Path();
-        mPathIn.moveTo(0.2f, 0.2f);
-        mPathIn.lineTo(1f, 1f);
+        mPathIn.moveTo(0f, 0f);
+        mPathIn.lineTo(360f, 360f);
 
         // Path for 'out' animation: shrinking from 100% to 20%
         mPathOut = new Path();
-        mPathOut.moveTo(1f, 1f);
-        mPathOut.lineTo(0.2f, 0.2f);
+        mPathOut.moveTo(360f, 360f);
+        mPathOut.lineTo(0f, 0f);
         return v;
     }
 
@@ -202,10 +187,11 @@ public class InterpolatorFragment extends MySuperFragment {
      * @see ObjectAnimator#ofFloat(Object, String, String, Path)
      */
     @RequiresApi(api = Build.VERSION_CODES.LOLLIPOP)
-    public ObjectAnimator startAnimation(Interpolator interpolator, long duration, Path path) {
+    public ObjectAnimator startAnimation(View view, Interpolator interpolator, long duration, Path path) {
         // This ObjectAnimator uses the path to change the x and y scale of the mView object.
-        ObjectAnimator animator = ObjectAnimator.ofFloat(mView, View.SCALE_X, View.SCALE_Y, path);
-
+        ObjectAnimator animator =
+//                ObjectAnimator.ofFloat(view, View.ROTATION_X, View.ROTATION_Y, path); // View.SCALE_X, View.SCALE_Y,
+                ObjectAnimator.ofFloat(view, View.ROTATION, 0f, 360f);
         // Set the duration and interpolator for this animation
         animator.setDuration(duration);
         animator.setInterpolator(interpolator);

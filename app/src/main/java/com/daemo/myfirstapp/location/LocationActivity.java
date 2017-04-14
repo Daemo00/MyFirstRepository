@@ -10,6 +10,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
 import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.SectionsPagerAdapter;
 import com.daemo.myfirstapp.location.aware.AwarenessFragment;
@@ -28,14 +29,14 @@ public class LocationActivity extends MySuperActivity {
         // Instantiate a ViewPager and a PagerAdapter.
         ViewPager mPager = (ViewPager) findViewById(R.id.pager);
         List<String> locationProviders = ((LocationManager) getSystemService(Context.LOCATION_SERVICE)).getAllProviders();
-        ArrayList<Fragment> locationProviderFragments = new ArrayList<>();
+        ArrayList<MySuperFragment> locationProviderFragments = new ArrayList<>();
         locationProviderFragments.add(new AwarenessFragment());
         locationProviderFragments.add(new MapsFragment());
         for (String locationProviderName : locationProviders)
             locationProviderFragments.add(ProviderDetailsFragment.newInstance(locationProviderName));
 
         sectionsPagerAdapter = new SectionsPagerAdapter(getSupportFragmentManager());
-        sectionsPagerAdapter.setFrags(locationProviderFragments.toArray(new Fragment[]{}));
+        sectionsPagerAdapter.setFrags(locationProviderFragments.toArray(new MySuperFragment[]{}));
         mPager.setAdapter(sectionsPagerAdapter);
         mPager.setOffscreenPageLimit(2);
     }

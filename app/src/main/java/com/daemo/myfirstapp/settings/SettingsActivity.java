@@ -7,16 +7,19 @@ import com.daemo.myfirstapp.R;
 
 public class SettingsActivity extends MySuperActivity {
 
+    private SettingsFragment fragment;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        getFragmentManager().beginTransaction()
-                .replace(R.id.content_frame, new SettingsFragment())
-                .commit();
-    }
+        setContentView(R.layout.activity_settings);
 
-    @Override
-    protected int getLayoutResID() {
-        return R.layout.activity_settings;
+        if (savedInstanceState == null) {
+            this.fragment = new SettingsFragment();
+            this.fragment.setActivityIntent(getIntent());
+            getFragmentManager().beginTransaction()
+                    .replace(R.id.content_frame, this.fragment)
+                    .commit();
+        }
     }
 }

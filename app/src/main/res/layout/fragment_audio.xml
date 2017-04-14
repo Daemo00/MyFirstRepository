@@ -17,18 +17,20 @@
         android:text="@string/select_stream"
         android:id="@+id/btnStream" />
 
-    <Button
+    <ToggleButton
+        android:id="@+id/btnToggleFocus"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@id/btnStream"
         android:text="@string/focus"
-        android:id="@+id/btnFocus" />
+        android:textOff="@string/focus"
+        android:textOn="@string/unfocus"/>
 
     <Button
         android:text="@string/select_uri"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@id/btnFocus"
+        android:layout_below="@id/btnToggleFocus"
         android:id="@+id/btnSelectFile" />
 
     <Button
