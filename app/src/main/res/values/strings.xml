@@ -195,5 +195,6 @@
     <string name="SWQuadrant">SWQuadrant</string>
     <string name="SEQuadrant">SEQuadrant</string>
     <string name="star">Star</string>
+    <string name="undo">Undo</string>
 
 </resources>

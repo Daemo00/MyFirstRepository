@@ -43,5 +43,30 @@ public class Post {
     }
     // [END post_to_map]
 
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        Post post = (Post) o;
+
+        if (!uid.equals(post.uid)) return false;
+        if (!title.equals(post.title)) return false;
+        return body.equals(post.body);
+
+    }
+
+    @Override
+    public int hashCode() {
+        int result = uid.hashCode();
+        result = 31 * result + title.hashCode();
+        result = 31 * result + body.hashCode();
+        return result;
+    }
+
+    @Override
+    protected Object clone() throws CloneNotSupportedException {
+        return super.clone();
+    }
 }
-// [END post_class]

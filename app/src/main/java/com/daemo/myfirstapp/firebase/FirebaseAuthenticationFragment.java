@@ -75,7 +75,7 @@ public class FirebaseAuthenticationFragment extends MySuperFirebaseFragment impl
                 String uid = user.getUid();
             }
             getMySuperActivity().hideProgressDialog();
-            Intent i = new Intent(Constants.ACTION_FIREBASE_LOGIN, null, getContext(), MainActivity.class);
+            Intent i = new Intent(Constants.ACTION_FIREBASE_LOGIN_LOGOUT, null, getContext(), MainActivity.class);
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(i);
         }
     };

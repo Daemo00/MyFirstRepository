@@ -15,9 +15,9 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.daemo.myfirstapp.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
+import com.daemo.myfirstapp.firebase.MySuperFirebaseFragment;
 import com.daemo.myfirstapp.firebase.database.models.Comment;
 import com.daemo.myfirstapp.firebase.database.models.Post;
 import com.daemo.myfirstapp.firebase.database.models.User;
@@ -32,7 +32,7 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 import java.util.List;
 
-public class PostDetailFragment extends MySuperFragment implements View.OnClickListener {
+public class PostDetailFragment extends MySuperFirebaseFragment implements View.OnClickListener {
 
     public static final String EXTRA_POST_KEY = "post_key";
 
@@ -139,7 +139,7 @@ public class PostDetailFragment extends MySuperFragment implements View.OnClickL
     }
 
     private void postComment() {
-        final String uid = getMySuperActivity().getUid();
+        final String uid = getUid();
         if (Strings.isNullOrEmpty(uid)) return;
         FirebaseDatabase.getInstance().getReference().child("users").child(uid)
                 .addListenerForSingleValueEvent(new ValueEventListener() {
@@ -147,7 +147,7 @@ public class PostDetailFragment extends MySuperFragment implements View.OnClickL
                     public void onDataChange(DataSnapshot dataSnapshot) {
                         // Get user information
                         User user = dataSnapshot.getValue(User.class);
-                        String authorName = user.username;
+                        String authorName = user != null ? user.username : "Anonymous";
 
                         // Create new comment object
                         String commentText = mCommentField.getText().toString();

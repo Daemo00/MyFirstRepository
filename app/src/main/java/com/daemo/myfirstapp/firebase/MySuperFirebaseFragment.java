@@ -4,7 +4,6 @@ package com.daemo.myfirstapp.firebase;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
 import android.support.v4.content.LocalBroadcastManager;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -15,9 +14,6 @@ import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.google.firebase.auth.FirebaseAuth;
 
-/**
- * A simple {@link Fragment} subclass.
- */
 public class MySuperFirebaseFragment extends MySuperFragment {
 
 
@@ -39,11 +35,14 @@ public class MySuperFirebaseFragment extends MySuperFragment {
         if (i == R.id.action_logout) {
             FirebaseAuth.getInstance().signOut();
             LocalBroadcastManager.getInstance(getContext())
-                    .sendBroadcast(new Intent(Constants.ACTION_FIREBASE_LOGIN));
+                    .sendBroadcast(new Intent(Constants.ACTION_FIREBASE_LOGIN_LOGOUT));
             return true;
         } else {
             return super.onOptionsItemSelected(item);
         }
     }
 
+    public String getUid() {
+        return getMySuperActivity().getUid();
+    }
 }

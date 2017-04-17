@@ -131,7 +131,7 @@ import java.util.concurrent.atomic.AtomicInteger;
  * <p>When an asynchronous task is executed, the task goes through 4 steps:</p>
  * <ol>
  *     <li>{@link #onPreExecute()}, invoked on the UI thread immediately after the task
- *     is executed. This step is normally used to setup the task, for instance by
+ *     is executed. This step is normally used to setupForUndo the task, for instance by
  *     showing a progress bar in the user interface.</li>
  *     <li>{@link #doInBackground}, invoked on the background thread
  *     immediately after {@link #onPreExecute()} finishes executing. This step is used

@@ -81,7 +81,7 @@ public class MainActivity extends MySuperActivity {
                 e.printStackTrace();
             }
         LocalBroadcastManager.getInstance(getBaseContext())
-                .registerReceiver(mBroadcastReceiver, new IntentFilter(Constants.ACTION_FIREBASE_LOGIN));
+                .registerReceiver(mBroadcastReceiver, new IntentFilter(Constants.ACTION_FIREBASE_LOGIN_LOGOUT));
     }
 
     @Override

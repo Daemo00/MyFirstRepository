@@ -96,8 +96,4 @@ public class MySuperFragment extends Fragment implements SwipeRefreshLayout.OnRe
     interface OnFragmentInteractionListener {
         void onFragmentInteraction(MySuperFragment fragment, Bundle bundle);
     }
-
-    public String getUid() {
-        return getMySuperActivity().getUid();
-    }
 }
