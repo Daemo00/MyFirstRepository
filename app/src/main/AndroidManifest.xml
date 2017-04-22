@@ -3,6 +3,8 @@
           xmlns:tools="http://schemas.android.com/tools"
           package="com.daemo.myfirstapp">
 
+    <permission android:name="com.daemo.myfirstapp.MY_FIRST_PERMISSION"/>
+
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION"/>
     <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION"/>
     <uses-permission android:name="android.permission.AUTHENTICATE_ACCOUNTS"/>
@@ -368,19 +370,27 @@
         </activity>
 
         <service
-            android:name=".firebase.MyFirebaseInstanceIdService">
+            android:name=".firebase.MyFirebaseInstanceIdService"
+            android:exported="false">
             <intent-filter>
                 <action android:name="com.google.firebase.INSTANCE_ID_EVENT"/>
             </intent-filter>
         </service>
         <service
-            android:name=".firebase.MyFirebaseMessagingService"
+            android:name=".firebase.cloudMessaging.MyFirebaseMessagingService"
             android:enabled="true"
             android:exported="true"
-            android:permission="">
+            android:permission="com.daemo.myfirstapp.MY_FIRST_PERMISSION">
             <intent-filter>
                 <action android:name="com.google.firebase.MESSAGING_EVENT"/>
             </intent-filter>
         </service>
+        <service
+            android:name=".firebase.storage.MyDownloadService"
+            android:exported="false"/>
+
+        <service
+            android:name=".firebase.storage.MyUploadService"
+            android:exported="false"/>
     </application>
 </manifest>

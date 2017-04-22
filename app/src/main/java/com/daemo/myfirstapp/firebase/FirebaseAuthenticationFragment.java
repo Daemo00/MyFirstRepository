@@ -43,7 +43,8 @@ public class FirebaseAuthenticationFragment extends MySuperFirebaseFragment impl
             FirebaseUser user = firebaseAuth.getCurrentUser();
             if (user != null)
                 Log.d(Utils.getTag(this), "onAuthStateChanged:signed_in: " + user.getUid());
-            else Log.d(Utils.getTag(this), "onAuthStateChanged:signed_out");
+            else
+                Log.d(Utils.getTag(this), "onAuthStateChanged:signed_out");
         }
     };
 
@@ -75,7 +76,7 @@ public class FirebaseAuthenticationFragment extends MySuperFirebaseFragment impl
                 String uid = user.getUid();
             }
             getMySuperActivity().hideProgressDialog();
-            Intent i = new Intent(Constants.ACTION_FIREBASE_LOGIN_LOGOUT, null, getContext(), MainActivity.class);
+            Intent i = new Intent(Constants.ACTION_FIREBASE_LOGIN, null, getContext(), MainActivity.class);
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(i);
         }
     };

@@ -34,10 +34,12 @@ import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.firebase.FirebaseAuthenticationFragment;
 import com.daemo.myfirstapp.firebase.database.FirebaseDatabaseFragment;
+import com.daemo.myfirstapp.firebase.storage.FirebaseStorageFragment;
 import com.google.common.base.Strings;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.List;
 
 public class MainActivity extends MySuperActivity {
 
@@ -48,6 +50,11 @@ public class MainActivity extends MySuperActivity {
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
+//            if (Constants.ACTION_FIREBASE_LOGIN.equals(intent.getAction())) {
+//            } else
+//            if (Constants.ACTION_FIREBASE_LOGOUT.equals(intent.getAction())) {
+//                invalidateOptionsMenu();
+//            }
             try {
                 fillRadioActivities();
             } catch (PackageManager.NameNotFoundException e) {
@@ -80,8 +87,8 @@ public class MainActivity extends MySuperActivity {
             } catch (PackageManager.NameNotFoundException e) {
                 e.printStackTrace();
             }
-        LocalBroadcastManager.getInstance(getBaseContext())
-                .registerReceiver(mBroadcastReceiver, new IntentFilter(Constants.ACTION_FIREBASE_LOGIN_LOGOUT));
+        LocalBroadcastManager.getInstance(getBaseContext()).registerReceiver(mBroadcastReceiver, new IntentFilter(Constants.ACTION_FIREBASE_LOGIN));
+        LocalBroadcastManager.getInstance(getBaseContext()).registerReceiver(mBroadcastReceiver, new IntentFilter(Constants.ACTION_FIREBASE_LOGOUT));
     }
 
     @Override
@@ -154,11 +161,14 @@ public class MainActivity extends MySuperActivity {
             targets.add(FirebaseAuthenticationFragment.class.getName());
         }
 
-        if (Strings.isNullOrEmpty(getUid()) && targets.contains(FirebaseDatabaseFragment.class.getName())) {
-            targets.remove(FirebaseDatabaseFragment.class.getName());
-        } else if (!Strings.isNullOrEmpty(getUid()) && !targets.contains(FirebaseDatabaseFragment.class.getName())) {
-            targets.add(FirebaseDatabaseFragment.class.getName());
-        }
+        List<String> firebaseFragments = Arrays.asList(
+                FirebaseDatabaseFragment.class.getName(),
+                FirebaseStorageFragment.class.getName());
+
+        if (Strings.isNullOrEmpty(getUid()) && targets.containsAll(firebaseFragments))
+            targets.removeAll(firebaseFragments);
+        else if (!Strings.isNullOrEmpty(getUid()) && !targets.containsAll(firebaseFragments))
+            targets.addAll(firebaseFragments);
 
         final int list_item_layout = android.R.layout.simple_list_item_1;
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this, list_item_layout, targets) {

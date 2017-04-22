@@ -309,14 +309,14 @@ public abstract class MySuperActivity extends AppCompatActivity implements MySup
 
     private ProgressDialog mProgressDialog;
 
-    public void showProgressDialog() {
+    public void showProgressDialog(final String caption) {
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
                 if (mProgressDialog == null) {
                     mProgressDialog = new ProgressDialog(MySuperActivity.this);
                     mProgressDialog.setCancelable(false);
-                    mProgressDialog.setMessage("Loading...");
+                    mProgressDialog.setMessage(caption);
                 }
                 mProgressDialog.show();
             }
@@ -327,9 +327,8 @@ public abstract class MySuperActivity extends AppCompatActivity implements MySup
         runOnUiThread(new Runnable() {
             @Override
             public void run() {
-                if (mProgressDialog != null && mProgressDialog.isShowing()) {
+                if (mProgressDialog != null && mProgressDialog.isShowing())
                     mProgressDialog.dismiss();
-                }
             }
         });
     }
@@ -337,5 +336,9 @@ public abstract class MySuperActivity extends AppCompatActivity implements MySup
     public String getUid() {
         FirebaseUser currentUser = FirebaseAuth.getInstance().getCurrentUser();
         return currentUser != null ? currentUser.getUid() : null;
+    }
+
+    public void showProgressDialog() {
+        showProgressDialog(getString(R.string.loading));
     }
 }

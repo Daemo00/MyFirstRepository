@@ -48,7 +48,8 @@ public final class Constants {
     public static final String ACTION_REPLACE_FRAGMENT = "replace_fragment";
     public static final String ACTION_FRAGMENT = "action_fragment";
     public static final String ACTION_ADDTOBACKSTACK = "action_addtobackstack";
-    public static final String ACTION_FIREBASE_LOGIN_LOGOUT = "Firebase_login";
+    public static final String ACTION_FIREBASE_LOGIN = "Firebase_login";
+    public static final String ACTION_FIREBASE_LOGOUT = "Firebase_logout";
     public static boolean SERVICE_CHAT_HEAD_RUNNING = false;
 
     public static final class Cache {

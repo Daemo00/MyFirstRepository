@@ -22,7 +22,7 @@
 
         <EditText
             android:id="@+id/field_email"
-            android:layout_width="150dp"
+            android:layout_width="@dimen/standard_field_width"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center_horizontal"
@@ -32,7 +32,7 @@
 
         <EditText
             android:id="@+id/field_password"
-            android:layout_width="150dp"
+            android:layout_width="@dimen/standard_field_width"
             android:layout_height="wrap_content"
             android:ellipsize="end"
             android:gravity="center_horizontal"
