@@ -25,7 +25,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.daemo.myfirstapp.BuildConfig;
-import com.daemo.myfirstapp.MySuperFragment;
+import com.daemo.myfirstapp.activities.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
 import java.text.SimpleDateFormat;

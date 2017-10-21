@@ -4,7 +4,7 @@ import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;

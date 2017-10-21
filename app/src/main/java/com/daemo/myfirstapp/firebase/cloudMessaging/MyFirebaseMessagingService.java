@@ -8,7 +8,7 @@ import android.media.RingtoneManager;
 import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
-import com.daemo.myfirstapp.MainActivity;
+import com.daemo.myfirstapp.activities.MainActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;

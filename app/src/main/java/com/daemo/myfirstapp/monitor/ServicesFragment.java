@@ -10,7 +10,7 @@ import android.view.ViewGroup;
 import android.widget.SimpleAdapter;
 
 import com.daemo.myfirstapp.MySuperApplication;
-import com.daemo.myfirstapp.MySuperFragment;
+import com.daemo.myfirstapp.activities.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
 

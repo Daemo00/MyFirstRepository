@@ -17,7 +17,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.daemo.myfirstapp.MySuperFragment;
+import com.daemo.myfirstapp.activities.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.firebase.MySuperFirebaseFragment;

@@ -14,7 +14,7 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 
-import com.daemo.myfirstapp.MainActivity;
+import com.daemo.myfirstapp.activities.MainActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;

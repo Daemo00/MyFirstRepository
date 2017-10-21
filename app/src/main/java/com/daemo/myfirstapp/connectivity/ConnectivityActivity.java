@@ -6,7 +6,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 import android.support.v4.view.ViewPager;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.connectivity.downloadPage.DownloadPageFragment;
 import com.daemo.myfirstapp.connectivity.nsd.NsdFragment;

@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp;
+package com.daemo.myfirstapp.activities;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
@@ -10,6 +10,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
 
 import java.util.Arrays;

@@ -33,7 +33,7 @@ import android.widget.QuickContactBadge;
 import android.widget.TextView;
 
 import com.daemo.myfirstapp.BuildConfig;
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.graphics.displayingbitmaps.util.ImageFetcher;

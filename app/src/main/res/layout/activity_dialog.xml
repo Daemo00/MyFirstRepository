@@ -16,26 +16,23 @@ limitations under the License.
 -->
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:orientation="vertical"
-    android:layout_width="225dp"
-    android:layout_height="120dp"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
     android:background="@color/dark_yellow"
-    android:padding="12dip"
     >
 
-<TextView  
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text="@string/dialog_text"
-    android:gravity="center_horizontal"
-    android:textSize="@dimen/font_medium"
-    android:textColor="@color/light_yellow"
-    android:paddingBottom="12dip"
-    />
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:gravity="center_horizontal"
+        android:padding="?attr/dialogPreferredPadding"
+        android:text="@string/dialog_title"
+        android:textAppearance="@android:style/TextAppearance.Large" />
 
  <Button
      android:layout_height="wrap_content"
      android:layout_width="wrap_content"
-     android:text="@string/btn_finish_dialog_label"
+     android:text="@string/dialog_close"
      android:layout_gravity="center_horizontal"
      android:onClick="finishDialog"
      />

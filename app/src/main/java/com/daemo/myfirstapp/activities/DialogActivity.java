@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp.lifecycle;/*
+package com.daemo.myfirstapp.activities;/*
  * Copyright (C) 2012 The Android Open Source Project
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -35,6 +35,6 @@ public class DialogActivity extends Activity {
      * @param v view calling this method
      */
     public void finishDialog(View v) {
-        DialogActivity.this.finish();
+        finish();
     }
 }

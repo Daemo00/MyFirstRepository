@@ -24,7 +24,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 
 public class NsdHelper {
 

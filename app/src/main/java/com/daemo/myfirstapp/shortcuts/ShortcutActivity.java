@@ -10,7 +10,7 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
 import java.util.Collections;

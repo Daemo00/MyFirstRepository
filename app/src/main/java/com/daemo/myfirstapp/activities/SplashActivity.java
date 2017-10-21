@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp;
+package com.daemo.myfirstapp.activities;
 
 import android.content.Intent;
 import android.os.Bundle;

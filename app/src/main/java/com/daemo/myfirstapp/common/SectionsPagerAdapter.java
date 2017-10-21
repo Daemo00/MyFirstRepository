@@ -4,7 +4,7 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentPagerAdapter;
 
-import com.daemo.myfirstapp.MySuperFragment;
+import com.daemo.myfirstapp.activities.MySuperFragment;
 
 public class SectionsPagerAdapter extends FragmentPagerAdapter {
 

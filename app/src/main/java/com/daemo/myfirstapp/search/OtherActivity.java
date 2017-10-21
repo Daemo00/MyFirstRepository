@@ -3,7 +3,7 @@ package com.daemo.myfirstapp.search;
 import android.os.Bundle;
 import android.view.View;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
 public class OtherActivity extends MySuperActivity {

@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.widget.RemoteViews;
 
-import com.daemo.myfirstapp.MainActivity;
+import com.daemo.myfirstapp.activities.MainActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 

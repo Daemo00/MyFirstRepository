@@ -6,7 +6,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.daemo.myfirstapp.MySuperFragment;
+import com.daemo.myfirstapp.activities.MySuperFragment;
 
 public class OpenGLFragment extends MySuperFragment {
 

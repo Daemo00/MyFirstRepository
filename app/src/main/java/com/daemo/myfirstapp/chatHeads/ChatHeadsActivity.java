@@ -10,7 +10,7 @@ import android.support.v4.os.ResultReceiver;
 import android.view.View;
 import android.widget.Button;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;

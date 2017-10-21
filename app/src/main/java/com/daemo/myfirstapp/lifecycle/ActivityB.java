@@ -21,8 +21,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.activities.DialogActivity;
 import com.daemo.myfirstapp.lifecycle.util.StatusTracker;
 import com.daemo.myfirstapp.lifecycle.util.Utils;
 

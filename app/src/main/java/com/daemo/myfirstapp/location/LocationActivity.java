@@ -9,8 +9,8 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 
-import com.daemo.myfirstapp.MySuperActivity;
-import com.daemo.myfirstapp.MySuperFragment;
+import com.daemo.myfirstapp.activities.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperFragment;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.SectionsPagerAdapter;
 import com.daemo.myfirstapp.location.aware.AwarenessFragment;

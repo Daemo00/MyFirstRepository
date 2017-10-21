@@ -27,9 +27,12 @@ public final class Constants {
 
     public static final String EXTRA_IMAGE = BuildConfig.APPLICATION_ID.concat(".EXTRA_IMAGE");
     public static final String NOTIFICATION_GROUP = BuildConfig.APPLICATION_ID.concat(".NOTIFICATION_GROUP");
+    public static final String NOTIFICATION_BATTERY_GROUP = BuildConfig.APPLICATION_ID.concat(".NOTIFICATION_BATTERY_GROUP");
+    public static final int NOTIFICATION_GROUP_BATTERY_SUMMARY_ID = 200;
     public static final int NOTIFICATION_GROUP_SUMMARY_ID = 100;
     public static final int NOTIFICATION_ID_MUSIC = 1;
     public static final int NOTIFICATION_ID_FIREBASE = 2;
+    public static final int NOTIFICATION_ID_BATTERY = 3;
 
     public static final int REQUEST_CODE_MUSIC = 1;
     public static final int REQUEST_CODE_VIDEO_PERMISSIONS = 2;

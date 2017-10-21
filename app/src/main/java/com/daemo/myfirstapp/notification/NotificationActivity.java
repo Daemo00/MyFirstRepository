@@ -15,17 +15,19 @@ import android.view.View;
 import android.widget.TextView;
 import android.widget.ToggleButton;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.DialogActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 import com.google.common.base.Objects;
 
+import java.util.Collections;
+
 import static com.daemo.myfirstapp.common.Constants.ACTION_UPDATE;
 import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_GROUP;
 import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_GROUP_SUMMARY_ID;
 import static com.daemo.myfirstapp.notification.MyNotificationReceiver.getDeletePendingIntent;
-import static com.daemo.myfirstapp.notification.MyNotificationReceiver.getNumberOfNotifications;
 import static com.daemo.myfirstapp.notification.MyNotificationReceiver.updateNotificationSummary;
 
 public class NotificationActivity extends MySuperActivity {
@@ -34,7 +36,6 @@ public class NotificationActivity extends MySuperActivity {
 
     NotificationCompat.Builder mBuilder;
     private TextView mNumberOfNotifications;
-    private int sNotificationId = 0;
     private NotificationManager mNotificationManager;
 
     @Override
@@ -43,10 +44,9 @@ public class NotificationActivity extends MySuperActivity {
         setContentView(R.layout.activity_notification);
         // Gets an instance of the NotificationManager service
         mNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N) {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.N)
             requestShowKeyboardShortcuts();
-        }
-        mNumberOfNotifications = (TextView) findViewById(R.id.notif_number);
+        mNumberOfNotifications = (TextView) findViewById(R.id.notification_number);
 
         if (getIntent() != null) {
             Log.i(Utils.getTag(this), "Received an intent with action " + getIntent().getAction());
@@ -56,11 +56,12 @@ public class NotificationActivity extends MySuperActivity {
     }
 
     public void issueNotification(View v) {
-        int notif_id = getNotificationId();
+
+        int notificationId = com.daemo.myfirstapp.notification.Utils.generateNotificationId();
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setSmallIcon(android.R.drawable.stat_notify_chat)
                 .setContentTitle("My content title")
-                .setContentText("My content text, id is " + notif_id)
+                .setContentText("My content text, id is " + notificationId)
                 .setGroup(NOTIFICATION_GROUP)
                 .setDeleteIntent(getDeletePendingIntent(this))
                 .setAutoCancel(true)
@@ -68,59 +69,49 @@ public class NotificationActivity extends MySuperActivity {
 
                 // Set dynamic attributes of notification
                 .setContentIntent(((ToggleButton) findViewById(R.id.toggleButton)).isChecked() ?
-                        getPendingSpecialIntent(notif_id) :
-                        getPendingIntent(notif_id));
+                        getPendingSpecialIntent() :
+                        getPendingIntent());
 
         mBuilder.addAction(getAction(
-                notif_id,
+                notificationId,
                 Constants.ACTION_SNOOZE,
                 R.drawable.ic_stat_snooze,
                 getString(R.string.snooze)));
 
-        mBuilder.addAction(inlineReply(notif_id));
+        mBuilder.addAction(inlineReply(notificationId));
 
-        progressTask(notif_id);
+        progressTask(notificationId);
 
         // Builds the notification and issues it.
-        mNotificationManager.notify(notif_id, mBuilder.build());
+        mNotificationManager.notify(notificationId, mBuilder.build());
         updateNotificationSummary(this, mNotificationManager);
         updateNumberOfNotifications();
     }
 
-    public int getNotificationId() {
-        int notificationId = sNotificationId++;
-
-        // Unlikely in the sample, but the int will overflow if used enough so we skip the summary ID.
-        // Most apps will prefer a more deterministic way of identifying an ID such as hashing the content of the notification.
-        if (notificationId == NOTIFICATION_GROUP_SUMMARY_ID) notificationId = sNotificationId++;
-
-        return notificationId;
-    }
-
     @NonNull
-    public NotificationCompat.Action getAction(int notif_id, String action, int icon, String label) {
+    public NotificationCompat.Action getAction(int notificationId, String action, int icon, String label) {
         Intent intent = new Intent(this, MyNotificationReceiver.class);
         intent.setAction(action);
-        intent.setData(Uri.parse(String.valueOf(notif_id)));
+        intent.setData(Uri.parse(String.valueOf(notificationId)));
         PendingIntent pIntent = PendingIntent.getBroadcast(this, 0, intent, 0);
         return new NotificationCompat.Action(icon, label, pIntent);
     }
 
-    private void progressTask(final int notif_id) {
+    private void progressTask(final int notificationId) {
         // Start a lengthy operation in a background thread
         new Thread(
                 new Runnable() {
                     @Override
                     public void run() {
                         NotificationCompat.Builder builder = mBuilder;
-                        int incr;
+                        int increment;
                         // Do the "lengthy" operation 20 times
-                        for (incr = 0; incr <= 100; incr += 5) {
+                        for (increment = 0; increment <= 100; increment += 5) {
                             // Sets the progress indicator to a max value, the current completion percentage, and "determinate" state
-//                            builder.setProgress(100, incr, false);
+//                            builder.setProgress(100, increment, false);
                             builder.setProgress(0, 0, true);
                             // Displays the progress bar for the first time.
-                            mNotificationManager.notify(notif_id, builder.build());
+                            mNotificationManager.notify(notificationId, builder.build());
                             // Sleeps the thread, simulating an operation
                             // that takes time
                             try {
@@ -134,7 +125,7 @@ public class NotificationActivity extends MySuperActivity {
                         builder.setContentText("Download complete")
                                 // Removes the progress bar
                                 .setProgress(0, 0, false);
-                        mNotificationManager.notify(notif_id, builder.build());
+                        mNotificationManager.notify(notificationId, builder.build());
                     }
                 }
 // Starts the thread by calling the run() method in its Runnable
@@ -152,12 +143,14 @@ public class NotificationActivity extends MySuperActivity {
      * display them to the user.
      */
     protected void updateNumberOfNotifications() {
-        final int numberOfNotifications = getNumberOfNotifications(mNotificationManager);
+        final int numberOfNotifications = com.daemo.myfirstapp.notification.Utils.getNumberOfNotifications(
+                mNotificationManager,
+                Collections.singletonList(NOTIFICATION_GROUP_SUMMARY_ID));
         mNumberOfNotifications.setText(getString(R.string.active_notifications,
                 numberOfNotifications));
     }
 
-    private PendingIntent getPendingIntent(int notif_id) {
+    private PendingIntent getPendingIntent() {
         Intent resultIntent = new Intent(this, this.getClass());
 
         TaskStackBuilder stackBuilder = TaskStackBuilder.create(this);
@@ -169,10 +162,10 @@ public class NotificationActivity extends MySuperActivity {
         return stackBuilder.getPendingIntent(0, PendingIntent.FLAG_UPDATE_CURRENT);
     }
 
-    private PendingIntent getPendingSpecialIntent(int notif_id) {
+    private PendingIntent getPendingSpecialIntent() {
         // Creates an Intent for the Activity
         Intent notifyIntent =
-                new Intent(this, NotificationSpecialActivity.class);
+                new Intent(this, DialogActivity.class);
         // Sets the Activity to start in a new, empty task
         notifyIntent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK |
                 Intent.FLAG_ACTIVITY_CLEAR_TASK);
@@ -185,12 +178,12 @@ public class NotificationActivity extends MySuperActivity {
         );
     }
 
-    private PendingIntent getPendingBroadcastIntent(int notif_id) {
+    private PendingIntent getPendingBroadcastIntent(int notificationId) {
         // Creates an Intent for the Activity
         Intent notifyIntent = new Intent();
         notifyIntent.setClass(this, MyNotificationReceiver.class);
         notifyIntent.setAction(ACTION_UPDATE);
-        notifyIntent.setData(Uri.parse(String.valueOf(notif_id)));
+        notifyIntent.setData(Uri.parse(String.valueOf(notificationId)));
         // Creates the PendingIntent
         return PendingIntent.getBroadcast(
                 this,
@@ -200,14 +193,13 @@ public class NotificationActivity extends MySuperActivity {
         );
     }
 
-
-    private NotificationCompat.Action inlineReply(int notif_id) {
+    private NotificationCompat.Action inlineReply(int notificationId) {
         // Key for the string that's delivered in the action's intent.
         RemoteInput remoteInput = new RemoteInput.Builder(key_text_reply)
                 .setLabel("Reply")
                 .build();
 
-        PendingIntent intent = getPendingBroadcastIntent(notif_id);
+        PendingIntent intent = getPendingBroadcastIntent(notificationId);
 
         // Create the reply action and add the remote input.
         return new NotificationCompat.Action.Builder(R.drawable.ic_stat_notification,

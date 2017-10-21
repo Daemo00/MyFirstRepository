@@ -3,9 +3,10 @@ package com.daemo.myfirstapp.performance;
 import android.os.Bundle;
 import android.os.PersistableBundle;
 import android.support.v7.widget.AppCompatTextView;
+import android.util.Pair;
 import android.view.View;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
 public class PerformanceActivity extends MySuperActivity {
@@ -17,7 +18,7 @@ public class PerformanceActivity extends MySuperActivity {
     }
 
     public void batteryStats(View view) {
-        Object[] infos = BatteryStatusReceiver.buildMessage(this);
-        ((AppCompatTextView) findViewById(R.id.textView)).setText(infos[1].toString());
+        Pair<Integer, String> batteryInfo = MyBatteryStatusReceiver.buildMessage(this);
+        ((AppCompatTextView) findViewById(R.id.textView)).setText(batteryInfo.second);
     }
 }

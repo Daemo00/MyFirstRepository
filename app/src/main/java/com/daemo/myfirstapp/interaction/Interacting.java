@@ -10,7 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.RadioGroup;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
 import java.util.List;

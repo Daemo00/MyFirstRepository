@@ -10,7 +10,7 @@ import android.os.Environment;
 import android.support.annotation.NonNull;
 import android.support.annotation.Nullable;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.chatHeads.ChatHeadService;
 
 import java.io.File;
@@ -159,5 +159,11 @@ public class Utils {
 
     public static boolean hasNougat() {
         return Build.VERSION.SDK_INT >= Build.VERSION_CODES.N;
+    }
+
+    @NonNull
+    public static String getUnqualifiedActionName(Intent intent) {
+        String action = intent.getAction();
+        return action.substring(action.lastIndexOf(".") + 1);
     }
 }

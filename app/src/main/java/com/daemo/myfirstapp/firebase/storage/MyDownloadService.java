@@ -24,7 +24,7 @@ import android.support.annotation.Nullable;
 import android.support.v4.content.LocalBroadcastManager;
 import android.util.Log;
 
-import com.daemo.myfirstapp.MainActivity;
+import com.daemo.myfirstapp.activities.MainActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
 import com.google.android.gms.tasks.OnFailureListener;

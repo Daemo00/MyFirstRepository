@@ -26,7 +26,7 @@ import android.webkit.WebView;
 import android.widget.Toast;
 
 import com.daemo.myfirstapp.BuildConfig;
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
 import org.xmlpull.v1.XmlPullParserException;

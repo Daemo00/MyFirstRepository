@@ -2,7 +2,7 @@ package com.daemo.myfirstapp.settings;
 
 import android.os.Bundle;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 
 public class SettingsActivity extends MySuperActivity {

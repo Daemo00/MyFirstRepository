@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp;
+package com.daemo.myfirstapp.activities;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
@@ -27,6 +27,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import com.daemo.myfirstapp.MySuperApplication;
+import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.search.MySuggestionProvider;
 import com.daemo.myfirstapp.search.SearchableActivity;

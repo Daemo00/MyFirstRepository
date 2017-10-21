@@ -60,7 +60,7 @@
             android:resource="@color/colorAccent"/>
 
         <activity
-            android:name=".MainActivity"
+            android:name=".activities.MainActivity"
             android:theme="@style/SplashTheme">
             <layout
                 android:defaultHeight="500dp"
@@ -77,28 +77,28 @@
         <activity
             android:name=".lifecycle.ActivityA"
             android:launchMode="singleTask"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity android:name=".lifecycle.ActivityB"/>
         <activity android:name=".lifecycle.ActivityC"/>
         <activity
-            android:name=".lifecycle.DialogActivity"
+            android:name=".activities.DialogActivity"
             android:theme="@android:style/Theme.Dialog"/>
         <activity
             android:name=".fragments.FragmentsActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".savingData.SavingActivity"
             android:label="@string/title_activity_saving_data"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".location.LocationActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".interaction.Interacting"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".sharingSimpleData.FileSelectClientActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEND"/>
 
@@ -136,11 +136,11 @@
         </activity>
         <activity
             android:name=".multimedia.MultimediaActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".graphics.GraphicsActivity"
             android:label="@string/title_activity_main2"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".graphics.displayingbitmaps.ImageDetailActivity"
             android:parentActivityName=".graphics.GraphicsActivity"/>
@@ -237,7 +237,7 @@
 
         <activity
             android:name=".connectivity.ConnectivityActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
 
         <receiver
             android:name=".connectivity.p2p.WiFiDirectBroadcastReceiver"
@@ -257,28 +257,19 @@
 
         <activity
             android:name=".userinfo.UserInfoActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".notification.NotificationActivity"
             android:launchMode="singleInstance"
-            android:parentActivityName=".MainActivity"/>
-        <activity
-            android:name=".notification.NotificationSpecialActivity"
-            android:excludeFromRecents="true"
-            android:label="@string/title_activity_notification_special"
-            android:launchMode="singleTask"
-            android:taskAffinity=""
-            android:theme="@android:style/Theme.Material.Dialog"
-            tools:ignore="NewApi"/>
+            android:parentActivityName=".activities.MainActivity"/>
 
         <receiver
             android:name=".notification.MyNotificationReceiver"
-            android:enabled="true"
-            android:exported="true"/>
+            android:enabled="true"/>
 
         <activity
             android:name=".shortcuts.ShortcutActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
@@ -291,10 +282,10 @@
         </activity>
         <activity
             android:name=".drag_drop.DragDropActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".monitor.MonitorActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
 
         <service
             android:name=".monitor.MonitorService"
@@ -306,11 +297,11 @@
 
         <activity
             android:name=".chatHeads.ChatHeadsActivity"
-            android:parentActivityName=".MainActivity"/>
+            android:parentActivityName=".activities.MainActivity"/>
         <activity
             android:name=".search.SearchableActivity"
             android:launchMode="singleTop"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.SEARCH"/>
             </intent-filter>
@@ -321,7 +312,7 @@
         </activity>
         <activity
             android:name=".search.OtherActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
             <meta-data
                 android:name="android.app.default_searchable"
                 android:value=".search.SearchableActivity"/>
@@ -335,17 +326,16 @@
 
         <activity
             android:name=".customView.CustomViewActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
         </activity>
         <activity
             android:name=".performance.PerformanceActivity"
-            android:parentActivityName=".MainActivity">
+            android:parentActivityName=".activities.MainActivity">
         </activity>
 
         <receiver
-            android:name=".performance.BatteryStatusReceiver"
-            android:enabled="true"
-            android:exported="true">
+            android:name=".performance.MyBatteryStatusReceiver"
+            android:enabled="true">
             <intent-filter>
                 <action android:name="android.intent.action.BATTERY_LOW"/>
                 <action android:name="android.intent.action.BATTERY_OKAY"/>

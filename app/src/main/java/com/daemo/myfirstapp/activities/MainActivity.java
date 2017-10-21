@@ -1,4 +1,4 @@
-package com.daemo.myfirstapp;
+package com.daemo.myfirstapp.activities;
 
 import android.app.Activity;
 import android.content.BroadcastReceiver;
@@ -30,6 +30,7 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.firebase.FirebaseAuthenticationFragment;

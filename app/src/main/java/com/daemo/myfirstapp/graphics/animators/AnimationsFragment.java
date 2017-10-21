@@ -13,7 +13,7 @@ import android.widget.ArrayAdapter;
 import android.widget.RelativeLayout;
 import android.widget.Spinner;
 
-import com.daemo.myfirstapp.MySuperFragment;
+import com.daemo.myfirstapp.activities.MySuperFragment;
 import com.daemo.myfirstapp.R;
 
 import static com.daemo.myfirstapp.graphics.animators.AnimationsFragment.AnimatedFragment.COLOR;

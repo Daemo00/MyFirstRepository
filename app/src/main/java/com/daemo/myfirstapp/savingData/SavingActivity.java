@@ -4,7 +4,7 @@ import android.Manifest;
 import android.os.Bundle;
 import android.support.v4.view.ViewPager;
 
-import com.daemo.myfirstapp.MySuperActivity;
+import com.daemo.myfirstapp.activities.MySuperActivity;
 import com.daemo.myfirstapp.R;
 import com.daemo.myfirstapp.common.SectionsPagerAdapter;
 

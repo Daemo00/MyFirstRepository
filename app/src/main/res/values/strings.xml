@@ -3,7 +3,7 @@
 
     <string name="lifecycle_method_list">Lifecycle Method List</string>
     <string name="activity_status">Activity Status</string>
-    <string name="dialog_text">Simple Dialog</string>
+    <string name="dialog_title">Simple Dialog</string>
     <string name="on_create">onCreate</string>
     <string name="on_destroy">onDestroy</string>
     <string name="on_start">onStart</string>
@@ -20,7 +20,7 @@
     <string name="btn_finish_a_label">Finish A</string>
     <string name="btn_finish_b_label">Finish B</string>
     <string name="btn_finish_c_label">Finish C</string>
-    <string name="btn_finish_dialog_label">Close</string>
+    <string name="dialog_close">Close</string>
     <string name="activity_a">Activity A</string>
     <string name="go">Go</string>
     <string name="sharedPreferencesTitle">Key-Value Sets</string>
@@ -207,4 +207,6 @@
     <string name="upload_file">Upload a File</string>
     <string name="link">Link</string>
     <string name="download">Download</string>
+    <string name="normal">Normal</string>
+    <string name="dialog">Dialog</string>
 </resources>
