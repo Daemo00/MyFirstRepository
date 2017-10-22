@@ -11,6 +11,8 @@ import android.util.Log;
 
 import com.daemo.myfirstapp.activities.MainActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
+import com.daemo.myfirstapp.common.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.storage.FirebaseStorage;
@@ -23,32 +25,13 @@ import com.google.firebase.storage.UploadTask;
  */
 public class MyUploadService extends MyBaseTaskService {
 
-    private static final String TAG = "MyUploadService";
-
-    /**
-     * Intent Actions
-     **/
-    public static final String ACTION_UPLOAD = "action_upload";
-    public static final String UPLOAD_COMPLETED = "upload_completed";
-    public static final String UPLOAD_ERROR = "upload_error";
-
-    /**
-     * Intent Extras
-     **/
-    public static final String EXTRA_FILE_URI = "extra_file_uri";
-    public static final String EXTRA_DOWNLOAD_URL = "extra_download_url";
-
-    // [START declare_ref]
+    private static final String TAG = Utils.getTag(MyUploadService.class);
     private StorageReference mStorageRef;
-    // [END declare_ref]
 
     @Override
     public void onCreate() {
         super.onCreate();
-
-        // [START get_storage_ref]
         mStorageRef = FirebaseStorage.getInstance().getReference();
-        // [END get_storage_ref]
     }
 
     @Nullable
@@ -60,8 +43,8 @@ public class MyUploadService extends MyBaseTaskService {
     @Override
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(TAG, "onStartCommand:" + intent + ":" + startId);
-        if (ACTION_UPLOAD.equals(intent.getAction())) {
-            Uri fileUri = intent.getParcelableExtra(EXTRA_FILE_URI);
+        if (Constants.ACTION_UPLOAD.equals(intent.getAction())) {
+            Uri fileUri = intent.getParcelableExtra(Constants.EXTRA_FILE_URI);
             uploadFromUri(fileUri);
         }
 
@@ -132,11 +115,11 @@ public class MyUploadService extends MyBaseTaskService {
     private boolean broadcastUploadFinished(@Nullable Uri downloadUrl, @Nullable Uri fileUri) {
         boolean success = downloadUrl != null;
 
-        String action = success ? UPLOAD_COMPLETED : UPLOAD_ERROR;
+        String action = success ? Constants.ACTION_UPLOAD_COMPLETED : Constants.ACTION_UPLOAD_ERROR;
 
         Intent broadcast = new Intent(action)
-                .putExtra(EXTRA_DOWNLOAD_URL, downloadUrl)
-                .putExtra(EXTRA_FILE_URI, fileUri);
+                .putExtra(Constants.EXTRA_DOWNLOAD_URL, downloadUrl)
+                .putExtra(Constants.EXTRA_FILE_URI, fileUri);
         return LocalBroadcastManager.getInstance(getApplicationContext())
                 .sendBroadcast(broadcast);
     }
@@ -150,20 +133,19 @@ public class MyUploadService extends MyBaseTaskService {
 
         // Make Intent to MainActivity
         Intent intent = new Intent(this, MainActivity.class)
-                .putExtra(EXTRA_DOWNLOAD_URL, downloadUrl)
-                .putExtra(EXTRA_FILE_URI, fileUri)
+                .putExtra(Constants.EXTRA_DOWNLOAD_URL, downloadUrl)
+                .putExtra(Constants.EXTRA_FILE_URI, fileUri)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         boolean success = downloadUrl != null;
         String caption = success ? getString(R.string.upload_success) : getString(R.string.upload_failure);
-        showFinishedNotification(caption, intent, success);
+        showFinishedNotification(caption, intent, success, false);
     }
 
     public static IntentFilter getIntentFilter() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(UPLOAD_COMPLETED);
-        filter.addAction(UPLOAD_ERROR);
-
+        filter.addAction(Constants.ACTION_UPLOAD_COMPLETED);
+        filter.addAction(Constants.ACTION_UPLOAD_ERROR);
         return filter;
     }
 

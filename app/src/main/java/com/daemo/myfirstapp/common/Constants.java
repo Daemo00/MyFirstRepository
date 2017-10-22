@@ -30,17 +30,23 @@ public final class Constants {
     public static final String NOTIFICATION_BATTERY_GROUP = BuildConfig.APPLICATION_ID.concat(".NOTIFICATION_BATTERY_GROUP");
     public static final int NOTIFICATION_GROUP_BATTERY_SUMMARY_ID = 200;
     public static final int NOTIFICATION_GROUP_SUMMARY_ID = 100;
-    public static final int NOTIFICATION_ID_MUSIC = 1;
-    public static final int NOTIFICATION_ID_FIREBASE = 2;
-    public static final int NOTIFICATION_ID_BATTERY = 3;
+    public static final int NOTIFICATION_MUSIC_ID = 0;
+    public static final int NOTIFICATION_FIREBASE_ID = 1;
+    public static final int NOTIFICATION_PROGRESS_ID = 2;
+    public static final int NOTIFICATION_FINISHED_ID = 3;
+    public static final int NOTIFICATION_BATTERY_ID = 4;
 
     public static final int REQUEST_CODE_MUSIC = 1;
     public static final int REQUEST_CODE_VIDEO_PERMISSIONS = 2;
     public static final int REQUEST_CODE_LOCATION = 3;
-
     public static final int REQUEST_CODE_OVERLAY_PERMISSION = 4;
+
+    public static final int REQUEST_CODE_CHOOSE_PICTURE = 5;
     public static final int KEY_ACTION_DELETE = 101;
     public static final int KEY_ACTION_UPDATE = 102;
+    public static final String KEY_FILE_URI = "key_file_uri";
+
+    public static final String KEY_DOWNLOAD_URL = "key_download_url";
     public static final String IMAGE_CACHE_DIR = "image_cache";
     public static final float CACHE_SIZE = 0.25f;
     public static final int WIDGET_INTENT = 1;
@@ -48,11 +54,24 @@ public final class Constants {
     public final static String mediaSessionTag = BuildConfig.APPLICATION_ID.concat(".mediaSessionTag");
     // Create a string for the ImageView label
     public static final String IMAGE_TAG = "icon bitmap";
+
     public static final String ACTION_REPLACE_FRAGMENT = "replace_fragment";
     public static final String ACTION_FRAGMENT = "action_fragment";
-    public static final String ACTION_ADDTOBACKSTACK = "action_addtobackstack";
+    public static final String ACTION_ADD_TO_BACKSTACK = "action_add_to_backstack";
     public static final String ACTION_FIREBASE_LOGIN = "Firebase_login";
     public static final String ACTION_FIREBASE_LOGOUT = "Firebase_logout";
+    public static final String ACTION_DOWNLOAD = "action_download";
+    public static final String ACTION_DOWNLOAD_COMPLETED = "download_completed";
+    public static final String ACTION_DOWNLOAD_ERROR = "download_error";
+    public static final String ACTION_UPLOAD = "action_upload";
+    public static final String ACTION_UPLOAD_COMPLETED = "upload_completed";
+    public static final String ACTION_UPLOAD_ERROR = "upload_error";
+
+    public static final String EXTRA_FILE_URI = "extra_file_uri";
+    public static final String EXTRA_DOWNLOAD_URL = "extra_download_url";
+    public static final String EXTRA_DOWNLOAD_PATH = "extra_download_path";
+    public static final String EXTRA_BYTES_DOWNLOADED = "extra_bytes_downloaded";
+
     public static boolean SERVICE_CHAT_HEAD_RUNNING = false;
 
     public static final class Cache {

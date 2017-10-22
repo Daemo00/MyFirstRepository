@@ -62,7 +62,6 @@ public class FirebaseAuthenticationFragment extends MySuperFirebaseFragment impl
 
             getMySuperActivity().showToast("Authentication succeeded!");
 
-
             FirebaseUser user = FirebaseAuth.getInstance().getCurrentUser();
             if (user != null) {
                 // Name, email address, and profile photo Url
@@ -75,7 +74,6 @@ public class FirebaseAuthenticationFragment extends MySuperFirebaseFragment impl
                 // Use FirebaseUser.getToken() instead.
                 String uid = user.getUid();
             }
-            getMySuperActivity().hideProgressDialog();
             Intent i = new Intent(Constants.ACTION_FIREBASE_LOGIN, null, getContext(), MainActivity.class);
             LocalBroadcastManager.getInstance(getContext()).sendBroadcast(i);
         }
@@ -108,11 +106,11 @@ public class FirebaseAuthenticationFragment extends MySuperFirebaseFragment impl
         super.onViewCreated(view, savedInstanceState);
 
         // Views
-        mEmailField = (EditText) view.findViewById(R.id.field_email);
-        mPasswordField = (EditText) view.findViewById(R.id.field_password);
-        Button mSignInButton = (Button) view.findViewById(R.id.button_sign_in);
-        Button mSignUpButton = (Button) view.findViewById(R.id.button_sign_up);
-        Button mSignInAnonymousButton = (Button) view.findViewById(R.id.button_sign_in_anonymous);
+        mEmailField = view.findViewById(R.id.field_email);
+        mPasswordField = view.findViewById(R.id.field_password);
+        Button mSignInButton = view.findViewById(R.id.button_sign_in);
+        Button mSignUpButton = view.findViewById(R.id.button_sign_up);
+        Button mSignInAnonymousButton = view.findViewById(R.id.button_sign_in_anonymous);
 
         // Click listeners
         mSignInButton.setOnClickListener(this);
@@ -213,6 +211,7 @@ public class FirebaseAuthenticationFragment extends MySuperFirebaseFragment impl
     }
 
     private void signInAnonymous() {
+        getMySuperActivity().showProgressDialog();
         mAuth.signInAnonymously()
                 .addOnCompleteListener(getActivity(), mAuthCompleteListener)
                 .addOnFailureListener(getActivity(), mAuthFailListener);

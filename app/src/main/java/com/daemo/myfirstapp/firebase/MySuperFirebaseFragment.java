@@ -39,6 +39,7 @@ public class MySuperFirebaseFragment extends MySuperFragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case R.id.menu_item_logout:
+                getMySuperActivity().showProgressDialog(getString(R.string.logging_out));
                 FirebaseAuth.getInstance().signOut();
                 LocalBroadcastManager.getInstance(getContext()).sendBroadcast(new Intent(Constants.ACTION_FIREBASE_LOGOUT));
                 return true;

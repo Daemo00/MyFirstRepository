@@ -9,6 +9,7 @@ import android.support.v4.app.NotificationCompat;
 import android.util.Log;
 
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 
 /**
@@ -16,9 +17,6 @@ import com.daemo.myfirstapp.common.Utils;
  * count is zero.
  */
 public abstract class MyBaseTaskService extends Service {
-
-    static final int PROGRESS_NOTIFICATION_ID = 0;
-    static final int FINISHED_NOTIFICATION_ID = 1;
 
     private int mNumTasks = 0;
 
@@ -61,18 +59,20 @@ public abstract class MyBaseTaskService extends Service {
         NotificationManager manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        manager.notify(PROGRESS_NOTIFICATION_ID, builder.build());
+        manager.notify(Constants.NOTIFICATION_PROGRESS_ID, builder.build());
     }
 
     /**
      * Show notification that the activity finished.
      */
-    protected void showFinishedNotification(String caption, Intent intent, boolean success) {
+    protected void showFinishedNotification(String caption, Intent intent, boolean success, boolean isDownload) {
         // Make PendingIntent for notification
         PendingIntent pendingIntent = PendingIntent.getActivity(this, 0 /* requestCode */, intent,
                 PendingIntent.FLAG_UPDATE_CURRENT);
 
-        int icon = success ? android.R.drawable.stat_sys_download_done : android.R.drawable.stat_sys_warning;
+        int icon = android.R.drawable.stat_sys_warning;
+        if(success && isDownload) icon = android.R.drawable.stat_sys_download_done;
+        else if (success) icon = android.R.drawable.stat_sys_upload_done;
 
         NotificationCompat.Builder builder = new NotificationCompat.Builder(this)
                 .setSmallIcon(icon)
@@ -84,7 +84,7 @@ public abstract class MyBaseTaskService extends Service {
         NotificationManager manager =
                 (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
 
-        manager.notify(FINISHED_NOTIFICATION_ID, builder.build());
+        manager.notify(Constants.NOTIFICATION_FINISHED_ID, builder.build());
     }
 
     /**
@@ -92,6 +92,6 @@ public abstract class MyBaseTaskService extends Service {
      */
     protected void dismissProgressNotification() {
         NotificationManager manager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-        manager.cancel(PROGRESS_NOTIFICATION_ID);
+        manager.cancel(Constants.NOTIFICATION_PROGRESS_ID);
     }
 }

@@ -133,7 +133,7 @@ public class MyMediaService extends Service implements MediaPlayer.OnPreparedLis
                 .setContentIntent(pi)
                 .build();
         notification.flags |= Notification.FLAG_ONGOING_EVENT;
-        startForeground(Constants.NOTIFICATION_ID_MUSIC, notification);
+        startForeground(Constants.NOTIFICATION_MUSIC_ID, notification);
     }
 
     public IBinder onBind(Intent intent) {

@@ -54,7 +54,7 @@ public class FirebaseDatabaseFragment extends MySuperFirebaseFragment {
             public void onClick(View v) {
                 Bundle bundle = new Bundle();
                 bundle.putString(Constants.ACTION_FRAGMENT, Constants.ACTION_REPLACE_FRAGMENT);
-                bundle.putBoolean(Constants.ACTION_ADDTOBACKSTACK, true);
+                bundle.putBoolean(Constants.ACTION_ADD_TO_BACKSTACK, true);
                 getMySuperActivity().onFragmentInteraction(
                         (MySuperFragment) Fragment.instantiate(getContext(), NewPostFragment.class.getName()),
                         bundle);

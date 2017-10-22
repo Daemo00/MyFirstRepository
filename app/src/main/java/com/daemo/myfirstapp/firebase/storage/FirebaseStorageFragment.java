@@ -15,6 +15,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 import com.daemo.myfirstapp.firebase.MySuperFirebaseFragment;
 
@@ -23,11 +24,6 @@ import java.util.Locale;
 import static android.app.Activity.RESULT_OK;
 
 public class FirebaseStorageFragment extends MySuperFirebaseFragment implements View.OnClickListener {
-
-    private static final int RC_TAKE_PICTURE = 101;
-
-    private static final String KEY_FILE_URI = "key_file_uri";
-    private static final String KEY_DOWNLOAD_URL = "key_download_url";
 
     private BroadcastReceiver mBroadcastReceiver;
 
@@ -46,25 +42,25 @@ public class FirebaseStorageFragment extends MySuperFirebaseFragment implements 
                 getMySuperActivity().hideProgressDialog();
 
                 switch (intent.getAction()) {
-                    case MyDownloadService.DOWNLOAD_COMPLETED:
+                    case Constants.ACTION_DOWNLOAD_COMPLETED:
                         // Get number of bytes downloaded
-                        long numBytes = intent.getLongExtra(MyDownloadService.EXTRA_BYTES_DOWNLOADED, 0);
+                        long numBytes = intent.getLongExtra(Constants.EXTRA_BYTES_DOWNLOADED, 0);
 
                         // Alert success
                         getMySuperActivity().showOkDialog(
                                 getString(R.string.success),
-                                String.format(Locale.getDefault(), "%d bytes downloaded from %s", numBytes, intent.getStringExtra(MyDownloadService.EXTRA_DOWNLOAD_PATH)),
+                                String.format(Locale.getDefault(), "%d bytes downloaded from %s", numBytes, intent.getStringExtra(Constants.EXTRA_DOWNLOAD_PATH)),
                                 null);
                         break;
-                    case MyDownloadService.DOWNLOAD_ERROR:
+                    case Constants.ACTION_DOWNLOAD_ERROR:
                         // Alert failure
                         getMySuperActivity().showOkDialog(
-                                "Error",
-                                String.format(Locale.getDefault(), "Failed to download from %s", intent.getStringExtra(MyDownloadService.EXTRA_DOWNLOAD_PATH)),
+                                getString(R.string.error),
+                                String.format(Locale.getDefault(), "Failed to download from %s", intent.getStringExtra(Constants.EXTRA_DOWNLOAD_PATH)),
                                 null);
                         break;
-                    case MyUploadService.UPLOAD_COMPLETED:
-                    case MyUploadService.UPLOAD_ERROR:
+                    case Constants.ACTION_UPLOAD_COMPLETED:
+                    case Constants.ACTION_UPLOAD_ERROR:
                         onUploadResultIntent(intent);
                         break;
                 }
@@ -83,7 +79,7 @@ public class FirebaseStorageFragment extends MySuperFirebaseFragment implements 
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         // Click listeners
-        view.findViewById(R.id.button_camera).setOnClickListener(this);
+        view.findViewById(R.id.button_upload).setOnClickListener(this);
         view.findViewById(R.id.button_download).setOnClickListener(this);
     }
 
@@ -115,8 +111,8 @@ public class FirebaseStorageFragment extends MySuperFirebaseFragment implements 
 
     @Override
     public void onSaveInstanceState(Bundle out) {
-        out.putParcelable(KEY_FILE_URI, mFileUri);
-        out.putParcelable(KEY_DOWNLOAD_URL, mDownloadUrl);
+        out.putParcelable(Constants.KEY_FILE_URI, mFileUri);
+        out.putParcelable(Constants.KEY_DOWNLOAD_URL, mDownloadUrl);
     }
 
     @Override
@@ -124,15 +120,16 @@ public class FirebaseStorageFragment extends MySuperFirebaseFragment implements 
         super.onViewStateRestored(savedInstanceState);
         // Restore instance state
         if (savedInstanceState != null) {
-            mFileUri = savedInstanceState.getParcelable(KEY_FILE_URI);
-            mDownloadUrl = savedInstanceState.getParcelable(KEY_DOWNLOAD_URL);
+            mFileUri = savedInstanceState.getParcelable(Constants.KEY_FILE_URI);
+            mDownloadUrl = savedInstanceState.getParcelable(Constants.KEY_DOWNLOAD_URL);
         }
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        Log.d(Utils.getTag(this), "onActivityResult:" + requestCode + ":" + resultCode + ":" + data);
-        if (requestCode == RC_TAKE_PICTURE) {
+        Log.d(Utils.getTag(this), String.format(Locale.getDefault(),
+                "onActivityResult(%s, %s, %s)", requestCode, resultCode, Utils.debugIntent(data)));
+        if (requestCode == Constants.REQUEST_CODE_CHOOSE_PICTURE) {
             if (resultCode == RESULT_OK) {
                 mFileUri = data.getData();
 
@@ -155,9 +152,9 @@ public class FirebaseStorageFragment extends MySuperFirebaseFragment implements 
         mDownloadUrl = null;
 
         // Start MyUploadService to upload the file, so that the file is uploaded even if this Activity is killed or put in the background
-        getActivity().startService(new Intent(getContext(), MyUploadService.class)
-                .putExtra(MyUploadService.EXTRA_FILE_URI, fileUri)
-                .setAction(MyUploadService.ACTION_UPLOAD));
+        getMySuperActivity().startService(new Intent(getContext(), MyUploadService.class)
+                .putExtra(Constants.EXTRA_FILE_URI, fileUri)
+                .setAction(Constants.ACTION_UPLOAD));
 
         // Show loading spinner
         getMySuperActivity().showProgressDialog(getString(R.string.progress_uploading));
@@ -169,27 +166,27 @@ public class FirebaseStorageFragment extends MySuperFirebaseFragment implements 
 
         // Kick off MyDownloadService to download the file
         Intent intent = new Intent(getContext(), MyDownloadService.class)
-                .putExtra(MyDownloadService.EXTRA_DOWNLOAD_PATH, path)
-                .setAction(MyDownloadService.ACTION_DOWNLOAD);
-        getActivity().startService(intent);
+                .putExtra(Constants.EXTRA_DOWNLOAD_PATH, path)
+                .setAction(Constants.ACTION_DOWNLOAD);
+        getMySuperActivity().startService(intent);
 
         // Show loading spinner
         getMySuperActivity().showProgressDialog(getString(R.string.progress_downloading));
     }
 
-    private void launchCamera() {
-        Log.d(Utils.getTag(this), "launchCamera");
+    private void choosePicture() {
+        Log.d(Utils.getTag(this), "choosePicture");
 
         // Pick an image from storage
         Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
         intent.setType("image/*");
-        startActivityForResult(intent, RC_TAKE_PICTURE);
+        startActivityForResult(intent, Constants.REQUEST_CODE_CHOOSE_PICTURE);
     }
 
     private void onUploadResultIntent(Intent intent) {
         // Got a new intent from MyUploadService with a success or failure
-        mDownloadUrl = intent.getParcelableExtra(MyUploadService.EXTRA_DOWNLOAD_URL);
-        mFileUri = intent.getParcelableExtra(MyUploadService.EXTRA_FILE_URI);
+        mDownloadUrl = intent.getParcelableExtra(Constants.EXTRA_DOWNLOAD_URL);
+        mFileUri = intent.getParcelableExtra(Constants.EXTRA_FILE_URI);
 
         updateUI();
     }
@@ -210,8 +207,8 @@ public class FirebaseStorageFragment extends MySuperFirebaseFragment implements 
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.button_camera:
-                launchCamera();
+            case R.id.button_upload:
+                choosePicture();
                 break;
             case R.id.button_download:
                 beginDownload();

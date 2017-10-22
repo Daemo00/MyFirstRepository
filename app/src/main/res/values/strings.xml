@@ -209,4 +209,6 @@
     <string name="download">Download</string>
     <string name="normal">Normal</string>
     <string name="dialog">Dialog</string>
+    <string name="error">Error</string>
+    <string name="logging_out">Logging out…</string>
 </resources>

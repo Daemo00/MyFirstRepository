@@ -26,6 +26,7 @@ import android.util.Log;
 
 import com.daemo.myfirstapp.activities.MainActivity;
 import com.daemo.myfirstapp.R;
+import com.daemo.myfirstapp.common.Constants;
 import com.daemo.myfirstapp.common.Utils;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -41,26 +42,15 @@ import java.io.InputStream;
  */
 public class MyDownloadService extends MyBaseTaskService {
 
-    /** Actions **/
-    public static final String ACTION_DOWNLOAD = "action_download";
-    public static final String DOWNLOAD_COMPLETED = "download_completed";
-    public static final String DOWNLOAD_ERROR = "download_error";
-
-    /** Extras **/
-    public static final String EXTRA_DOWNLOAD_PATH = "extra_download_path";
-    public static final String EXTRA_BYTES_DOWNLOADED = "extra_bytes_downloaded";
-
     private StorageReference mStorageRef;
 
     @Override
     public void onCreate() {
         super.onCreate();
-
         // Initialize Storage
         mStorageRef = FirebaseStorage.getInstance().getReference();
     }
 
-    @Nullable
     @Override
     public IBinder onBind(Intent intent) {
         return null;
@@ -70,9 +60,9 @@ public class MyDownloadService extends MyBaseTaskService {
     public int onStartCommand(Intent intent, int flags, int startId) {
         Log.d(Utils.getTag(this), "onStartCommand:" + intent + ":" + startId);
 
-        if (ACTION_DOWNLOAD.equals(intent.getAction())) {
+        if (Constants.ACTION_DOWNLOAD.equals(intent.getAction())) {
             // Get the path to download from the intent
-            String downloadPath = intent.getStringExtra(EXTRA_DOWNLOAD_PATH);
+            String downloadPath = intent.getStringExtra(Constants.EXTRA_DOWNLOAD_PATH);
             downloadFromPath(downloadPath);
         }
 
@@ -141,11 +131,11 @@ public class MyDownloadService extends MyBaseTaskService {
      */
     private boolean broadcastDownloadFinished(String downloadPath, long bytesDownloaded) {
         boolean success = bytesDownloaded != -1;
-        String action = success ? DOWNLOAD_COMPLETED : DOWNLOAD_ERROR;
+        String action = success ? Constants.ACTION_DOWNLOAD_COMPLETED : Constants.ACTION_DOWNLOAD_ERROR;
 
         Intent broadcast = new Intent(action)
-                .putExtra(EXTRA_DOWNLOAD_PATH, downloadPath)
-                .putExtra(EXTRA_BYTES_DOWNLOADED, bytesDownloaded);
+                .putExtra(Constants.EXTRA_DOWNLOAD_PATH, downloadPath)
+                .putExtra(Constants.EXTRA_BYTES_DOWNLOADED, bytesDownloaded);
         return LocalBroadcastManager.getInstance(getApplicationContext())
                 .sendBroadcast(broadcast);
     }
@@ -159,21 +149,19 @@ public class MyDownloadService extends MyBaseTaskService {
 
         // Make Intent to MainActivity
         Intent intent = new Intent(this, MainActivity.class)
-                .putExtra(EXTRA_DOWNLOAD_PATH, downloadPath)
-                .putExtra(EXTRA_BYTES_DOWNLOADED, bytesDownloaded)
+                .putExtra(Constants.EXTRA_DOWNLOAD_PATH, downloadPath)
+                .putExtra(Constants.EXTRA_BYTES_DOWNLOADED, bytesDownloaded)
                 .addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 
         boolean success = bytesDownloaded != -1;
         String caption = success ? getString(R.string.download_success) : getString(R.string.download_failure);
-        showFinishedNotification(caption, intent, true);
+        showFinishedNotification(caption, intent, true, true);
     }
-
 
     public static IntentFilter getIntentFilter() {
         IntentFilter filter = new IntentFilter();
-        filter.addAction(DOWNLOAD_COMPLETED);
-        filter.addAction(DOWNLOAD_ERROR);
-
+        filter.addAction(Constants.ACTION_DOWNLOAD_COMPLETED);
+        filter.addAction(Constants.ACTION_DOWNLOAD_ERROR);
         return filter;
     }
 }

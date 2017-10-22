@@ -51,11 +51,8 @@ public class MainActivity extends MySuperActivity {
     private BroadcastReceiver mBroadcastReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
-//            if (Constants.ACTION_FIREBASE_LOGIN.equals(intent.getAction())) {
-//            } else
-//            if (Constants.ACTION_FIREBASE_LOGOUT.equals(intent.getAction())) {
-//                invalidateOptionsMenu();
-//            }
+            if(Arrays.asList(Constants.ACTION_FIREBASE_LOGIN, Constants.ACTION_FIREBASE_LOGOUT).contains(intent.getAction()))
+                hideProgressDialog();
             try {
                 fillRadioActivities();
             } catch (PackageManager.NameNotFoundException e) {
@@ -126,7 +123,7 @@ public class MainActivity extends MySuperActivity {
     public void onFragmentInteraction(MySuperFragment fragment, Bundle bundle) {
         Log.d(Utils.getTag(this), "Bundle " + Utils.debugBundle(bundle) + " received from fragment: " + fragment);
         String action = bundle.getString(Constants.ACTION_FRAGMENT);
-        boolean addToBackstack = bundle.getBoolean(Constants.ACTION_ADDTOBACKSTACK);
+        boolean addToBackstack = bundle.getBoolean(Constants.ACTION_ADD_TO_BACKSTACK);
         if (Constants.ACTION_REPLACE_FRAGMENT.equals(action))
             replaceFragment(fragment, addToBackstack);
     }

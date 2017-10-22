@@ -15,6 +15,14 @@
       },
       "oauth_client": [
         {
+          "client_id": "513852456302-2h2nbo9mc2nkplkl9cri7aopm8kji2up.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.daemo.myfirstapp",
+            "certificate_hash": "93ba80aa650a2fb5a4b4110b2b41bf12b53f50c9"
+          }
+        },
+        {
           "client_id": "513852456302-fm91qgo7df3obgroos7rup778dia3d72.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
