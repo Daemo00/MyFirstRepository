@@ -1,16 +1,13 @@
 package com.daemo.myfirstapp.notification;
 
 import android.app.NotificationManager;
+import android.os.Build;
 import android.service.notification.StatusBarNotification;
 
 import com.daemo.myfirstapp.common.Constants;
-import com.google.common.collect.Lists;
 
 import java.lang.reflect.Field;
-import java.text.CollationElementIterator;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 public class Utils {
@@ -30,21 +27,24 @@ public class Utils {
         return validNotifications.size();
     }
 
-    private static int notificationId = 0;
-    public static int generateNotificationId() {
+    public static int generateNewNotificationId(NotificationManager notificationManager) {
         List<Integer> excludedIds = new ArrayList<>();
-        for (Field f : Constants.class.getDeclaredFields()) {
-            if (f.getName().toUpperCase().contains("NOTIFICATION") && f.getType() == int.class) {
+        for (Field f : Constants.class.getDeclaredFields())
+            if (f.getName().toUpperCase().contains("NOTIFICATION") && f.getType() == int.class)
                 try {
                     excludedIds.add(f.getInt(null));
                 } catch (IllegalAccessException e) {
                     e.printStackTrace();
                 }
-            }
-        }
+
+        // Exclude ids of existing notifications
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)
+            for (StatusBarNotification notification : notificationManager.getActiveNotifications())
+                excludedIds.add(notification.getId());
+
         // Unlikely in the sample, but the int will overflow if used enough so we skip the summary ID.
         // Most apps will prefer a more deterministic way of identifying an ID such as hashing the content of the notification.
-        notificationId++;
+        int notificationId = 0;
         while (excludedIds.contains(notificationId))
             notificationId++;
 

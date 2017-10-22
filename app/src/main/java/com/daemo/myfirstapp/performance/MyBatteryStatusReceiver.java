@@ -24,7 +24,7 @@ import java.util.Locale;
 import static android.content.Context.NOTIFICATION_SERVICE;
 import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_BATTERY_GROUP;
 import static com.daemo.myfirstapp.common.Constants.NOTIFICATION_GROUP_BATTERY_SUMMARY_ID;
-import static com.daemo.myfirstapp.notification.Utils.generateNotificationId;
+import static com.daemo.myfirstapp.notification.Utils.generateNewNotificationId;
 import static com.daemo.myfirstapp.notification.Utils.getNumberOfNotifications;
 
 public class MyBatteryStatusReceiver extends BroadcastReceiver {
@@ -46,7 +46,7 @@ public class MyBatteryStatusReceiver extends BroadcastReceiver {
         String notificationContent = batteryInfo.second.split(System.lineSeparator(), 2)[1];
         updateNotificationSummary(context);
 
-        int notificationId = generateNotificationId();
+        int notificationId = generateNewNotificationId(notificationManager);
         NotificationCompat.Builder mBuilder = new NotificationCompat.Builder(context);
         mBuilder.setSmallIcon(smallIcon)
                 .setContentTitle(notificationTitle)

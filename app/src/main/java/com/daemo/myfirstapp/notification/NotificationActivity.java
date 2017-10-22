@@ -57,7 +57,7 @@ public class NotificationActivity extends MySuperActivity {
 
     public void issueNotification(View v) {
 
-        int notificationId = com.daemo.myfirstapp.notification.Utils.generateNotificationId();
+        int notificationId = com.daemo.myfirstapp.notification.Utils.generateNewNotificationId(mNotificationManager);
         mBuilder = new NotificationCompat.Builder(this);
         mBuilder.setSmallIcon(android.R.drawable.stat_notify_chat)
                 .setContentTitle("My content title")
